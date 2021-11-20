@@ -10,10 +10,15 @@
     "ecmaFeatures": {
       "jsx": true
     },
-    "ecmaVersion": 13
+    "ecmaVersion": 12
   },
   "plugins": ["react"],
   "rules": {
     "complexity": ["error", 6]
+  },
+  "settings": {
+      "react":{
+          "version":"latest"
+      }
   }
 }

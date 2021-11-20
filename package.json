@@ -4,7 +4,8 @@
   "description": "Trabajo desarrollado en TT.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint-staged": "lint-staged"
   },
   "repository": {
     "type": "git",
@@ -24,5 +25,12 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.1",
     "eslint-plugin-react": "^7.27.1"
-  }
+  },
+  "dependencies": {
+    "pre-commit": "^1.2.2"
+  },
+  "lint-staged":{
+    "*.js":"eslint"
+  },
+  "pre-commit": "lint-staged"
 }
