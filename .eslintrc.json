@@ -14,11 +14,11 @@
   },
   "plugins": ["react"],
   "rules": {
-    "complexity": ["error", 6]
+    "complexity": ["error", 15]
   },
   "settings": {
-      "react":{
-          "version":"latest"
-      }
+    "react": {
+      "version": "latest"
+    }
   }
 }
