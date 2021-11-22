@@ -29,8 +29,8 @@
   "dependencies": {
     "pre-commit": "^1.2.2"
   },
-  "lint-staged":{
-    "*.js":"eslint"
+  "lint-staged": {
+    "*.js": "eslint"
   },
   "pre-commit": "lint-staged"
 }
