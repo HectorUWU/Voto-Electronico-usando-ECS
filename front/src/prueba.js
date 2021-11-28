@@ -1,3 +1,1 @@
-function(a) {
-
-}
+var x = 1;
