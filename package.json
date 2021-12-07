@@ -24,7 +24,8 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.1",
-    "eslint-plugin-react": "^7.27.1"
+    "eslint-plugin-react": "^7.27.1",
+    "lint-staged": "^12.1.2"
   },
   "dependencies": {
     "pre-commit": "^1.2.2"
