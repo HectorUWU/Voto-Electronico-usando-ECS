@@ -8,7 +8,7 @@ const morgan = require("morgan")
 const cors = require("cors")
 // dotenv
 const dotenv = require('dotenv')
-dotenv.config({path: '../dotenv/.env'})
+dotenv.config({path: './dotenv/.env'})
 // rutas  
 const routes = require('./routes/routes')
 // CONFIG

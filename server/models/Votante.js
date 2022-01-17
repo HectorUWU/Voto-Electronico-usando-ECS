@@ -1,59 +1,78 @@
-const bcryptjs = require('bcryptjs');
-const Votante = function(votante){
-    this.boleta = votante.boleta;
-    this.idVotante = votante.idVotante;
-    this.correo = votante.correo;
-    this.contrasena = votante.contrasena;
-}
-const conexion = require('../database/db')
+const bcryptjs = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-Votante.buscarPorBoleta = function(boleta, resultados){
-    conexion.query('SELECT * FROM votante WHERE BOLETA = ?', boleta, (error, results)=>{
-        if(error){
-            console.log(error);
-        }else{
-            resultados(results)
+const Votante = function (votante) {
+  this.boleta = votante.boleta;
+  this.idVotante = votante.idVotante;
+  this.correo = votante.correo;
+  this.contrasena = votante.contrasena;
+};
+const conexion = require("../database/db");
+
+Votante.buscarPorBoleta = function (boleta) {
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query("SELECT * FROM votante WHERE BOLETA = ?", boleta)
+      .then(([fields, rows]) => {
+        resolve(fields[0]);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+Votante.registro = function (votante) {
+  const sal = 10;
+  return new Promise((resolve, reject) => {
+    bcryptjs
+      .hash(votante.contrasena, sal)
+      .then(function (hash) {
+        return conexion.promise().query("INSERT INTO votante SET ?", {
+          boleta: votante.boleta,
+          idVotante: votante.boleta,
+          contrasena: hash,
+          correo: votante.correo,
+        });
+      })
+      .then(([fields, rows]) => {
+        resolve({ mensaje: "Registro exitoso" });
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+Votante.iniciarSesion = function (votante) {
+  return new Promise((resolve, reject) => {
+    Votante.buscarPorBoleta(votante.boleta)
+      .then((resultado) => {
+        if (!resultado) { 
+          reject(new Error("Boleta no registrada"));
+        } else {
+          return Promise.all(
+            [bcryptjs.compare(votante.contrasena, resultado.contrasena),
+            resultado]
+          );
         }
-    })
-}
-
-Votante.registro = function(votante, resultados){
-    const sal = 10
-    bcryptjs.hash(votante.contrasena, sal).then(function(hash){
-        conexion.query('INSERT INTO votante SET ?', {boleta:votante.boleta, idVotante:votante.boleta, 
-            contrasena:hash, correo:votante.correo}, (error, results)=>{
-                if(error){
-                    console.log(error)
-                    resultados(error, null)
-                }else{
-                    resultados(null, results)
-                }
-            })
-    })
-}
-
-Votante.iniciarSesion = function(votante, resultados){
-    Votante.buscarPorBoleta(votante.boleta, (error, resultado)=>{
-        if(error){
-            console.log(error)
-            resultados(error, null)
-        }else{
-            if(resultados.length === 0){
-                resultados('Boleta no registrada', null)
-            }
-            else{
-                bcryptjs.compare(votante.contrasena, resultado[0].contrasena).then((err, bool)=>{
-                    if(err){
-                        resultados(err, null)
-                    }else if(bool){
-                        // TO DO
-                        console.log("Contrasena corrercta")
-                    }else{
-                        resultados("Contraseña incorrrecta", null)
-                    }
-                })
-            }
+      })
+      .then(([bool, resultado]) => {
+        if (bool) {
+          const token = jwt.sign(
+            { boleta: resultado.boleta },
+            process.env.SECRET,
+            { expiresIn: "5h" }
+          );
+          resolve({ ...resultado, token });
+        } else {
+          reject(new Error("Contraseña incorrecta"));
         }
-    })
-}
-module.exports = Votante
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+module.exports = Votante;
