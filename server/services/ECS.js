@@ -11,7 +11,7 @@ const CAMPO_TAM = Math.pow(10, 2); // Constante que define el tamaño del plano
 
 class ECS{
     /** @constructor */
-    constructor() {}
+    // constructor() {}
     /** 
      * Fragmenta un secreto utilizando ECS de Shamir
      * @param secreto {number} 
@@ -52,6 +52,7 @@ class ECS{
 
         return evaluacion
     }
+
     /** 
      * Recupera un secreto con base en los fragmentos utilizando ECS de Shamir
      * @param fragmentos {map}

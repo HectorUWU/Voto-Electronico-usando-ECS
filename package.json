@@ -37,7 +37,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "concurrently": "^6.4.0",
-    "rref": "^0.0.1"
+    "rref": "^0.0.1",
     "dotenv": "^11.0.0",
     "express": "^4.17.2",
     "express-sessions": "^1.0.6",

@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-const rsa = require('../server/services/Rsa.js');
+const Rsa = require('../server/services/Rsa.js');
 const llavePrivada = `-----BEGIN ENCRYPTED PRIVATE KEY-----
 MIIJrTBXBgkqhkiG9w0BBQ0wSjApBgkqhkiG9w0BBQwwHAQILz5jALyXnCcCAggA
 MAwGCCqGSIb3DQIJBQAwHQYJYIZIAWUDBAEqBBAjYb9ykmVAnIbM0ZQ2aR5RBIIJ
@@ -55,9 +55,9 @@ cWFJVd2hLJ1uL1eRZ7RdfOo/LQNeQxSc4NxHF2agPoLtgKM2zCZfkfb+Sb5anXcp
 sHd+dMVCFXCTrKACPh6kzeCMTlZTvpjgIjdhiYNZZyw5
 -----END ENCRYPTED PRIVATE KEY-----`;
 
+const rsa = new Rsa(llavePrivada)
 test('Ingresar texto cifrado previamente, llave privada y contrasena top secret debe obtener my secret data', () => {
     expect(rsa.descifrar(
-        llavePrivada,
         'FmU2LUVXGh5GqytS6DPw9ipUL5Xrs3uMb9OD+OYxZnhxbcDn5gc0jZ48JzUtB/a+60jdLHY5Vi0OIfcn+JZtUBdivLM335/DYrbjsYegENq4Cce42Fyr14fsEVfgK6sTScUZFgzFGzSIWyZZ5H2C5mEZk8CtBdcWyOo4pI0X0FcxaVPko5gDP7mVARjJHaAdnb0pmf72twaBNDW7acXndSdwAWqE01I6Of7MT/HWFEL8PVH+HTpmAVQR97Wt9dFGKPIRrooswZMN0O3k8BNXBeFX+NhXuIo2RcjAZ0I7b1JkANVHZ6RGbKtE34gJ7Y9pvTt8A8648l24RkkvIa+iGgwwQbYonKADBuf6L3o9Ez7rPtS2vpBOUoNvHvziFtee0vH/3Wu2cNawR2w1yPqNsBnCa4Hkv1/IdmbWCDzMBOA+YwxDSfcrvQXyvxSAUSt2W5B42FoW8k5yVfMerDqoyiHqdLBqsPW51v+Ogc7KxWvA3JNirz6CuUIpSXv2QKpOxYDcHFXTlLems3qDLk0pLHuZAFh7Y+AbxWNo9DwO55vpRgBcZ8R9fTRNkzLo2ADGi8yQg1f2uCku5jW8xbtRPfTuLvxsKxWluli1ty+WX2keoP5mGN0VivxSuJ20SIVYiuUIOPCi8sXSxh2xV4jMTuFHt2n4ZFp2ac+Vc/uyL+s=',
         'top secret'
     )).toBe('my secret data');
