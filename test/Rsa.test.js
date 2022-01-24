@@ -53,11 +53,32 @@ oh2lU+lAdWgvcmlVYN8J40xnw/ACxQPphx/2wQ9b5swpec8LhgEnNT6LHAjlcrjk
 6xLA4iV62wkjMKaiV66h+uVfLLZe8kYS0/QrvkalvLR/8wyPYdrXq9B5pjKFklVR
 cWFJVd2hLJ1uL1eRZ7RdfOo/LQNeQxSc4NxHF2agPoLtgKM2zCZfkfb+Sb5anXcp
 sHd+dMVCFXCTrKACPh6kzeCMTlZTvpjgIjdhiYNZZyw5
------END ENCRYPTED PRIVATE KEY-----`;
+-----END ENCRYPTED PRIVATE KEY-----`
 
-const rsa = new Rsa(llavePrivada)
+const llavePublica =  `-----BEGIN RSA PUBLIC KEY-----
+MIICCgKCAgEArkR+HsM6nCeHsK/HkqW2pSFZwd8zF6X+PpwB4qob4vxh1CtSIij3
+8s5jfFSZl+ybeQgGnjPHZDRWPkMTqbfOPyIqzhsSuknY2kPuQkD68t8ly01rrq23
+6I0G5R2bSVB0tJz7l266s341MoCrCCED5/vwPHv/J5h7t4yfbjzqIQHwdswuT4dp
+F8gkm8PDEfTDK3f9OgVXCG84cU/7e8mi8eNo4b9lac1Q62d5rUIalxPa6WzsLNx8
+PFfXjqaFutgLNuwoVQah5gw4Plh0fkwfQ65KeYNbEiqghPTlOqi0NexPyrfZdfP4
+cPiJVcAsutbQuOE7xpiSueELTQ58mUl9iMlKSDrB4l6jerrXrULfMyhV8dhZHt/U
+tBzd5uMqtc1ew5z0pP47ydmJ9Bw2DisHdJKRXOgwEZherCjI4bIMP7LFcF9hU0mx
++9Vp2GWdaQIOxn4Zo5Tq1p2rFf6YzX7Ih9n4p7qjbeR1pArNSRpShPS079ZMqSji
+tGKm1SLzCndx3/xHSYbnpdTMwmqb5BbkJZhJmdGhxqmR+Ffo2gwNT/C9JcGB+DVf
+vFqgO6FaTqJegMdcN7+D/vmfpJYkhwGqtmAAq0ECcXHvLboYib8kPAS3oJG8cuTc
+kKmwWSWPqToevNAVY8mu3+csMesQcJlMZr93NsRAxY1qiJ+xZEIRw7MCAwEAAQ==
+-----END RSA PUBLIC KEY-----`
+
+const rsaCifrar = new Rsa(llavePublica)
+test('Ingresar texto my secret data y llave publica debe obtener una longitud de 684', () => {
+    expect(rsaCifrar.cifrar(
+        'my secret data'
+    )).toHaveLength(684);
+});
+
+const rsaDescifrar = new Rsa(llavePrivada)
 test('Ingresar texto cifrado previamente, llave privada y contrasena top secret debe obtener my secret data', () => {
-    expect(rsa.descifrar(
+    expect(rsaDescifrar.descifrar(
         'FmU2LUVXGh5GqytS6DPw9ipUL5Xrs3uMb9OD+OYxZnhxbcDn5gc0jZ48JzUtB/a+60jdLHY5Vi0OIfcn+JZtUBdivLM335/DYrbjsYegENq4Cce42Fyr14fsEVfgK6sTScUZFgzFGzSIWyZZ5H2C5mEZk8CtBdcWyOo4pI0X0FcxaVPko5gDP7mVARjJHaAdnb0pmf72twaBNDW7acXndSdwAWqE01I6Of7MT/HWFEL8PVH+HTpmAVQR97Wt9dFGKPIRrooswZMN0O3k8BNXBeFX+NhXuIo2RcjAZ0I7b1JkANVHZ6RGbKtE34gJ7Y9pvTt8A8648l24RkkvIa+iGgwwQbYonKADBuf6L3o9Ez7rPtS2vpBOUoNvHvziFtee0vH/3Wu2cNawR2w1yPqNsBnCa4Hkv1/IdmbWCDzMBOA+YwxDSfcrvQXyvxSAUSt2W5B42FoW8k5yVfMerDqoyiHqdLBqsPW51v+Ogc7KxWvA3JNirz6CuUIpSXv2QKpOxYDcHFXTlLems3qDLk0pLHuZAFh7Y+AbxWNo9DwO55vpRgBcZ8R9fTRNkzLo2ADGi8yQg1f2uCku5jW8xbtRPfTuLvxsKxWluli1ty+WX2keoP5mGN0VivxSuJ20SIVYiuUIOPCi8sXSxh2xV4jMTuFHt2n4ZFp2ac+Vc/uyL+s=',
         'top secret'
     )).toBe('my secret data');
