@@ -1,10 +1,11 @@
 /**
  * @fileoverview Rsa, clase que contiene los metodos de cifrado y descifrado de rsa
- * @version 1.1
+ * @version 1.2
  * @author Kevin Uriel Malvaez Landeros
  * history
  * v.1.0 primera implementacion de las funciones cifrar y descifrar las
  * v.1.1 cambio en el padding a RSA_PKCS1_PADDING y variables a español
+ * v.1.2 se agrego la funcion de generar llaves
  */
 
 const crypto = require("crypto");// Modulo crypto, necesario para usar rsa
@@ -22,7 +23,7 @@ class Rsa {
    * @param datos {string} 
    * @return datosCifrados {string} 
    */
-  cifrar = function (datos) {
+  cifrar(datos) {
     const datosCifrados = crypto.publicEncrypt(
       {
         key: this.llave,
@@ -39,7 +40,7 @@ class Rsa {
    * @param contrasena {string}
    * @return datosDescifrados {string}  
    */
-  descifrar = function (datos, contrasena) {
+  descifrar(datos, contrasena) {
     const datosDescifrados = crypto.privateDecrypt(
       {
         key: this.llave,
@@ -51,6 +52,10 @@ class Rsa {
     return datosDescifrados.toString();
   };
 
+  /** 
+    * @param contrasena {string}, contraseña para la llave privada 
+    * @returns publicKey, privateKey {string}
+    */
   static generarLLaves(contrasena) {
     const {
       publicKey,
