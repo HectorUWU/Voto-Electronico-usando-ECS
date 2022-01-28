@@ -42,6 +42,20 @@ MesaElectoral.buscarPorID = function (id) {
   });
 };
 
+ MesaElectoral.obtenerLLavesPublicas = function () {
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query("SELECT idMesaElectoral, clavePublica FROM mesaelectoral")
+      .then(([fields, rows]) => {
+        resolve(fields);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
 /**
  * Registra un nuevo miembro de la mesa electoral en la base de datos.
  * @param mesaelectoral {Mesaelectoral}
