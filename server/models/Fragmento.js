@@ -19,11 +19,11 @@ Fragmento.guardarFragmentos = function (fragmentos) {
   };
 
 
-Fragmento.optenerFragmentos = function () {
+Fragmento.obtenerFragmentos = function (id) {
   return new Promise((resolve, reject) => {
     conexion
       .promise()
-      .query("SELECT * FROM voto")
+      .query("SELECT * FROM voto WHERE idMesaElectoral IN (?);", [id])
       .then(([fields, rows]) => {
         resolve(fields);
       })
