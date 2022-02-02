@@ -28,36 +28,44 @@ class Votante {
    * Fragmenta el voto 
    * @param eleccion {number}, numero de eleccion del voto 
    * @param u {number}, umbral
-   * @param p {number}, No. de participantes 
+   * @param p {number}, No. de participantes
+   * @return {promise}, resultado de la promesa
    */
   votar(eleccion, u, p) {
-    if(this.EstadoAcademico){
-      if(this.EstadoVoto){
-        console.log('Ya has ejercido tu voto') 
+    return new Promise((resolve, reject) => {
+      if(this.EstadoAcademico){
+        if(this.EstadoVoto){
+          console.log('Ya has ejercido tu voto') 
+        }else{
+          const ecs = new ECS()
+          // Obtener Id de voto
+          const Id = 0;
+          const secretos = ecs.fragmentarSecreto(eleccion, u, p)
+          const fragmentos = []
+          // obtener llave publica y Id de todos los integrantes de la mesa electoral que participen en la votación
+          ME.obtenerLLavesPublicas().then(resultados=>{
+            let i = 0;           
+            for(const [llave, valor] of secretos){
+              // obtener llavepublica del integrante i de la mesa MesaElectoral
+              const r = new Rsa(resultados[i].clavePublica) 
+              const fragmento =[r.cifrar(Id.toString()), // Id cifrado con RSA
+                llave.toString()+','+valor.toString(), // fragmento del ECS
+                resultados[i].idMesaElectoral] // Id del integrante de la mesa electoral
+              fragmentos.push(fragmento)
+              i++
+            }
+            F.guardarFragmentos(fragmentos).then(result=>{
+              resolve({mensaje:'Voto correcto'})
+            });
+          }).catch(err=>{
+            reject(err)
+          })      
+        }
       }else{
-        const ecs = new ECS()
-        // Obtener Id de voto
-        const Id = 0;
-        const secretos = ecs.fragmentarSecreto(eleccion, u, p)
-        const fragmentos = []
-        // obtener llave publica y Id de todos los integrantes de la mesa electoral que participen en la votación
-        ME.obtenerLLavesPublicas().then(resultados=>{
-          let i = 0;           
-          for(const [llave, valor] of secretos){
-            // obtener llavepublica del integrante i de la mesa MesaElectoral
-            const r = new Rsa(resultados[i].clavePublica) 
-            const fragmento =[r.cifrar(Id.toString()), // Id cifrado con RSA
-              llave.toString()+','+valor.toString(), // fragmento del ECS
-              resultados[i].idMesaElectoral] // Id del integrante de la mesa electoral
-            fragmentos.push(fragmento)
-            i++
-          }
-          F.guardarFragmentos(fragmentos)
-        }).catch(err=>console.log(err))      
+        console.log('No estas inscrito y no puedes votar');
       }
-    }else{
-      console.log('No estas inscrito y no puedes votar');
-    }
+    })
+    
   }
 }
 

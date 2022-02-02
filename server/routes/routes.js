@@ -1,6 +1,7 @@
 const express = require("express");
 const Votante = require("../models/Votante");
 const MesaElectoral = require("../models/MesaElectoral");
+const Votan = require('../services/Votante')
 const router = express.Router();
 router.post("/registro", (req, res) => {
   if (req.body) {
@@ -38,5 +39,16 @@ router.post("/login", (req, res) => {
     res.status(400).send({ error: "Campos invalidos" });
   }
 });
+
+router.post('/votar', (req, res) => {
+  if(req.body){
+    const V = new Votan(false, true);
+    V.votar(req.body.eleccion, 2, 3).then((result) => {
+      res.send(result)
+    }).catch((err) => {
+      res.status(400).send({ error: err.toString()})
+    })
+  }
+})
 
 module.exports = router;
