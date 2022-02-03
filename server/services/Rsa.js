@@ -1,11 +1,12 @@
 /**
  * @fileoverview Rsa, clase que contiene los metodos de cifrado y descifrado de rsa
- * @version 1.2
+ * @version 1.3
  * @author Kevin Uriel Malvaez Landeros
  * history
  * v.1.0 primera implementacion de las funciones cifrar y descifrar las
  * v.1.1 cambio en el padding a RSA_PKCS1_PADDING y variables a español
  * v.1.2 se agrego la funcion de generar llaves
+ * v.1.3 se agrego la funcion de validar llaves privadas
  */
 
 const crypto = require("crypto");// Modulo crypto, necesario para usar rsa
@@ -51,6 +52,26 @@ class Rsa {
     );
     return datosDescifrados.toString();
   };
+
+  /**
+   * Funcion que verifica si la llave privada es valida y la contraseña ingresada es correcta
+   * @param contrasena {string}  
+   * @returns {boolean}
+   */
+  validarLlavePrivada(contrasena){
+    try{
+      crypto.createPrivateKey({  
+        key: this.llave,
+        format: "pem",
+        type: "pkcs8",
+        passphrase: contrasena,
+        encoding: "utf-8"
+      });
+      return true
+    } catch {
+      return false
+    }
+  }
 
   /** 
     * @param contrasena {string}, contraseña para la llave privada 
