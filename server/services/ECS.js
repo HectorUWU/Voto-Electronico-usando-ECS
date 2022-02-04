@@ -9,7 +9,7 @@ const rref = require("rref"); // Módulo rref, necesario para resolver el sistem
 
 const CAMPO_TAM = Math.pow(10, 2); // Constante que define el tamaño del plano
 
-class ECS{
+class ECS {
     /** @constructor */
     // constructor() {}
     /** 
@@ -19,7 +19,7 @@ class ECS{
      * @param p {number}, No. de participantes
      * @return fragmentos {map}
      */
-    fragmentarSecreto (secreto, u, p) {
+    fragmentarSecreto(secreto, u, p) {
         const coeficientes = []
         for (let i = 1; i < u; i++) {
             coeficientes.push(obtenerNumeroAleatorio(0, CAMPO_TAM))
@@ -58,7 +58,7 @@ class ECS{
      * @param fragmentos {map}
      * @return ECS.resolverSistemaEcuaciones {number}, secreto desfragmentado
      */
-    desfragmentarSecreto (fragmentos) {
+    desfragmentarSecreto(fragmentos) {
         const ecuaciones = []
         let i = 0;
         for (const [key, value] of fragmentos) {
@@ -75,7 +75,7 @@ class ECS{
      * @param u {number}, umbral del ECS de Shamir
      * @return ecuacion {number array}
      */
-    generarEcuacion (x, y, u) {
+    generarEcuacion(x, y, u) {
         const ecuacion = []
         for (let i = 0; i < u; i++) {
             ecuacion.push(Math.pow(x, i))
@@ -89,7 +89,7 @@ class ECS{
      * @param ecuaciones {number matrix}, Matriz con los coeficientes del sistema de ecuaciones
      * @return x0[res[0].length - 1] {number}, Valor de x0
      */
-    resolverSistemaEcuaciones (ecuaciones) {
+    resolverSistemaEcuaciones(ecuaciones) {
         const res = rref(ecuaciones)
         const x0 = res[0]
         return x0[res[0].length - 1]
