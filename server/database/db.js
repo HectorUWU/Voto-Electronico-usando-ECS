@@ -1,9 +1,10 @@
 const mysql = require("mysql2");
+
 const conexion = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root",
-  database: "votoe",
+  host: "ubuntu.mysql.database.azure.com",
+  user: "tt",
+  password: "VotoECS2021A",
+  database: "votoe"
 });
 
 conexion.connect((error) => {
