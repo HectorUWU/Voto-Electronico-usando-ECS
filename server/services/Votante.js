@@ -53,7 +53,7 @@ class Votante {
                 // obtener llavepublica del integrante i de la mesa MesaElectoral
                 const r = new Rsa(resultados[i].clavePublica);
                 const fragmento = [
-                  r.cifrar(Id.toString()), // Id cifrado con RSA
+                  r.cifrar(Id), // Id cifrado con RSA
                   llave.toString() + "," + valor.toString(), // fragmento del ECS
                   resultados[i].idMesaElectoral,
                 ]; // Id del integrante de la mesa electoral
