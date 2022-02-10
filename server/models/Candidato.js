@@ -29,4 +29,22 @@ Candidato.registrarVotos = function (votos) {
   });
 };
 
+/**
+ * Regresa todos los candidatos
+ * @return {promise}
+ */
+Candidato.obtenerCandidatos = function () {
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query("SELECT * FROM candidato")
+      .then(([fields, rows]) => {
+        resolve(fields);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
 module.exports = Candidato; // Exporta el modulo
