@@ -1,16 +1,17 @@
 const mysql = require("mysql2");
 const conexion = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root",
-  database: "votoe",
+    host: "ubuntu.mysql.database.azure.com",
+    user: "tt",
+    password: "VotoECS2021A",
+    database: "votoe",
+    port: 3306
 });
 
 conexion.connect((error) => {
-  if (error) {
-    console.log("El error es " + error);
-    return;
-  }
-  console.log("Conexion completa");
+    if (error) {
+        console.log("El error es " + error);
+        return;
+    }
+    console.log("Conexion completa");
 });
 module.exports = conexion;

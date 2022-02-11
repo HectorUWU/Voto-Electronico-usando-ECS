@@ -6,7 +6,7 @@
  * v.0.1 Agregando conexion y registro de votantes a la base de datos
  */
 /** @constructor */
-const Candidato = function () {};
+const Candidato = function() {};
 
 const conexion = require("../database/db"); // realiza la conecion a la base de datos.
 
@@ -15,18 +15,18 @@ const conexion = require("../database/db"); // realiza la conecion a la base de 
  * @param votos {array[Numero de votos, idCandidato]}
  * @return {promise}
  */
-Candidato.registrarVotos = function (votos) {
-  return new Promise((resolve, reject) => {
-    conexion
-      .promise()
-      .query("UPDATE candidato SET numeroVotos=? where idCandidato=?", votos)
-      .then(([fields, rows]) => {
-        resolve({ mensaje: "Resultados guardados con exito" });
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+Candidato.registrarVotos = function(votos) {
+    return new Promise((resolve, reject) => {
+        conexion
+            .promise()
+            .query("UPDATE candidato SET numeroVotos=? where idCandidato=?", votos)
+            .then(([fields, rows]) => {
+                resolve({ mensaje: "Resultados guardados con exito" });
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
 };
 
 module.exports = Candidato; // Exporta el modulo
