@@ -24,6 +24,7 @@ Fragmento.guardarFragmentos = function (fragmentos) {
         [fragmentos]
       )
       .then(([fields, rows]) => {
+
         resolve({ mensaje: "Fragmentos guardados con exito" });
       })
       .catch((_err) => {

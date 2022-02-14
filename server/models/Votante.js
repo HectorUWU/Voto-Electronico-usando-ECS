@@ -70,7 +70,7 @@ Votante.registro = function (votante) {
  */
 Votante.iniciarSesion = function (votante) {
   return new Promise((resolve, reject) => {
-    Votante.buscarPorBoleta(votante.boleta)
+    Votante.buscarPorBoleta(votante.id)
       .then((resultado) => {
         if (!resultado) { 
           reject(new Error("Boleta no registrada"));
