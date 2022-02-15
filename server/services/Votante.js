@@ -35,7 +35,7 @@ class Votante {
     return new Promise((resolve, reject) => {
       if (this.EstadoAcademico) {
         if (this.EstadoVoto) {
-          console.log("Ya has ejercido tu voto");
+          reject(new Error('Ya has ejercido tu voto'))
         } else {
           const ecs = new ECS();
           // Obtener Id de voto
@@ -69,7 +69,7 @@ class Votante {
             });
         }
       } else {
-        console.log("No estas inscrito y no puedes votar");
+        reject(new Error('No estas inscrito y no puedes votar'))
       }
     });
   }
