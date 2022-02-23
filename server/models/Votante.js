@@ -84,11 +84,11 @@ Votante.iniciarSesion = function (votante) {
       .then(([bool, resultado]) => {
         if (bool) {
           const token = jwt.sign(
-            { boleta: resultado.boleta },
+            { boleta: resultado.boleta, contrasena: resultado.contrasena, rol:"Votante"},
             process.env.SECRET,
             { expiresIn: "5h" }
           );
-          resolve({ ...resultado, token });
+          resolve({ ...resultado, rol:"Votante", token });
         } else {
           reject(new Error("Contraseña incorrecta"));
         }

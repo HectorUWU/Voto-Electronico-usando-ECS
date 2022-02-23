@@ -10,18 +10,45 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
+import ResponseError from "./responseError";
 const theme = createTheme();
 
 export default function SignIn() {
+  const [error, setError] = React.useState("");
+  const [showError, setShowError] = React.useState(false);
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    let datos = {
+      id: data.get("id"),
+      contrasena: data.get("contrasena"),
+    };
+    let config = {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(datos),
+    };
+    fetch("http://localhost:8000/api/login", config)
+      .then((response) => response.json())
+      .then((response) => {
+        if (response.error) {
+          setError(response.error);
+          setShowError(true);
+        }else{
+          console.log(response)
+          if(response.rol==="Votante"){
+            sessionStorage.setItem( 'votante', JSON.stringify(response));
+            window.location.href = "/votante/menuPrincipal"
+          }
+          else if(response.rol==="MesaElectoral"){
+            sessionStorage.setItem( 'MesaElectoral', JSON.stringify(response));
+            window.location.href = "/mesa/menuPrincipal"
+          }
+        }
+      });
   };
 
   return (
@@ -42,6 +69,7 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Iniciar Sesion
           </Typography>
+          <ResponseError error={error} showError={showError} />
           <Box
             component="form"
             onSubmit={handleSubmit}

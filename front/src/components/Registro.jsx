@@ -10,18 +10,41 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import ResponseError from "./responseError"
 
 const theme = createTheme();
 
 export default function SignUp() {
+  const [error, setError] = React.useState("")
+  const [showError, setShowError] = React.useState(false)
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    let datos = {
+      boleta: data.get("boleta"),
+      idVotante: data.get("boleta"),
+      correo: data.get("correo"),
+      contrasena: data.get("contrasena"),
+    };
+    let config = {
+      method: "POST", 
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+      body: JSON.stringify(datos)
+    };
+    fetch("http://localhost:8000/api/registro", config).then((response) =>
+      response.json()
+    ).then(response => {
+      if(response.error){
+        setError(response.error);
+        setShowError(true)      
+      } else {
+        window.location.href = "/"
+      }
+    })
   };
 
   return (
@@ -42,6 +65,7 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Registro
           </Typography>
+          <ResponseError error={error} showError={showError}/>
           <Box
             component="form"
             noValidate

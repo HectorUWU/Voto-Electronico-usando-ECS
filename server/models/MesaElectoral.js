@@ -107,11 +107,11 @@ MesaElectoral.iniciarSesion = function (me) {
       .then(([bool, resultado]) => {
         if (bool) {
           const token = jwt.sign(
-            { idMesaElectoral: resultado.idMesaElectoral },
+            { idMesaElectoral: resultado.idMesaElectoral, contrasena: resultado.contrasena, rol:"MesaElectoral" },
             process.env.SECRET,
             { expiresIn: "5h" }
           );
-          resolve({ ...resultado, token });
+          resolve({ ...resultado, rol: "MesaElectoral", token });
         } else {
           reject(new Error("Contraseña incorrecta"));
         }

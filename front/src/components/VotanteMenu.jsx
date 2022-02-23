@@ -12,6 +12,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 const theme = createTheme();
 
 export default function VotanteMenu() {
+  let data = sessionStorage.getItem('votante');
+  data = JSON.parse(data)
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -28,7 +30,7 @@ export default function VotanteMenu() {
             <HowToVoteIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Bienvenido votante
+            Bienvenido {data.boleta}
           </Typography>
           <Button
             component={Link}
