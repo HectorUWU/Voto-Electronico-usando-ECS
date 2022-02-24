@@ -8,7 +8,7 @@ const verifyVotante = (req, res, next) => {
     try {
         // Verificamos el token usando la dependencia de jwt y el método .verify
         const verified = jwt.verify(token, process.env.SECRET)
-        if(verified.rol !== "Votante") return res.status(401).json({error: 'Usuario no valido'})
+        if(verified.rol !== "Votante") return res.status(403).json({error: 'Usuario no valido'})
         // si el token es correcto nos devolvera los datos que pusimos en el token
         req.user = verified
         // next() indica que el req paso la prueba y continue su camino
