@@ -37,20 +37,28 @@ export default function SignIn() {
         if (response.error) {
           setError(response.error);
           setShowError(true);
-        }else{
-          console.log(response)
-          if(response.rol==="Votante"){
-            sessionStorage.setItem( 'votante', JSON.stringify(response));
-            window.location.href = "/votante/menuPrincipal"
-          }
-          else if(response.rol==="MesaElectoral"){
-            sessionStorage.setItem( 'MesaElectoral', JSON.stringify(response));
-            window.location.href = "/mesa/menuPrincipal"
+        } else {
+          console.log(response);
+          if (response.rol === "Votante") {
+            sessionStorage.setItem("votante", JSON.stringify(response));
+            window.location.href = "/votante/menuPrincipal";
+          } else if (response.rol === "MesaElectoral") {
+            sessionStorage.setItem("MesaElectoral", JSON.stringify(response));
+            window.location.href = "/mesa/menuPrincipal";
           }
         }
       });
   };
-
+  let data = sessionStorage.getItem("votante");
+  data = JSON.parse(data);
+  if(data != null) {
+    window.location.href = "/votante/menuPrincipal";
+  }
+  data= sessionStorage.getItem("MesaElectoral");
+  data = JSON.parse(data);
+  if(data != null) {
+    window.location.href = "/mesa/menuPrincipal";
+  }
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">

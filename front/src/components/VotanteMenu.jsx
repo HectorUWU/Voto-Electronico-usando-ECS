@@ -12,55 +12,59 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 const theme = createTheme();
 
 export default function VotanteMenu() {
-  let data = sessionStorage.getItem('votante');
-  data = JSON.parse(data)
-  return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-            <HowToVoteIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Bienvenido {data.boleta}
-          </Typography>
-          <Button
-            component={Link}
-            to="#"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+  let data = sessionStorage.getItem("votante");
+  data = JSON.parse(data);
+  if (data != null) {
+    return (
+      <ThemeProvider theme={theme}>
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
+          <Box
+            sx={{
+              marginTop: 8,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            Ver candidatos
-          </Button>
-          <Button
-            component={Link}
-            to="#"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Votar
-          </Button>
-          <Button
-            component={Link}
-            to="#"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Cambiar contraseña
-          </Button>
-        </Box>
-      </Container>
-    </ThemeProvider>
-  );
+            <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
+              <HowToVoteIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Bienvenido {data.boleta}
+            </Typography>
+            <Button
+              component={Link}
+              to="#"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Ver candidatos
+            </Button>
+            <Button
+              component={Link}
+              to="#"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Votar
+            </Button>
+            <Button
+              component={Link}
+              to="#"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Cambiar contraseña
+            </Button>
+          </Box>
+        </Container>
+      </ThemeProvider>
+    );
+  } else {
+    window.location.href = "/";
+  }
 }

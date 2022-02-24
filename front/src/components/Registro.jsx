@@ -10,13 +10,13 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import ResponseError from "./responseError"
+import ResponseError from "./responseError";
 
 const theme = createTheme();
 
 export default function SignUp() {
-  const [error, setError] = React.useState("")
-  const [showError, setShowError] = React.useState(false)
+  const [error, setError] = React.useState("");
+  const [showError, setShowError] = React.useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -26,27 +26,37 @@ export default function SignUp() {
       idVotante: data.get("boleta"),
       correo: data.get("correo"),
       contrasena: data.get("contrasena"),
+      repetir: data.get("confirmarContrsena"),
     };
     let config = {
-      method: "POST", 
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-      body: JSON.stringify(datos)
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(datos),
     };
-    fetch("http://localhost:8000/api/registro", config).then((response) =>
-      response.json()
-    ).then(response => {
-      if(response.error){
-        setError(response.error);
-        setShowError(true)      
-      } else {
-        window.location.href = "/"
-      }
-    })
+    fetch("http://localhost:8000/api/registro", config)
+      .then((response) => response.json())
+      .then((response) => {
+        if (response.error) {
+          setError(response.error);
+          setShowError(true);
+        } else {
+          window.location.href = "/";
+        }
+      });
   };
-
+  let data = sessionStorage.getItem("votante");
+  data = JSON.parse(data);
+  if (data != null) {
+    window.location.href = "/votante/menuPrincipal";
+  }
+  data = sessionStorage.getItem("MesaElectoral");
+  data = JSON.parse(data);
+  if (data != null) {
+    window.location.href = "/mesa/menuPrincipal";
+  }
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -65,7 +75,7 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Registro
           </Typography>
-          <ResponseError error={error} showError={showError}/>
+          <ResponseError error={error} showError={showError} />
           <Box
             component="form"
             noValidate

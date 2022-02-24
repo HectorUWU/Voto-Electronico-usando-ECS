@@ -11,6 +11,9 @@ import { Link } from 'react-router-dom';
 const theme = createTheme();
 
 export default function VotanteMenu() {
+  let data = sessionStorage.getItem("MesaElectoral");
+  data = JSON.parse(data);
+  if (data != null) {
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -69,4 +72,7 @@ export default function VotanteMenu() {
       </Container>
     </ThemeProvider>
   );
+        }else{
+          window.location.href = "/";
+        }
 }
