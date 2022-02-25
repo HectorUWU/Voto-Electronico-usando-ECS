@@ -35,7 +35,7 @@ export default function VotanteMenu() {
             </Typography>
             <Button
               component={Link}
-              to="#"
+              to="/votante/verCandidatos"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
@@ -44,7 +44,7 @@ export default function VotanteMenu() {
             </Button>
             <Button
               component={Link}
-              to="#"
+              to="/votante/votar"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
