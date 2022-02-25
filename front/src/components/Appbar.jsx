@@ -14,7 +14,7 @@ function Appbar() {
       <AppBar position="relative" sx={{backgroundColor: '#6600FF'}}>
         <Toolbar>
           <IconButton
-            size="large"
+            size="medium"
             edge="start"
             color="inherit"
             aria-label="menu"
