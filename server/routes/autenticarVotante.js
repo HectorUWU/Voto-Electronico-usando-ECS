@@ -14,7 +14,7 @@ const verifyVotante = (req, res, next) => {
         // next() indica que el req paso la prueba y continue su camino
         next()
     } catch (error){
-        res.status(400).json({error: 'Token no valido, acceso denegado'})
+        res.status(498).json({error: 'Token no valido, acceso denegado'})
     }
 }
 
