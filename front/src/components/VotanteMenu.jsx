@@ -2,12 +2,12 @@ import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import Link from "@mui/material/Link";
 import Box from "@mui/material/Box";
 import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Link } from 'react-router-dom';
 
 const theme = createTheme();
 
