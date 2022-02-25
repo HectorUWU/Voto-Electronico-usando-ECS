@@ -43,7 +43,7 @@ router.post("/login", (req, res) => {
 
 router.post('/votar', verifyVotantes, (req, res) => {
   if(req.body){
-    const V = new Votan(false, true);
+    const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
     V.votar(req.body.eleccion, 2, 3).then((result) => {
       res.send(result)
     }).catch((err) => {
