@@ -26,7 +26,7 @@ export default function SignUp() {
       idVotante: data.get("boleta"),
       correo: data.get("correo"),
       contrasena: data.get("contrasena"),
-      repetir: data.get("confirmarContrsena"),
+      repetir: data.get("confirmarContrasena"),
     };
     let config = {
       method: "POST",
