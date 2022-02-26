@@ -33,8 +33,8 @@ class Votante {
    */
   votar(eleccion, u, p) {
     return new Promise((resolve, reject) => {
-      if (this.EstadoAcademico) {
-        if (this.EstadoVoto) {
+      if (this.EstadoAcademico===1) {
+        if (this.EstadoVoto===1) {
           reject(new Error('Ya has ejercido tu voto'))
         } else {
           const ecs = new ECS();
