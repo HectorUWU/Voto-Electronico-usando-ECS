@@ -3,7 +3,7 @@ const Votante = require("../models/Votante");
 const MesaElectoral = require("../models/MesaElectoral");
 const Votan = require("../services/Votante");
 const router = express.Router();
-const verifyVotantes = require("./autenticarVotante");
+const verificarVotantes = require("./autenticarVotante");
 const Candidato = require("../models/Candidato");
 router.post("/registro", (req, res) => {
   if (req.body) {
@@ -42,11 +42,12 @@ router.post("/login", (req, res) => {
   }
 });
 
-router.post("/votar", verifyVotantes, (req, res) => {
+router.post("/votar", verificarVotantes, (req, res) => {
   if (req.body) {
     const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
     V.votar(req.body.eleccion, 2, 3)
       .then((result) => {
+        Votante.modificarEstadoVoto([1,req.body.idVotante])
         res.send(result);
       })
       .catch((err) => {
