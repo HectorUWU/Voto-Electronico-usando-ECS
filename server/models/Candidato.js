@@ -46,5 +46,5 @@ Candidato.obtenerCandidatos = function () {
       });
   });
 };
-
 module.exports = Candidato; // Exporta el modulo
+
