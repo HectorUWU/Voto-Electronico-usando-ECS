@@ -7,7 +7,7 @@ import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 const theme = createTheme();
 
@@ -27,7 +27,7 @@ export default function VotanteMenu() {
               alignItems: "center",
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
+            <Avatar sx={{ m: 1, backgroundColor: "#0099E6" }}>
               <HowToVoteIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
@@ -38,7 +38,7 @@ export default function VotanteMenu() {
               to="/votante/verCandidatos"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
             >
               Ver candidatos
             </Button>
@@ -47,7 +47,12 @@ export default function VotanteMenu() {
               to="/votante/votar"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              disabled={
+                data.estadoVoto === 0 && data.estadoAcademico === 1
+                  ? false
+                  : true
+              }
+              sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
             >
               Votar
             </Button>
@@ -56,7 +61,7 @@ export default function VotanteMenu() {
               to=""
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
             >
               Cambiar contraseña
             </Button>
@@ -65,6 +70,6 @@ export default function VotanteMenu() {
       </ThemeProvider>
     );
   } else {
-    window.location.href = "/";
+    window.location.href = "/SingIn";
   }
 }

@@ -50,6 +50,9 @@ export default function VotanteVotar() {
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
   };
+  let data = sessionStorage.getItem("votante");
+  data = JSON.parse(data);
+  if (data != null) {
   return (
     <Container component="main">
       <Box sx={{flexGrow: 1, marginTop: 6}}>
@@ -110,4 +113,7 @@ export default function VotanteVotar() {
       
     </Container>
   );
+  }else{
+    window.location.href = "/SingIn";
+  }
 }

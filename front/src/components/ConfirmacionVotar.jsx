@@ -33,6 +33,7 @@ function ConfirmacionVotar(props) {
             eleccion: props.eleccion.IdCandidato,
             estadoAcademico: data.estadoAcademico,
             estadoVoto: data.estadoVoto,
+            idVotante: data.idVotante,
         };
         let config = {
         method: "POST",
@@ -50,6 +51,9 @@ function ConfirmacionVotar(props) {
             setError(response.error);
             setShowError(true);
             } else {
+                data.estadoVoto =1;
+                sessionStorage.removeItem("votante")
+                sessionStorage.setItem("votante", JSON.stringify(data))
                 setOpenConf(true);
             }
         });

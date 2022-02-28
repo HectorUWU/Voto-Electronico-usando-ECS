@@ -48,8 +48,6 @@ Votante.registro = function (votante) {
   return new Promise((resolve, reject) => {
     const ipn = votante.correo.split("@");
     if (ipn[1] === "alumno.ipn.mx") {
-      console.log(votante.contrasena)
-      console.log(JSON.stringify(votante))
       if (votante.contrasena === votante.repetir) {
         bcryptjs
           .hash(votante.contrasena, sal)
@@ -114,4 +112,19 @@ Votante.iniciarSesion = function (votante) {
       });
   });
 };
+Votante.modificarEstadoVoto = function (votante){
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query("UPDATE votante SET estadoVoto=? where idVotante=?", votante)
+      .then(([fields, rows]) => {
+        resolve({ mensaje: "Estado Actualizado" });
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  })
+}
+
+
 module.exports = Votante; // exporta clase votante
