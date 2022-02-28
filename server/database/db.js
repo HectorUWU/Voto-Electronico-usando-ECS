@@ -8,10 +8,10 @@ const conexion = mysql.createConnection({
 });
 
 conexion.connect((error) => {
-  if (error) {
-    console.log("El error es " + error);
-    return;
-  }
-  console.log("Conexion completa");
+    if (error) {
+        console.log("El error es " + error);
+        return;
+    }
+    console.log("Conexion completa");
 });
 module.exports = conexion;
