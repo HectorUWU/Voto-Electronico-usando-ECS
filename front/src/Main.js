@@ -8,6 +8,8 @@ import VotanteMenu from "./components/VotanteMenu";
 import VotanteVotar from "./components/VotanteVotar";
 import VotanteVerCandidatos from "./components/VotanteVerCandidatos";
 import MesaMenu from "./components/MesaMenu";
+import CapturaLlavePrivada from "./components/CapturaLlavePrivada";
+import SalaDeEsperaConteo from "./components/SalaDeEsperaConteo";
 
 const Main = () => {
   return (
@@ -19,6 +21,8 @@ const Main = () => {
         <Route path="/votante/votar" element={<VotanteVotar />}></Route>
         <Route path="/votante/verCandidatos" element={<VotanteVerCandidatos />}></Route>
         <Route path="/mesa/menuPrincipal" element={<MesaMenu />}></Route> 
+        <Route path="/mesa/recuperarVotos" element={<CapturaLlavePrivada />}></Route> 
+        <Route path="/mesa/salaDeEspera" element={<SalaDeEsperaConteo />}></Route> 
       </Routes>
   );
 };

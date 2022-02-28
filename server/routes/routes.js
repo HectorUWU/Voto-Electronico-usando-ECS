@@ -1,10 +1,10 @@
 const express = require("express");
 const Votante = require("../models/Votante");
 const MesaElectoral = require("../models/MesaElectoral");
-const Votan = require('../services/Votante')
+const Votan = require("../services/Votante");
 const router = express.Router();
-const verifyVotantes = require("./autenticarVotante")
-const Candidato = require("../models/Candidato")
+const verifyVotantes = require("./autenticarVotante");
+const Candidato = require("../models/Candidato");
 router.post("/registro", (req, res) => {
   if (req.body) {
     const nuevoVotante = new Votante(req.body);
@@ -42,23 +42,37 @@ router.post("/login", (req, res) => {
   }
 });
 
-router.post('/votar', verifyVotantes, (req, res) => {
-  if(req.body){
+router.post("/votar", verifyVotantes, (req, res) => {
+  if (req.body) {
     const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
-    V.votar(req.body.eleccion, 2, 3).then((result) => {
-      res.send(result)
-    }).catch((err) => {
-      res.status(400).send({ error: err.toString()})
-    })
+    V.votar(req.body.eleccion, 2, 3)
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.toString() });
+      });
   }
-})
+});
 
-router.get('/verCandidatos', (req, res) => {
-  Candidato.obtenerCandidatos().then((result) => {
-    res.send(result)
-  }).catch((err) => {
-    res.status(500).send({ error: err.toString() })
-  })
-})
+router.get("/verCandidatos", (req, res) => {
+  Candidato.obtenerCandidatos()
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      res.status(500).send({ error: err.toString() });
+    });
+});
+
+router.get("/listaMesa", (req, res) => {
+  MesaElectoral.obtenerListaCompleta()
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      res.status(500).send({ error: err.toString() });
+    });
+});
 
 module.exports = router;
