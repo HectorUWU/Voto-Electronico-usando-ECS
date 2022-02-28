@@ -63,8 +63,8 @@ function ConfirmacionVotar(props) {
     return(
         <React.Fragment>
             <ResponseError error={error} showError={showError} />
-                <Button variant='contained' sx={{backgroundColor: '#6600FF'}} onClick={handleOpen} >CONFIRMAR VOTO</Button>
-                <Button variant='contained' sx={{backgroundColor: '#6600FF'}} component={Link} to="/votante/menuPrincipal"> REGRESAR </Button>
+            <Button variant='contained' sx={{backgroundColor: '#6600FF'}} component={Link} to="/votante/menuPrincipal"> REGRESAR </Button>
+            <Button variant='contained' sx={{backgroundColor: '#6600FF'}} onClick={handleOpen} >CONFIRMAR VOTO</Button>    
             <Modal
                 keepMounted
                 open={open}
@@ -79,7 +79,7 @@ function ConfirmacionVotar(props) {
                 </p>
                 <Button onClick={handleClose}>Regresar</Button>
                 <Button onClick={handleClick}>Confirmar</Button>
-                <Confirmacion open={openConf} mensaje={"Voto correcto"}/>
+                <Confirmacion open={openConf} ruta={"/votante/menuPrincipal"} mensaje={"Voto correcto"}/>
                 </Box>
             </Modal>
         </React.Fragment>

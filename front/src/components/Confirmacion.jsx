@@ -36,7 +36,7 @@ return(
                 <AlertTitle>Listo</AlertTitle>
                 <strong>{props.mensaje}</strong>
             </Alert>
-            <Button component={Link} to="/votante/menuPrincipal" >Regresar</Button>
+            <Button component={Link} to={props.ruta} >Regresar</Button>
             </Box>
         </Modal>
     </React.Fragment>
@@ -45,11 +45,13 @@ return(
 
 Confirmacion.defaultProps = {
     open: false,
-    mensaje: ''
+    mensaje: '',
+    ruta:''
 }
 
 Confirmacion.propTypes = {
     open: PropTypes.bool,
-    mensaje: PropTypes.string
+    mensaje: PropTypes.string,
+    ruta: PropTypes.string
 }
 export default Confirmacion;
