@@ -36,7 +36,13 @@ return(
                 <AlertTitle>Listo</AlertTitle>
                 <strong>{props.mensaje}</strong>
             </Alert>
-            <Button component={Link} to={props.ruta} >Regresar</Button>
+            <Box sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}>
+            <Button component={Link} to={props.ruta} >Continuar</Button>
+            </Box>
             </Box>
         </Modal>
     </React.Fragment>

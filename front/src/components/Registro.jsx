@@ -11,13 +11,13 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ResponseError from "./responseError";
-
+import Confirmacion from "./Confirmacion";
 const theme = createTheme();
 
 export default function SignUp() {
   const [error, setError] = React.useState("");
   const [showError, setShowError] = React.useState(false);
-
+  const [open, setOpen] = React.useState(false);
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -43,7 +43,7 @@ export default function SignUp() {
           setError(response.error);
           setShowError(true);
         } else {
-          window.location.href = "/";
+          setOpen(true);
         }
       });
   };
@@ -123,11 +123,11 @@ export default function SignUp() {
                 />
               </Grid>
             </Grid>
-            <Button
+            <Button 
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2,  backgroundColor: "#0099E6" }}
             >
               Registrar
             </Button>
@@ -138,6 +138,7 @@ export default function SignUp() {
                 </Link>
               </Grid>
             </Grid>
+            <Confirmacion open={open} ruta={"/SingIn"} mensaje={"Registro exitoso. Se ha enviado un correo de confirmacion"}/>
           </Box>
         </Box>
       </Container>

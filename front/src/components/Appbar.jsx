@@ -15,7 +15,7 @@ if (
 function Appbar() {
   return (
     <div>
-      <AppBar position="relative" sx={{ backgroundColor: "#6600FF" }}>
+      <AppBar position="relative" sx={{ backgroundColor: "#0099E6" }}>
         <Toolbar>
           <IconButton
             size="medium"
