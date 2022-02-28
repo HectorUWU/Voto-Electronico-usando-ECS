@@ -8,6 +8,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import LinkMui from "@mui/material/Link";
 import { Link } from "react-router-dom";
+import Grid from '@mui/material/Grid';
 
 function Item(props) {
   const { sx, ...other } = props;
@@ -47,17 +48,10 @@ export default function VotanteVotar() {
 
   return (
     <Container component="main">
-      <Box
-        sx={{
-          marginTop: 6,
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gridColumnGap: "10%",
-          alignItems: "center",
-          width: 1200,
-        }}
-      >
+      <Box sx={{flexGrow: 1, marginTop: 6}}>
+        <Grid container spacing={{ xs: 4, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
         {infoCandidatos.map((candidato, i) => (
+          <Grid item xs={4} sm={4} md={4} key={i}>
           <Item>
             <Card sx={{ maxWidth: 400, maxHeight: 500 }}>
               <Typography
@@ -87,7 +81,9 @@ export default function VotanteVotar() {
               </CardContent>
             </Card>
           </Item>
+          </Grid>
         ))}
+        </Grid>
       </Box>
       <Box
         sx={{
@@ -102,7 +98,7 @@ export default function VotanteVotar() {
           component={Link}
           to="/votante/menuPrincipal"
           variant="contained"
-          sx={{ }}
+          sx={{ backgroundColor: '#6600FF'}}
         >
           REGRESAR
         </Button>

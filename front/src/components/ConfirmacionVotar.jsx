@@ -4,14 +4,15 @@ import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types'
 import ResponseError from "./responseError";
-// import { Link } from 'react-router-dom';
+import Confirmacion from "./Confirmacion";
+import { Link } from "react-router-dom";
 
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    maxWidth: 400,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -24,6 +25,7 @@ function ConfirmacionVotar(props) {
     const [open, setOpen] = React.useState(false);
     const [error, setError] = React.useState("");
     const [showError, setShowError] = React.useState(false);
+    const [openConf, setOpenConf] = React.useState(false);
     const handleClick = () => {
         let data = sessionStorage.getItem("votante");
         data = JSON.parse(data);
@@ -48,7 +50,7 @@ function ConfirmacionVotar(props) {
             setError(response.error);
             setShowError(true);
             } else {
-                window.location.href = "/votante/menuPrincipal";
+                setOpenConf(true);
             }
         });
     };
@@ -61,21 +63,23 @@ function ConfirmacionVotar(props) {
     return(
         <React.Fragment>
             <ResponseError error={error} showError={showError} />
-            <Button variant="contained" onClick={handleOpen} sx={{backgroundColor: '#6600FF'}}>CONFIRMAR VOTO</Button>
+                <Button variant='contained' sx={{backgroundColor: '#6600FF'}} onClick={handleOpen} >CONFIRMAR VOTO</Button>
+                <Button variant='contained' sx={{backgroundColor: '#6600FF'}} component={Link} to="/votante/menuPrincipal"> REGRESAR </Button>
             <Modal
-                hideBackdrop
+                keepMounted
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="Confirmacion"
                 aria-describedby="Confirmacion-del-voto"
             >
-                <Box sx={{ ...style, width: 400 }}>
+                <Box sx={{ ...style, maxWidth: 400 }}>
                 <h2 id="Confirmacion">Confirma del voto</h2>
                 <p id="Confirmacion-del-voto">
                     ¿Desea confirmar su voto por el candidato {props.eleccion.nombre}?
                 </p>
                 <Button onClick={handleClose}>Regresar</Button>
                 <Button onClick={handleClick}>Confirmar</Button>
+                <Confirmacion open={openConf} mensaje={"Voto correcto"}/>
                 </Box>
             </Modal>
         </React.Fragment>

@@ -7,6 +7,8 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import ConfirmacionVotar from "./ConfirmacionVotar";
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
 
 function Item(props) {
   const { sx, ...other } = props;
@@ -50,22 +52,16 @@ export default function VotanteVotar() {
   };
   return (
     <Container component="main">
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
-          gridColumnGap: "20%",
-          alignItems: "center",
-          width: 1200,
-        }}
-      >
+      <Box sx={{flexGrow: 1, marginTop: 6}}>
+        <Grid container spacing={{ xs: 4, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
         {infoCandidatos.map((candidato, i) => (
+          <Grid item xs={4} sm={4} md={4} key={i}>
           <Item>
-            <Card sx={{ maxWidth: 600, maxHeight: 600 }}>
+            <Card sx={{ maxWidth: 400, maxHeight: 500 }}>
               <CardMedia
                 component="img"
-                height="450"
-                width="450"
+                height="300"
+                width="300"
                 image={candidato.foto}
                 alt={candidato.nombre}
               />
@@ -94,7 +90,9 @@ export default function VotanteVotar() {
               />
             </Box>
           </Item>
+          </Grid>
         ))}
+        </Grid>
       </Box>
       <Box
         sx={{
@@ -102,11 +100,14 @@ export default function VotanteVotar() {
           marginBottom: 5,
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          alignItems: "center"
         }}
       >
-        <ConfirmacionVotar eleccion={infoCandidatos[selectedValue]} />
+        <Stack direction="row" spacing={2}>
+          <ConfirmacionVotar eleccion={infoCandidatos[selectedValue]} />
+        </Stack>
       </Box>
+      
     </Container>
   );
 }
