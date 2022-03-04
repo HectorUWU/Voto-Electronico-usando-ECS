@@ -52,7 +52,7 @@ export default function VotanteMenu() {
           </Button>
           <Button
             component={Link}
-            to="#"
+            to="/mesa/recuperarVotos"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
