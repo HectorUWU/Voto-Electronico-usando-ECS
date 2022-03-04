@@ -20,6 +20,17 @@ router.post("/registro", (req, res) => {
   }
 });
 
+router.get("/verificar/:token/:id", (req, res) => {
+  const {token, id} = req.params;
+  Votante.verificarCorreo(token,id).then((result) => {
+    res.send(result);
+  })
+  .catch((err) => {
+    res.status(401).send({ error: err.toString() });
+  });
+  })
+
+
 router.post("/login", (req, res) => {
   if (!isNaN(req.body.id)) {
     Votante.iniciarSesion(req.body)
