@@ -45,6 +45,10 @@ export default function SignUp() {
         } else {
           setOpen(true);
         }
+      })
+      .catch((error) => {
+        setError(error);
+        setShowError(true);
       });
   };
   let data = sessionStorage.getItem("votante");
@@ -123,11 +127,11 @@ export default function SignUp() {
                 />
               </Grid>
             </Grid>
-            <Button 
+            <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2,  backgroundColor: "#0099E6" }}
+              sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
             >
               Registrar
             </Button>
@@ -138,7 +142,13 @@ export default function SignUp() {
                 </Link>
               </Grid>
             </Grid>
-            <Confirmacion open={open} ruta={"/SingIn"} mensaje={"Registro exitoso. Se ha enviado un correo de confirmacion"}/>
+            <Confirmacion
+              open={open}
+              ruta={"/SingIn"}
+              mensaje={
+                "Registro exitoso. Se ha enviado un correo de confirmacion"
+              }
+            />
           </Box>
         </Box>
       </Container>

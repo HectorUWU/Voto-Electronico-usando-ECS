@@ -4,6 +4,7 @@ const MesaElectoral = require("../models/MesaElectoral");
 const Votan = require("../services/Votante");
 const router = express.Router();
 const verificarVotantes = require("./autenticarVotante");
+const verificarMesa = require("./autenticarMesa");
 const Candidato = require("../models/Candidato");
 router.post("/registro", (req, res) => {
   if (req.body) {
@@ -19,6 +20,17 @@ router.post("/registro", (req, res) => {
     res.status(400).send({ error: "Campos invalidos" });
   }
 });
+
+router.get("/verificar/:token/:id", (req, res) => {
+  const {token, id} = req.params;
+  Votante.verificarCorreo(token,id).then((result) => {
+    res.send(result);
+  })
+  .catch((err) => {
+    res.status(401).send({ error: err.toString() });
+  });
+  })
+
 
 router.post("/login", (req, res) => {
   if (!isNaN(req.body.id)) {
@@ -54,6 +66,10 @@ router.post("/votar", verificarVotantes, (req, res) => {
         res.status(400).send({ error: err.toString() });
       });
   }
+});
+
+router.post("/validarIntegrante", verificarMesa, (req, res) => {
+  
 });
 
 router.get("/verCandidatos", (req, res) => {
