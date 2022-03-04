@@ -3,8 +3,8 @@ const Votante = require("../models/Votante");
 const MesaElectoral = require("../models/MesaElectoral");
 const Votan = require("../services/Votante");
 const router = express.Router();
-const verifyVotantes = require("./autenticarVotante");
-const verifyIntegranteMesa = require("./autenticarMesa")
+const verificarVotantes = require("./autenticarVotante");
+const verificarMesa = require("./autenticarMesa");
 const Candidato = require("../models/Candidato");
 router.post("/registro", (req, res) => {
   if (req.body) {
@@ -20,6 +20,17 @@ router.post("/registro", (req, res) => {
     res.status(400).send({ error: "Campos invalidos" });
   }
 });
+
+router.get("/verificar/:token/:id", (req, res) => {
+  const {token, id} = req.params;
+  Votante.verificarCorreo(token,id).then((result) => {
+    res.send(result);
+  })
+  .catch((err) => {
+    res.status(401).send({ error: err.toString() });
+  });
+  })
+
 
 router.post("/login", (req, res) => {
   if (!isNaN(req.body.id)) {
@@ -43,11 +54,12 @@ router.post("/login", (req, res) => {
   }
 });
 
-router.post("/votar", verifyVotantes, (req, res) => {
+router.post("/votar", verificarVotantes, (req, res) => {
   if (req.body) {
     const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
     V.votar(req.body.eleccion, 2, 3)
       .then((result) => {
+        Votante.modificarEstadoVoto([1,req.body.idVotante])
         res.send(result);
       })
       .catch((err) => {
@@ -56,7 +68,7 @@ router.post("/votar", verifyVotantes, (req, res) => {
   }
 });
 
-router.post("/validarIntegrante", verifyIntegranteMesa, (req, res) => {
+router.post("/validarIntegrante", verificarMesa, (req, res) => {
   
 });
 
