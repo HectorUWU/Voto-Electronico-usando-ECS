@@ -15,13 +15,10 @@ function Item(props) {
   return (
     <Box
       sx={{
-        bgcolor: (theme) =>
-          theme.palette.mode === "dark" ? "#101010" : "#fff",
-        color: (theme) =>
-          theme.palette.mode === "dark" ? "grey.300" : "grey.800",
+        bgcolor: "#fff",
+        color: "grey.800",
         border: "1px solid",
-        borderColor: (theme) =>
-          theme.palette.mode === "dark" ? "grey.800" : "grey.300",
+        borderColor: "grey.300",
         p: 1,
         m: 1,
         borderRadius: 2,
@@ -35,7 +32,14 @@ function Item(props) {
 }
 
 export default function VotanteVotar() {
+  /**
+   * Estado que contendra los objetos de todos los candidatos de la base de datos
+   * @type {object}
+   */
   const [infoCandidatos, setInfoCandidatos] = React.useState([])
+  /**
+   * Funcion que recupera la informacion de los candidatos
+   */
   React.useEffect(() => {
     fetch('/api/verCandidatos')
       .then((response) => {

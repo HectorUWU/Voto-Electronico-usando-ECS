@@ -21,6 +21,9 @@ const style = {
     pb: 3,
   };
 
+/**
+ * Ventana en la cual se mostrar un mensaje de confirmacion y el boton que nos guiara a una ruta dada
+ */
 function Confirmacion(props) {
 return(
     <React.Fragment>
@@ -56,8 +59,17 @@ Confirmacion.defaultProps = {
 }
 
 Confirmacion.propTypes = {
+    /**
+     * Variable que controla cuando se abre la ventana
+     */
     open: PropTypes.bool,
+    /**
+     * Mensaje que se mostrar en la ventana
+     */
     mensaje: PropTypes.string,
+    /**
+     * Ruta a la que se mandara despues de oprimir el boton de continuar
+     */
     ruta: PropTypes.string
 }
 export default Confirmacion;

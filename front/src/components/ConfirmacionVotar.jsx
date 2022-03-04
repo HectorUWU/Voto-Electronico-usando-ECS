@@ -21,16 +21,40 @@ const style = {
     pb: 3,
   };
 
+/**
+ * Componente que muestra una ventana de confirmacion con el nombre del candidato elegido 
+ */  
 function ConfirmacionVotar(props) {
+    /**
+     * Estado usado para abrir o cerrar la ventanade confirmacion del voto
+     * @type {boolean}
+     */
     const [open, setOpen] = React.useState(false);
+    /**
+     * Estado usado paraguardar el error que se pudiera dar
+     * @type {string}
+     */
     const [error, setError] = React.useState("");
+    /**
+     * Estado usado para mostrar el error, en caso de que lo hubiera
+     * @type {boolean}
+     */
     const [showError, setShowError] = React.useState(false);
+    /**
+     * Estado usado para abrir el componente de confirmacion en caso de que el voto haya sido guardado exitosamente
+     * @type {boolean}
+     */
     const [openConf, setOpenConf] = React.useState(false);
+
+    /**
+     * Funcion en donde se manda los datos del votante y su eleccion a la peticion de votar
+     */
     const handleClick = () => {
         let data = sessionStorage.getItem("votante");
         data = JSON.parse(data);
         let datos = {
-            eleccion: props.eleccion.IdCandidato,
+            // Se asigna a eleccion -1 para anular el voto o el ID del candidato en caso de haberse seleccionado alguno 
+            eleccion: Object.keys(props.eleccion).length===0?-1:props.eleccion.IdCandidato,
             estadoAcademico: data.estadoAcademico,
             estadoVoto: data.estadoVoto,
             idVotante: data.idVotante,
@@ -67,8 +91,8 @@ function ConfirmacionVotar(props) {
     return(
         <React.Fragment>
             <ResponseError error={error} showError={showError} />
-            <Button variant='contained' sx={{backgroundColor: '#6600FF'}} component={Link} to="/votante/menuPrincipal"> REGRESAR </Button>
-            <Button variant='contained' sx={{backgroundColor: '#6600FF'}} onClick={handleOpen} >CONFIRMAR VOTO</Button>    
+            <Button variant='contained' sx={{backgroundColor: '#0099E6'}} component={Link} to="/votante/menuPrincipal"> REGRESAR </Button>
+            <Button variant='contained' sx={{backgroundColor: '#0099E6'}} onClick={handleOpen} >CONFIRMAR VOTO</Button>    
             <Modal
                 keepMounted
                 open={open}
@@ -78,9 +102,15 @@ function ConfirmacionVotar(props) {
             >
                 <Box sx={{ ...style, maxWidth: 400 }}>
                 <h2 id="Confirmacion">Confirma del voto</h2>
-                <p id="Confirmacion-del-voto">
+                {/*En caso de que no haya sido seleccionada una opcion se pregintara si desea anular su voto*/}
+                {Object.keys(props.eleccion).length===0?
+                <p id="Anulacion-del-voto">
+                    ¿Desea anular su voto? De no ser asi, por favor elija una opcion
+                </p>
+                :<p id="Confirmacion-del-voto">
                     ¿Desea confirmar su voto por el candidato {props.eleccion.nombre}?
                 </p>
+                }
                 <Button onClick={handleClose}>Regresar</Button>
                 <Button onClick={handleClick}>Confirmar</Button>
                 <Confirmacion open={openConf} ruta={"/votante/menuPrincipal"} mensaje={"Voto correcto"}/>
@@ -96,6 +126,9 @@ ConfirmacionVotar.defaultProps = {
 }
 
 ConfirmacionVotar.propTypes = {
+    /**
+     * Objeto que contendra la informacion del candidato elegido 
+     */
     eleccion: PropTypes.object
 }
 export default ConfirmacionVotar;
