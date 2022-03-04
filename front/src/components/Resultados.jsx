@@ -11,22 +11,27 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Alert from "@mui/material/Alert";
-import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 
 const theme = createTheme();
 
 export default function SalaDeEsperaConteo() {
-  const [listaMesa, setInfoMesa] = React.useState([]);
+  const [infoCandidatos, setInfoCandidatos] = React.useState([]);
   React.useEffect(() => {
-    fetch("/api/listaMesa")
+    fetch("/api/verCandidatos")
       .then((response) => {
         return response.json();
       })
-      .then((mesaElectoral) => {
-        setInfoMesa(mesaElectoral);
+      .then((candidatos) => {
+        setInfoCandidatos(candidatos);
       });
   }, []);
+
+  let votosTotales = 0;
+  infoCandidatos.forEach((candidato) => {
+    votosTotales += candidato.numeroVotos;
+  });
+
   let data = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
   if (data != null) {
@@ -42,26 +47,28 @@ export default function SalaDeEsperaConteo() {
               alignItems: "center",
             }}
           >
-            <Alert severity="info">
-              En espera del resto de miembros de la mesa electoral para comenzar
-              el conteo. Se requieren al menos t miembros para continuar
-            </Alert>
             <TableContainer component={Paper}>
               <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center">Miembro</TableCell>
-                    <TableCell align="center">Estatus</TableCell>
+                    <TableCell align="center">Candidato</TableCell>
+                    <TableCell align="center">Total de votos</TableCell>
+                    <TableCell align="center">Porcentaje </TableCell>
+                    <TableCell align="center">Estado</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {listaMesa.map((integrante, i) => (
+                  {infoCandidatos.map((candidato, i) => (
                     <TableRow key={i}>
+                      <TableCell align="center">{candidato.nombre}</TableCell>
                       <TableCell align="center">
-                        {integrante.idMesaElectoral}
+                        {candidato.numeroVotos}
                       </TableCell>
                       <TableCell align="center">
-                        <CircularProgress />
+                        {((100 / votosTotales) * candidato.numeroVotos).toFixed(2)} %
+                      </TableCell>
+                      <TableCell align="center">
+                        {candidato.resultado === 1 ? "Electo": "No electo"}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -70,10 +77,9 @@ export default function SalaDeEsperaConteo() {
             </TableContainer>
             <Button
               variant="contained"
-              disabled
               sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
             >
-              Continuar
+              Publicar resultados
             </Button>
           </Box>
         </Container>

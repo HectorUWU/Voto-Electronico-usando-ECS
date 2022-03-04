@@ -4,6 +4,7 @@ const MesaElectoral = require("../models/MesaElectoral");
 const Votan = require("../services/Votante");
 const router = express.Router();
 const verificarVotantes = require("./autenticarVotante");
+const verificarMesa = require("./autenticarMesa");
 const Candidato = require("../models/Candidato");
 router.post("/registro", (req, res) => {
   if (req.body) {
@@ -65,6 +66,10 @@ router.post("/votar", verificarVotantes, (req, res) => {
         res.status(400).send({ error: err.toString() });
       });
   }
+});
+
+router.post("/validarIntegrante", verificarMesa, (req, res) => {
+  
 });
 
 router.get("/verCandidatos", (req, res) => {
