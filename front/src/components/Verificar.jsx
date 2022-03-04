@@ -26,16 +26,21 @@ export default function SignUp() {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-    }).then((response) => response.json())
-        .then((response) => {
-      if (response.error) {
-        setError(response.error);
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        if (response.error) {
+          setError(response.error);
+          setShowError(true);
+        } else {
+          setMensaje(response.mensaje);
+          setOpen(true);
+        }
+      })
+      .catch((err) => {
+        setError(error);
         setShowError(true);
-      } else {
-        setMensaje(response.mensaje);
-        setOpen(true);
-      }
-    });
+      });
   };
 
   let data = sessionStorage.getItem("votante");

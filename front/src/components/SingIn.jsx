@@ -47,16 +47,20 @@ export default function SignIn() {
             window.location.href = "/mesa/menuPrincipal";
           }
         }
+      })
+      .catch((error) => {
+        setError(error);
+        setShowError(true);
       });
   };
   let data = sessionStorage.getItem("votante");
   data = JSON.parse(data);
-  if(data != null) {
+  if (data != null) {
     window.location.href = "/votante/menuPrincipal";
   }
-  data= sessionStorage.getItem("MesaElectoral");
+  data = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
-  if(data != null) {
+  if (data != null) {
     window.location.href = "/mesa/menuPrincipal";
   }
   return (
