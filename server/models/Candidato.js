@@ -46,5 +46,24 @@ Candidato.obtenerCandidatos = function () {
       });
   });
 };
+
+/**
+ * Regresa todos los candidatos de la ultima votacion
+ * @return {promise}
+ */
+Candidato.verResultadosUltimaVotacion = function () {
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query("SELECT IdCandidato, numeroVotos, resultado, nombre, foto FROM candidato WHERE idVotacion=(SELECT MAX(idVotacion) FROM votacion)")
+      .then(([fields, rows]) => {
+        resolve(fields);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
 module.exports = Candidato; // Exporta el modulo
 

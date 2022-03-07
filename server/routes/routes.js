@@ -6,6 +6,7 @@ const router = express.Router();
 const verificarVotantes = require("./autenticarVotante");
 const verificarMesa = require("./autenticarMesa");
 const Candidato = require("../models/Candidato");
+const Votacion = require("../models/Votacion");
 router.post("/registro", (req, res) => {
   if (req.body) {
     const nuevoVotante = new Votante(req.body);
@@ -88,6 +89,23 @@ router.get("/listaMesa", (req, res) => {
       res.send(result);
     })
     .catch((err) => {
+      res.status(500).send({ error: err.toString() });
+    });
+});
+
+router.get("/verResultadosUltimaVotacion", (req, res) => {
+  Votacion.verEstadoUltimaVotacion().then((result) => {
+    if(result.estado==='finalizado'){
+      Candidato.verResultadosUltimaVotacion()
+      .then((result) => {
+        res.send(result);
+      })
+    }else if(result.estado==='activo'){
+        res.send({resultado: true})
+    }else{
+      res.send({resultado: false})
+    }
+  }).catch((err) => {
       res.status(500).send({ error: err.toString() });
     });
 });
