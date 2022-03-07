@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import LinkMui from "@mui/material/Link";
 import { Link } from "react-router-dom";
 import Grid from '@mui/material/Grid';
+import ResponseError from "./responseError";
 
 function Item(props) {
   const { sx, ...other } = props;
@@ -37,9 +38,16 @@ export default function VotanteVotar() {
    * @type {object}
    */
   const [infoCandidatos, setInfoCandidatos] = React.useState([])
-  /**
-   * Funcion que recupera la informacion de los candidatos
-   */
+    /**
+     * Estado usado paraguardar el error que se pudiera dar
+     * @type {string}
+     */
+   const [error, setError] = React.useState("");
+   /**
+    * Estado usado para mostrar el error, en caso de que lo hubiera
+    * @type {boolean}
+    */
+   const [showError, setShowError] = React.useState(false);
   React.useEffect(() => {
     fetch('/api/verCandidatos')
       .then((response) => {
@@ -47,12 +55,16 @@ export default function VotanteVotar() {
       })
       .then((candidatos) => {
         setInfoCandidatos(candidatos)
+      }).catch((error) => {
+        setError(error);
+        setShowError(true);
       })
   }, [])
 
   return (
     <Container component="main">
       <Box sx={{flexGrow: 1, marginTop: 6}}>
+      <ResponseError error={error} showError={showError} />
         <Grid container spacing={{ xs: 4, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
         {infoCandidatos.map((candidato, i) => (
           <Grid item xs={4} sm={4} md={4} key={i}>

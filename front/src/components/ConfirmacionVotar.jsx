@@ -80,7 +80,10 @@ function ConfirmacionVotar(props) {
                 sessionStorage.setItem("votante", JSON.stringify(data))
                 setOpenConf(true);
             }
-        });
+        }).catch((error) => {
+            setError(error);
+            setShowError(true);
+          });
     };
     const handleOpen = () => {
         setOpen(true);
