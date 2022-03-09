@@ -7,6 +7,7 @@ const verificarVotantes = require("./autenticarVotante");
 const verificarMesa = require("./autenticarMesa");
 const Candidato = require("../models/Candidato");
 const Votacion = require("../models/Votacion");
+const WSService = require("../services/WSService");
 router.post("/registro", (req, res) => {
   if (req.body) {
     const nuevoVotante = new Votante(req.body);
@@ -23,15 +24,15 @@ router.post("/registro", (req, res) => {
 });
 
 router.get("/verificar/:token/:id", (req, res) => {
-  const {token, id} = req.params;
-  Votante.verificarCorreo(token,id).then((result) => {
-    res.send(result);
-  })
-  .catch((err) => {
-    res.status(401).send({ error: err.toString() });
-  });
-  })
-
+  const { token, id } = req.params;
+  Votante.verificarCorreo(token, id)
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      res.status(401).send({ error: err.toString() });
+    });
+});
 
 router.post("/login", (req, res) => {
   if (!isNaN(req.body.id)) {
@@ -60,7 +61,7 @@ router.post("/votar", verificarVotantes, (req, res) => {
     const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
     V.votar(req.body.eleccion, 2, 3)
       .then((result) => {
-        Votante.modificarEstadoVoto([1,req.body.idVotante])
+        Votante.modificarEstadoVoto([1, req.body.idVotante]);
         res.send(result);
       })
       .catch((err) => {
@@ -70,7 +71,16 @@ router.post("/votar", verificarVotantes, (req, res) => {
 });
 
 router.post("/validarIntegrante", verificarMesa, (req, res) => {
-  
+  if (req.body) {
+    try {
+      const webSocket = new WSService();
+      webSocket.abrirSocket();
+      res.status(200).send({ message: "ok" });
+    } catch (err) {
+      console.log("socket ya abierto");
+      res.status(200).send({ message: "ok" });
+    }
+  }
 });
 
 router.get("/verCandidatos", (req, res) => {
@@ -94,18 +104,19 @@ router.get("/listaMesa", (req, res) => {
 });
 
 router.get("/verResultadosUltimaVotacion", (req, res) => {
-  Votacion.verEstadoUltimaVotacion().then((result) => {
-    if(result.estado==='finalizado'){
-      Candidato.verResultadosUltimaVotacion()
-      .then((result) => {
-        res.send(result);
-      })
-    }else if(result.estado==='activo'){
-        res.send({resultado: true})
-    }else{
-      res.send({resultado: false})
-    }
-  }).catch((err) => {
+  Votacion.verEstadoUltimaVotacion()
+    .then((result) => {
+      if (result.estado === "finalizado") {
+        Candidato.verResultadosUltimaVotacion().then((result) => {
+          res.send(result);
+        });
+      } else if (result.estado === "activo") {
+        res.send({ resultado: true });
+      } else {
+        res.send({ resultado: false });
+      }
+    })
+    .catch((err) => {
       res.status(500).send({ error: err.toString() });
     });
 });
