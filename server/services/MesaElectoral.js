@@ -18,7 +18,7 @@ class MesaElectoral {
    * @param umbral {numero}, umbral del ECS
    */
   constructor() {
-    this.umbral = process.env.UMBRAL;
+    this.umbral = 3;
     this.participantesPresentes = [];
   }
 
@@ -31,7 +31,7 @@ class MesaElectoral {
   validarParticipante(llavePrivada, id, contra) {
     const rsa = new Rsa(llavePrivada);
     if (rsa.validarLlavePrivada(contra)) {
-      this.participantesPresentes.push({ id: id, llave: llavePrivada });
+      this.participantesPresentes.push({ id: id, llave: llavePrivada, contrasena: contra });
     } else {
       return { mensaje: "La llave es invalida", estatus: 0 };
     }
@@ -40,7 +40,8 @@ class MesaElectoral {
       for (let i = 0; i < this.participantesPresentes.length; i++) {
         idParticipantes.push(this.participantesPresentes[i].id);
       }
-      return this.extraerVotos(idParticipantes, contra);
+      console.log('-/-/-/-/-/-/-/-/-/-/-/-/*COMENZANDO CONTEO*/-/-/-/-/-/-/-/-/-/-/-/-')
+      return this.extraerVotos(idParticipantes);
     }
     return { mensaje: "Esperando a participantes", estatus: 1};
   }
@@ -48,9 +49,8 @@ class MesaElectoral {
   /**
    * Función para extraer y manipular los votos almacenados en la base de datos
    * @param idParticipantes {string array}, Arreglo con los id de los participantes presentes
-   * @param contra  {string}, Contraseña del integrante de la mesa electoral
    */
-  extraerVotos(idParticipantes, contra) {
+  extraerVotos(idParticipantes) {
     const fragmentos = new Map();
     const votosReales = [];
     fragmentoBD
@@ -58,6 +58,12 @@ class MesaElectoral {
       .then((result) => {
         // idFragmento, fragmento, idMesaElectoral
         result.forEach((fragmento) => {
+          let contra = ""
+          this.participantesPresentes.forEach((participante => {
+            if(participante.id === fragmento.idMesaElectoral) {
+              contra = participante.contrasena
+            }
+          }))
           const idReal = this.descifrarVoto(
             fragmento.idFragmento,
             fragmento.idMesaElectoral,
@@ -93,14 +99,14 @@ class MesaElectoral {
               ])
               .then()
               .catch((err) => {
-                console.log(err);
+                console.log("ERROR AL GUARDAR RESULTADOS " + err);
                 return { error: "No se pudo guardar el resultado" };
               });
           });
         });
       })
       .catch((err) => {
-        console.log(err);
+        console.log("ERROR AL EXTRAER FRAGMENTOS " + err);
         return {
           error: "No se pudieron extraer los fragmentos de la base de datos",
         };

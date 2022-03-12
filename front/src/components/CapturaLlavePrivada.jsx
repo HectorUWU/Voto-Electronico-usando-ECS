@@ -38,6 +38,7 @@ export default function CapturaLlavePrivada() {
   const [fileName, setFileName] = React.useState("Abrir...");
   const [error, setError] = React.useState("");
   const [showError, setShowError] = React.useState(false);
+  const [listaMesa, setInfoMesa] = React.useState([]);
 
   const handleChange = (event) => {
     console.log(event.target.files[0]);
@@ -72,6 +73,8 @@ export default function CapturaLlavePrivada() {
           setError(response.error);
           setShowError(true);
         } else {
+          document.getElementById("formContainer").style.display = "none";
+          document.getElementById("tablaEspera").style.display = "flex";
           miWebSocket = new WebSocket("ws://localhost:8080");
 
           miWebSocket.onopen = function (evt) {
@@ -101,7 +104,17 @@ export default function CapturaLlavePrivada() {
           };
 
           miWebSocket.onmessage = function (event) {
-            const jsondata = event.data
+            const jsondata = JSON.parse(event.data);
+            console.log(jsondata);
+            const listaAux = []
+            listaMesa.forEach(mesa => {
+              if(jsondata.id === mesa.idMesaElectoral){
+                listaAux.push({idMesaElectoral: mesa.idMesaElectoral, estado: jsondata.estatus})
+              } else {
+                listaAux.push({idMesaElectoral: mesa.idMesaElectoral, estado: mesa.estado})
+              }
+            })
+            setInfoMesa(listaAux);
           };
         }
       });
@@ -109,6 +122,23 @@ export default function CapturaLlavePrivada() {
 
   let data = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
+
+  React.useEffect(() => {
+    fetch("/api/listaMesa")
+      .then((response) => {
+        return response.json();
+      })
+      .then((candidatos) => {
+        candidatos.forEach(candidato => {
+          candidato.estado = 0
+        })
+        setInfoMesa(candidatos);
+      })
+      .catch((error) => {
+        setError(error);
+        setShowError(true);
+      });
+  }, []);
   if (data != null) {
     return (
       <ThemeProvider theme={theme}>
@@ -181,7 +211,7 @@ export default function CapturaLlavePrivada() {
             </Box>
           </div>
 
-          <div id="tablaEspera">
+          <div id="tablaEspera" style={{ display: "none" }}>
             <Box
               sx={{
                 marginTop: 8,
@@ -202,7 +232,16 @@ export default function CapturaLlavePrivada() {
                       <TableCell align="center">Miembro</TableCell>
                       <TableCell align="center">Estatus</TableCell>
                     </TableRow>
-
+                    {listaMesa.map((integrante, i) => (
+                      <TableRow>
+                        <TableCell align="center">
+                          {integrante.idMesaElectoral}
+                        </TableCell>
+                        <TableCell align="center">
+                          {integrante.estado}
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableHead>
                   <TableBody></TableBody>
                 </Table>

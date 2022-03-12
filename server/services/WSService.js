@@ -11,11 +11,13 @@ class WSService {
       ws.on("message", function incoming(data) {
         // Revisar
         const jsondata = JSON.parse(data);
+        console.log('validando participante')
         const msg = conteo.validarParticipante(
           jsondata.llave,
           jsondata.id,
           jsondata.contrasena
         );
+        console.log(msg);
         if (msg.estatus === 0) {
           ws.close();
         } else if (msg.estatus === 1) {
@@ -45,9 +47,15 @@ class WSService {
         }
       });
     });
-
     server.listen(8080);
     console.log("WSS running");
+  }
+
+  comprobarSocket() {
+    if (server.listening) {
+      return false;
+    }
+    return true;
   }
 }
 
