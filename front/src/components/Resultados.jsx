@@ -14,7 +14,7 @@ import Button from "@mui/material/Button";
 
 const theme = createTheme();
 
-export default function SalaDeEsperaConteo() {
+export default function Resultados() {
   const [infoCandidatos, setInfoCandidatos] = React.useState([]);
   React.useEffect(() => {
     fetch("/api/verCandidatos")

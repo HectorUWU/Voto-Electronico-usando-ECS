@@ -11,7 +11,7 @@ class WSService {
       ws.on("message", function incoming(data) {
         // Revisar
         const jsondata = JSON.parse(data);
-        console.log('validando participante')
+        console.log("validando participante");
         const msg = conteo.validarParticipante(
           jsondata.llave,
           jsondata.id,
@@ -42,11 +42,19 @@ class WSService {
               });
             }
           });
+        } else if (msg.estatus === 2) {
+          wss.clients.forEach(function each(client) {
+            client.send(JSON.stringify({ msg: msg.mensaje }));
+          });
+          // wss.close();
         } else {
-          // Ocurrio un error durante el conteo de votos
+          wss.clients.forEach(function each(client) {
+            client.send(JSON.stringify({ error: msg.error }));
+          });
         }
       });
     });
+
     server.listen(8080);
     console.log("WSS running");
   }

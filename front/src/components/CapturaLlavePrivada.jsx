@@ -19,6 +19,8 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { Link } from "react-router-dom";
 
 let miWebSocket = null;
 
@@ -38,7 +40,8 @@ export default function CapturaLlavePrivada() {
   const [fileName, setFileName] = React.useState("Abrir...");
   const [error, setError] = React.useState("");
   const [showError, setShowError] = React.useState(false);
-  const [listaMesa, setInfoMesa] = React.useState([]);
+  let [listaMesa, setInfoMesa] = React.useState([]);
+  const [conteoEnCurso, setConteoEnCurso] = React.useState(true);
 
   const handleChange = (event) => {
     console.log(event.target.files[0]);
@@ -100,21 +103,35 @@ export default function CapturaLlavePrivada() {
           };
 
           miWebSocket.onclose = function (evt) {
-            console.log("Conexion cerrada por host");
+            if (conteoEnCurso) {
+              alert("Conexión cerrada por host");
+              window.location.href = "/mesa/menuPrincipal";
+            }
           };
 
           miWebSocket.onmessage = function (event) {
             const jsondata = JSON.parse(event.data);
-            console.log(jsondata);
-            const listaAux = []
-            listaMesa.forEach(mesa => {
-              if(jsondata.id === mesa.idMesaElectoral){
-                listaAux.push({idMesaElectoral: mesa.idMesaElectoral, estado: jsondata.estatus})
-              } else {
-                listaAux.push({idMesaElectoral: mesa.idMesaElectoral, estado: mesa.estado})
-              }
-            })
-            setInfoMesa(listaAux);
+            if (jsondata.estatus !== undefined) {
+              const listaAux = [];
+              listaMesa.forEach((mesa) => {
+                if (jsondata.id === mesa.idMesaElectoral) {
+                  listaAux.push({
+                    idMesaElectoral: mesa.idMesaElectoral,
+                    estado: jsondata.estatus,
+                  });
+                } else {
+                  listaAux.push({
+                    idMesaElectoral: mesa.idMesaElectoral,
+                    estado: mesa.estado,
+                  });
+                }
+              });
+              listaMesa = listaAux;
+              setInfoMesa(listaMesa);
+            } else {
+              setConteoEnCurso(false);
+              //miWebSocket.close();
+            }
           };
         }
       });
@@ -129,9 +146,9 @@ export default function CapturaLlavePrivada() {
         return response.json();
       })
       .then((candidatos) => {
-        candidatos.forEach(candidato => {
-          candidato.estado = 0
-        })
+        candidatos.forEach((candidato) => {
+          candidato.estado = 0;
+        });
         setInfoMesa(candidatos);
       })
       .catch((error) => {
@@ -220,10 +237,12 @@ export default function CapturaLlavePrivada() {
                 alignItems: "center",
               }}
             >
-              <Alert severity="info">
-                En espera del resto de miembros de la mesa electoral para
+              <Alert severity={conteoEnCurso ? "info" : "success"}>
+                {conteoEnCurso
+                  ? `En espera del resto de miembros de la mesa electoral para
                 comenzar el conteo. Se requieren al menos t miembros para
-                continuar
+                continuar`
+                  : `Participantes necesarios presentes. Pulse el botón Continuar para ver los resultados del conteo de votos`}
               </Alert>
               <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -233,12 +252,16 @@ export default function CapturaLlavePrivada() {
                       <TableCell align="center">Estatus</TableCell>
                     </TableRow>
                     {listaMesa.map((integrante, i) => (
-                      <TableRow>
+                      <TableRow id={i}>
                         <TableCell align="center">
                           {integrante.idMesaElectoral}
                         </TableCell>
                         <TableCell align="center">
-                          {integrante.estado}
+                          {integrante.estado === 1 ? (
+                            <CheckCircleIcon></CheckCircleIcon>
+                          ) : (
+                            <CircularProgress></CircularProgress>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -248,8 +271,10 @@ export default function CapturaLlavePrivada() {
               </TableContainer>
               <Button
                 variant="contained"
-                disabled
+                disabled={conteoEnCurso}
                 sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
+                component={Link}
+                to="/mesa/resultados"
               >
                 Continuar
               </Button>
