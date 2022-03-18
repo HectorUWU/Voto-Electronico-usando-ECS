@@ -41,7 +41,13 @@ export default function CapturaLlavePrivada() {
   const [error, setError] = React.useState("");
   const [showError, setShowError] = React.useState(false);
   let [listaMesa, setInfoMesa] = React.useState([]);
-  const [conteoEnCurso, setConteoEnCurso] = React.useState(true);
+  let [conteoEnCurso, setConteoEnCurso] = React.useState(true);
+
+  const [severity, setSeverity] = React.useState("info");
+  const [tablamsg, setTablamsg] =
+    React.useState(`En espera del resto de miembros de la mesa electoral para
+  comenzar el conteo. Se requieren al menos t miembros para
+  continuar`);
 
   const handleChange = (event) => {
     console.log(event.target.files[0]);
@@ -77,11 +83,10 @@ export default function CapturaLlavePrivada() {
           setShowError(true);
         } else {
           document.getElementById("formContainer").style.display = "none";
-          document.getElementById("tablaEspera").style.display = "flex";
+          document.getElementById("tablaEspera").style.display = "block";
           miWebSocket = new WebSocket("ws://localhost:8080");
 
           miWebSocket.onopen = function (evt) {
-            console.log("Socket ReadyState: " + miWebSocket.readyState);
             const file = document.getElementById("llave").files[0];
             const reader = new FileReader();
             let rawData = new ArrayBuffer();
@@ -103,10 +108,14 @@ export default function CapturaLlavePrivada() {
           };
 
           miWebSocket.onclose = function (evt) {
+            console.log(conteoEnCurso)
             if (conteoEnCurso) {
-              alert("Conexión cerrada por host");
-              window.location.href = "/mesa/menuPrincipal";
+              document.getElementById("formContainer").style.display = "block";
+              document.getElementById("tablaEspera").style.display = "none";
+              setError("Ocurrió un error al validar la llave privada");
+              setShowError(true);
             }
+            // window.location.href = "/mesa/menuPrincipal";
           };
 
           miWebSocket.onmessage = function (event) {
@@ -128,8 +137,22 @@ export default function CapturaLlavePrivada() {
               });
               listaMesa = listaAux;
               setInfoMesa(listaMesa);
+            } else if (jsondata.msg === "Participante ya registrado") {
+              // Mostrar alerta de que ya se habia registrado
+            } else if (jsondata.error !== undefined) {
+              conteoEnCurso = false;
+              setSeverity("error");
+              setTablamsg(
+                "Ocurrió un error en el conteo de votos, por favor refresque la página e ingrese sus credenciales nuevamente"
+              );
+              miWebSocket.close();
             } else {
-              setConteoEnCurso(false);
+              conteoEnCurso = false;
+              setConteoEnCurso(conteoEnCurso);
+              setSeverity("success");
+              setTablamsg(
+                "Participantes necesarios presentes. Pulse el botón Continuar para ver los resultados del conteo de votos"
+              );
               //miWebSocket.close();
             }
           };
@@ -176,13 +199,14 @@ export default function CapturaLlavePrivada() {
               <Typography component="h1" variant="h5">
                 Comenzar conteo de votos
               </Typography>
-              <ResponseError error={error} showError={showError} />
+
               <Box
                 component="form"
                 onSubmit={handleSubmit}
                 noValidate
                 sx={{ mt: 1 }}
               >
+                <ResponseError error={error} showError={showError} />
                 <Item elevation={0}>{`Ingrese su llave privada`}</Item>
                 <Box
                   sx={{
@@ -237,13 +261,7 @@ export default function CapturaLlavePrivada() {
                 alignItems: "center",
               }}
             >
-              <Alert severity={conteoEnCurso ? "info" : "success"}>
-                {conteoEnCurso
-                  ? `En espera del resto de miembros de la mesa electoral para
-                comenzar el conteo. Se requieren al menos t miembros para
-                continuar`
-                  : `Participantes necesarios presentes. Pulse el botón Continuar para ver los resultados del conteo de votos`}
-              </Alert>
+              <Alert severity={severity}>{tablamsg}</Alert>
               <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
@@ -252,7 +270,7 @@ export default function CapturaLlavePrivada() {
                       <TableCell align="center">Estatus</TableCell>
                     </TableRow>
                     {listaMesa.map((integrante, i) => (
-                      <TableRow id={i}>
+                      <TableRow key={i}>
                         <TableCell align="center">
                           {integrante.idMesaElectoral}
                         </TableCell>

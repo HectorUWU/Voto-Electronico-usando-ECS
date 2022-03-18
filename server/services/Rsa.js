@@ -42,15 +42,19 @@ class Rsa {
    * @return datosDescifrados {string}  
    */
   descifrar(datos, contrasena) {
-    const datosDescifrados = crypto.privateDecrypt(
-      {
-        key: this.llave,
-        padding: crypto.constants.RSA_PKCS1_PADDING,
-        passphrase: contrasena,
-      },
-      Buffer.from(datos, "base64")
-    );
-    return datosDescifrados.toString();
+    try {
+      const datosDescifrados = crypto.privateDecrypt(
+        {
+          key: this.llave,
+          padding: crypto.constants.RSA_PKCS1_PADDING,
+          passphrase: contrasena,
+        },
+        Buffer.from(datos, "base64")
+      );
+      return datosDescifrados.toString();
+    } catch(err) {
+      return null
+    }
   };
 
   /**
