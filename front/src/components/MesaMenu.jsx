@@ -34,7 +34,7 @@ export default function VotanteMenu() {
           </Typography>
           <Button
             component={Link}
-            to="/registro"
+            to="/mesa/registrarCandidato"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}

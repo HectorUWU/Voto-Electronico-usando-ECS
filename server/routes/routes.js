@@ -4,8 +4,10 @@ const MesaElectoral = require("../models/MesaElectoral");
 const Votan = require("../services/Votante");
 const router = express.Router();
 const verificarVotantes = require("./autenticarVotante");
-const verificarMesa = require("./autenticarMesa");
+const verificarMesa = require("./autenticarMesaElectoral");
 const Candidato = require("../models/Candidato");
+const fs = require('fs')
+const path = require('path');
 router.post("/registro", (req, res) => {
   if (req.body) {
     const nuevoVotante = new Votante(req.body);
@@ -92,4 +94,35 @@ router.get("/listaMesa", (req, res) => {
     });
 });
 
+router.post('/subir', verificarMesa, (req, res) => {
+  // const newPath = "D:\\Documentos\\Github\\Voto-Electronico-usando-ECS\\server\\files";
+  const dataUrl = req.body.file;
+  const matches = dataUrl.match(/^data:.+\/(.+);base64,(.*)$/);
+  // const ext = matches[1];
+  const base64Data = matches[2];
+  const buffer = Buffer.from(base64Data, 'base64');
+  const dir = path.join(__dirname,"../","public/files/", req.body.nombre)
+  fs.writeFile(dir, buffer, function (error) {
+    if(error){
+      res.status(500).send({ error: error.toString() });
+    }else{
+    res.send({mensaje: "Carga exitosa", direccion : dir});
+    }
+  });
+});
+
+router.post('/registrarCandidato', verificarMesa, (req, res)=>{
+  if (req.body) {
+    const nuevoCandidato = new Candidato(req.body);
+    Candidato.registro(nuevoCandidato)
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.toString() });
+      });
+  } else {
+    res.status(400).send({ error: "Campos invalidos" });
+  }
+})
 module.exports = router;

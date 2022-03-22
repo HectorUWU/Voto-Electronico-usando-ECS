@@ -6,9 +6,61 @@
  * v.0.1 Agregando conexion y registro de votantes a la base de datos
  */
 /** @constructor */
-const Candidato = function () {};
-
+const Candidato = function (candidato) {
+  this.nombre = candidato.nombre;
+  this.correo = candidato.correo;
+  this.link = candidato.link;
+  this.foto = candidato.foto;
+};
 const conexion = require("../database/db"); // realiza la conecion a la base de datos.
+Candidato.buscarPorCorreo = function (correo) {
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query("SELECT * FROM candidato WHERE correo = ?", correo)
+      .then(([fields, rows]) => {
+        resolve(fields[0]);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+Candidato.registro = function (candidato) {
+  return new Promise((resolve, reject) => {
+    Candidato.buscarPorCorreo(candidato.correo).then((results) => {
+      if(results){
+      reject(new Error("Candidato ya registrado"));
+    }else {
+      conexion
+        .promise()
+        .query(
+          "(SELECT idVotacion from votacion where estado='Preparando' LIMIT 1)"
+        )
+        .then(([fields, rows]) => {
+          conexion
+            .promise()
+            .query("INSERT INTO candidato SET ?", {
+              nombre: candidato.nombre,
+              correo: candidato.correo,
+              linkPlanTrabajo: candidato.link,
+              foto: candidato.foto,
+              numeroVotos: 0, // Se asigna como si no ubiera votado
+              resultado: 0, // Se asume que no esta inscrito hasta que se demuestre lo contrario
+              idVotacion: fields[0].idVotacion,
+            })
+            .then(([fields, rows]) => {
+              resolve({ mensaje: "Registro exitoso" });
+            });
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    }
+  })
+  });
+};
 
 /**
  * Guarda los resultados de la eleccion en la base de datos
@@ -19,7 +71,10 @@ Candidato.registrarVotos = function (votos) {
   return new Promise((resolve, reject) => {
     conexion
       .promise()
-      .query("UPDATE candidato SET numeroVotos=?, resultado=? where idCandidato=?", votos)
+      .query(
+        "UPDATE candidato SET numeroVotos=?, resultado=? where idCandidato=?",
+        votos
+      )
       .then(([fields, rows]) => {
         resolve({ mensaje: "Resultados guardados con exito" });
       })
@@ -47,4 +102,3 @@ Candidato.obtenerCandidatos = function () {
   });
 };
 module.exports = Candidato; // Exporta el modulo
-

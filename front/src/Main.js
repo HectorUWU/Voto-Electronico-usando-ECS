@@ -12,6 +12,7 @@ import CapturaLlavePrivada from "./components/CapturaLlavePrivada";
 import SalaDeEsperaConteo from "./components/SalaDeEsperaConteo";
 import Resultados from "./components/Resultados";
 import Verificar from "./components/Verificar";
+import RegistroCandidatos from "./components/RegistroCandidatos.jsx";
 
 const Main = () => {
   return (
@@ -26,7 +27,8 @@ const Main = () => {
         <Route path="/mesa/recuperarVotos" element={<CapturaLlavePrivada />}></Route> 
         <Route path="/mesa/salaDeEspera" element={<SalaDeEsperaConteo />}></Route> 
         <Route path="/mesa/resultados" element={<Resultados />}></Route> 
-        <Route path="/verificar/:token/:id" element={<Verificar/>}></Route> 
+        <Route path="/verificar/:token/:id" element={<Verificar/>}></Route>
+        <Route path="/mesa/registrarCandidato" element={<RegistroCandidatos/>}></Route>  
       </Routes>
   );
 };
