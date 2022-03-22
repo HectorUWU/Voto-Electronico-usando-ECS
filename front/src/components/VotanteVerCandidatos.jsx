@@ -8,7 +8,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import LinkMui from "@mui/material/Link";
 import { Link } from "react-router-dom";
-import Grid from '@mui/material/Grid';
+import Grid from "@mui/material/Grid";
 import ResponseError from "./responseError";
 
 function Item(props) {
@@ -37,68 +37,73 @@ export default function VotanteVotar() {
    * Estado que contendra los objetos de todos los candidatos de la base de datos
    * @type {object}
    */
-  const [infoCandidatos, setInfoCandidatos] = React.useState([])
-    /**
-     * Estado usado paraguardar el error que se pudiera dar
-     * @type {string}
-     */
-   const [error, setError] = React.useState("");
-   /**
-    * Estado usado para mostrar el error, en caso de que lo hubiera
-    * @type {boolean}
-    */
-   const [showError, setShowError] = React.useState(false);
+  const [infoCandidatos, setInfoCandidatos] = React.useState([]);
+  /**
+   * Estado usado paraguardar el error que se pudiera dar
+   * @type {string}
+   */
+  const [error, setError] = React.useState("");
+  /**
+   * Estado usado para mostrar el error, en caso de que lo hubiera
+   * @type {boolean}
+   */
+  const [showError, setShowError] = React.useState(false);
   React.useEffect(() => {
-    fetch('/api/verCandidatos')
+    fetch("/api/verCandidatos")
       .then((response) => {
-        return response.json()
+        return response.json();
       })
       .then((candidatos) => {
-        setInfoCandidatos(candidatos)
-      }).catch((error) => {
+        setInfoCandidatos(candidatos);
+      })
+      .catch((error) => {
         setError(error);
         setShowError(true);
-      })
-  }, [])
+      });
+  }, []);
 
   return (
     <Container component="main">
-      <Box sx={{flexGrow: 1, marginTop: 6}}>
-      <ResponseError error={error} showError={showError} />
-        <Grid container spacing={{ xs: 4, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-        {infoCandidatos.map((candidato, i) => (
-          <Grid item xs={4} sm={4} md={4} key={i}>
-          <Item>
-            <Card sx={{ maxWidth: 400, maxHeight: 500 }}>
-              <Typography
-                gutterBottom
-                variant="h5"
-                component="div"
-                align="center"
-              >
-                {candidato.nombre}
-              </Typography>
-              <CardMedia
-                component="img"
-                height="300"
-                width="300"
-                image={candidato.foto}
-                alt={candidato.nombre}
-              />
-              <CardContent align="center">
-                <LinkMui
-                  href={candidato.linkPlanTrabajo}
-                  underline="hover"
-                  variant="h6"
-                  sx={{ color: "#6600FF" }}
-                >
-                  {"VER PLAN DE TRABAJO"}
-                </LinkMui>
-              </CardContent>
-            </Card>
-          </Item>
-          </Grid>
-        ))}
+      <Box sx={{ flexGrow: 1, marginTop: 6 }}>
+        <ResponseError error={error} showError={showError} />
+        <Grid
+          container
+          spacing={{ xs: 4, md: 3 }}
+          columns={{ xs: 4, sm: 8, md: 12 }}
+        >
+          {infoCandidatos.map((candidato, i) => (
+            <Grid item xs={4} sm={4} md={4} key={i}>
+              <Item>
+                <Card sx={{ maxWidth: 400, maxHeight: 500 }}>
+                  <Typography
+                    gutterBottom
+                    variant="h5"
+                    component="div"
+                    align="center"
+                  >
+                    {candidato.nombre}
+                  </Typography>
+                  <CardMedia
+                    component="img"
+                    height="300"
+                    width="300"
+                    image={candidato.foto}
+                    alt={candidato.nombre}
+                  />
+                  <CardContent align="center">
+                    <LinkMui
+                      href={candidato.linkPlanTrabajo}
+                      underline="hover"
+                      variant="h6"
+                      sx={{ color: "#6600FF" }}
+                    >
+                      {"VER PLAN DE TRABAJO"}
+                    </LinkMui>
+                  </CardContent>
+                </Card>
+              </Item>
+            </Grid>
+          ))}
         </Grid>
       </Box>
       <Box
@@ -114,7 +119,7 @@ export default function VotanteVotar() {
           component={Link}
           to="/votante/menuPrincipal"
           variant="contained"
-          sx={{ backgroundColor: '#6600FF'}}
+          sx={{ backgroundColor: "#6600FF" }}
         >
           REGRESAR
         </Button>

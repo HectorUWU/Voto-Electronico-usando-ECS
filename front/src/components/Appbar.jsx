@@ -39,7 +39,7 @@ function Appbar() {
               to="/"
               color="inherit"
               onClick={() => {
-                if(sessionStorage.getItem("votante") != null){
+                if (sessionStorage.getItem("votante") != null) {
                   sessionStorage.removeItem("votante");
                   window.location.href = "/";
                 } else {

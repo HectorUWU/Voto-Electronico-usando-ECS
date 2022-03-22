@@ -44,16 +44,16 @@ export default function VotanteVotar() {
    */
   const [selectedValue, setSelectedValue] = React.useState(-1);
   /**
-     * Estado usado paraguardar el error que se pudiera dar
-     * @type {string}
-     */
-   const [error, setError] = React.useState("");
-   /**
-    * Estado usado para mostrar el error, en caso de que lo hubiera
-    * @type {boolean}
-    */
-   const [showError, setShowError] = React.useState(false);
-   /**
+   * Estado usado paraguardar el error que se pudiera dar
+   * @type {string}
+   */
+  const [error, setError] = React.useState("");
+  /**
+   * Estado usado para mostrar el error, en caso de que lo hubiera
+   * @type {boolean}
+   */
+  const [showError, setShowError] = React.useState(false);
+  /**
    * Funcion que recupera la informacion de los candidatos
    */
   React.useEffect(() => {
@@ -63,12 +63,13 @@ export default function VotanteVotar() {
       })
       .then((candidatos) => {
         setInfoCandidatos(candidatos);
-      }).catch((error) => {
+      })
+      .catch((error) => {
         setError(error);
         setShowError(true);
-      })
+      });
   }, []);
-  
+
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
   };
@@ -79,7 +80,7 @@ export default function VotanteVotar() {
       return (
         <Container component="main">
           <Box sx={{ flexGrow: 1, marginTop: 6 }}>
-          <ResponseError error={error} showError={showError} />
+            <ResponseError error={error} showError={showError} />
             <Grid
               container
               spacing={{ xs: 4, md: 3 }}
