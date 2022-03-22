@@ -19,27 +19,12 @@ Candidato.registrarVotos = function (votos) {
   return new Promise((resolve, reject) => {
     conexion
       .promise()
-      .query("UPDATE candidato SET numeroVotos=?, resultado=? where idCandidato=?", votos)
+      .query(
+        "UPDATE candidato SET numeroVotos=?, resultado=? where idCandidato=?",
+        votos
+      )
       .then(([fields, rows]) => {
         resolve({ mensaje: "Resultados guardados con exito" });
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-};
-
-/**
- * Regresa todos los candidatos
- * @return {promise}
- */
-Candidato.obtenerCandidatos = function () {
-  return new Promise((resolve, reject) => {
-    conexion
-      .promise()
-      .query("SELECT * FROM candidato")
-      .then(([fields, rows]) => {
-        resolve(fields);
       })
       .catch((err) => {
         reject(err);
@@ -51,11 +36,13 @@ Candidato.obtenerCandidatos = function () {
  * Regresa todos los candidatos de la ultima votacion
  * @return {promise}
  */
-Candidato.verResultadosUltimaVotacion = function () {
+Candidato.obtenerCandidatos = function () {
   return new Promise((resolve, reject) => {
     conexion
       .promise()
-      .query("SELECT IdCandidato, numeroVotos, resultado, nombre, foto FROM candidato WHERE idVotacion=(SELECT MAX(idVotacion) FROM votacion)")
+      .query(
+        "SELECT * FROM candidato WHERE idVotacion=(SELECT MAX(idVotacion) FROM votacion)"
+      )
       .then(([fields, rows]) => {
         resolve(fields);
       })
@@ -66,4 +53,3 @@ Candidato.verResultadosUltimaVotacion = function () {
 };
 
 module.exports = Candidato; // Exporta el modulo
-

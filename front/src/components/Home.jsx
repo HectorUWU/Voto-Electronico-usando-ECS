@@ -4,11 +4,12 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ResponseError from "./responseError";
-import Grid from '@mui/material/Grid';
+import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 const theme = createTheme();
+const moment = require("moment");
 
 function Item(props) {
   const { sx, ...other } = props;
@@ -36,49 +37,69 @@ export default function Main() {
    * Estado que contendra los objetos de todos los candidatos de la base de datos
    * @type {object}
    */
-   const [infoCandidatos, setInfoCandidatos] = React.useState([])
-     /**
-   * Estado que contendra los objetos de todos los candidatos de la base de datos
-   * @type {object}
-   */
-      const [estadoVotacion, setEstadoVotacion] = React.useState('')
-   /**
-      * Estado usado paraguardar el error que se pudiera dar
-      * @type {string}
-      */
-    const [error, setError] = React.useState("");
-    /**
-     * Estado usado para mostrar el error, en caso de que lo hubiera
-     * @type {boolean}
-     */
-    const [showError, setShowError] = React.useState(false);
+  const [infoCandidatos, setInfoCandidatos] = React.useState([]);
   /**
-   * Funcion que recupera la informacion de los candidatos de la ultima votacion y el estado de la misma
+   * Estado que contendra el estado de la votacion
+   * @type {string}
+   */
+  const [estadoVotacion, setEstadoVotacion] = React.useState("");
+  /** Estado que contendra el estado de la votacion
+   * @type {string}
+   */
+  const [nombreVotacion, setNombreVotacion] = React.useState("");
+  /** Estado que contendra la fecha de inicio de la votacion
+   * @type {string}
+   */
+  const [fechaInicioVotacion, setFechaInicioVotacion] = React.useState("");
+  /** Estado que contendra la fecha de fin de la votacion
+   * @type {string}
+   */
+  const [fechaFinVotacion, setFechaFinVotacion] = React.useState("");
+  /**
+   * Estado usado paraguardar el error que se pudiera dar
+   * @type {string}
+   */
+  const [error, setError] = React.useState("");
+  /**
+   * Estado usado para mostrar el error, en caso de que lo hubiera
+   * @type {boolean}
+   */
+  const [showError, setShowError] = React.useState(false);
+  /**
+   * Funcion que recupera la informacion de los candidatos de la ultima votacion en caso de que este finalizada y el estado de la misma
    */
   React.useEffect(() => {
-    fetch('/api/verResultadosUltimaVotacion')
+    fetch("/api/verResultadosUltimaVotacion")
       .then((response) => {
-        return response.json()
+        return response.json();
       })
       .then((response) => {
-        console.log(response)
-        if(response.resultado===false){
-          setEstadoVotacion('inactivo') 
-        } else if(response.resultado===true){
-          setEstadoVotacion('activo') 
-        } else{
-          setInfoCandidatos(response)
-          setEstadoVotacion('finalizado')
+        if (
+          (response.estado === "activo") |
+          (response.estado === "listoParaConteo")
+        ) {
+          setNombreVotacion(response.nombre);
+          setEstadoVotacion(response.estado);
+          setFechaInicioVotacion(
+            moment(response.fechaInicio).format("DD/MM/YYYY")
+          );
+          setFechaFinVotacion(moment(response.fechaFin).format("DD/MM/YYYY"));
+        } else if (response.estado === "inactivo") {
+          setEstadoVotacion(response.estado);
         }
-          
-      }).catch((error) => {
+
+         else {
+          setInfoCandidatos(response);
+          setEstadoVotacion("finalizado");
+        }
+      })
+      .catch((error) => {
         setError(error);
         setShowError(true);
-      })
-  }, [])
-
+      });
+  }, []);
   let votosTotales = 0;
-  if(estadoVotacion==='finalizado'){
+  if (estadoVotacion === "finalizado") {
     infoCandidatos.forEach((candidato) => {
       votosTotales += candidato.numeroVotos;
     });
@@ -87,51 +108,89 @@ export default function Main() {
     <ThemeProvider theme={theme}>
       <Container component="main">
         <ResponseError error={error} showError={showError} />
-          {/*Se mostraran los resultados de al ultima votacion si ya ha finalizado, si esta activa se mostrara un mensaje para que vote, si esta inactiva se mostrara un mensaje para que espere noticias*/}
-          {estadoVotacion==='activo'?
-          <Typography align="center" component="h2" variant="h4" sx={{flexGrow: 1, marginTop: 6}}>
-          Hay una votacion activa en estos momentos, si aun no has votado, favor de hacerlo
+        {/*Se mostraran los resultados de al ultima votacion si ya ha finalizado, 
+          si esta activa se mostrara un mensaje para que vote, 
+          si esta inactiva se mostrara un mensaje para que espere noticias,
+          si ya termino su tiempo pero aun no se han contado, se mostrara un mensaje para qeu espere los resultados*/}
+        {estadoVotacion === "activo" ? (
+          <Typography
+            align="center"
+            component="h2"
+            variant="h4"
+            sx={{ flexGrow: 1, marginTop: 6 }}
+          >
+            La votacion {nombreVotacion} se encuentra activa en estos momentos,
+            si aun no has votado, favor de hacerlo durante el periodo
+            <br /> <br />
+            {fechaInicioVotacion} - {fechaFinVotacion}
           </Typography>
-          :estadoVotacion==='finalizado'?
-          <Box sx={{flexGrow: 1, marginTop: 6}}>
-          <Typography align="center" component="h2" variant="h4">
-          Conoce los resultados de la ultima votacion
-          </Typography>
-            <Grid container spacing={{ xs: 4, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-            {infoCandidatos.map((candidato, i) => (
-              <Grid item xs={4} sm={4} md={4} key={i}>
-              <Item>
-                <Card sx={{ maxWidth: 400, maxHeight: 500 }}>
-                  <Typography
-                    gutterBottom
-                    variant="h5"
-                    component="div"
-                    align="center"
-                  >
-                    {candidato.nombre}
-                  </Typography>
-                  <CardMedia
-                    component="img"
-                    height="300"
-                    width="300"
-                    image={candidato.foto}
-                    alt={candidato.nombre}
-                  />
-                  <CardContent align="center">
-                  {((100 / votosTotales) * candidato.numeroVotos).toFixed(2)} %
-                  <br />
-                  {candidato.resultado === 1 ? "Electo": "No electo"}
-                  </CardContent>
-                </Card>
-              </Item>
-              </Grid>
-            ))}
+        ) : estadoVotacion === "finalizado" ? (
+          <Box sx={{ flexGrow: 1, marginTop: 6 }}>
+            <Typography align="center" component="h2" variant="h4">
+              Conoce los resultados de la ultima votacion
+            </Typography>
+            <Grid
+              container
+              spacing={{ xs: 4, md: 3 }}
+              columns={{ xs: 4, sm: 8, md: 12 }}
+            >
+              {infoCandidatos.map((candidato, i) => (
+                <Grid item xs={4} sm={4} md={4} key={i}>
+                  <Item>
+                    <Card sx={{ maxWidth: 400, maxHeight: 500 }}>
+                      <Typography
+                        gutterBottom
+                        variant="h5"
+                        component="div"
+                        align="center"
+                      >
+                        {candidato.nombre}
+                      </Typography>
+                      <CardMedia
+                        component="img"
+                        height="300"
+                        width="300"
+                        image={candidato.foto}
+                        alt={candidato.nombre}
+                      />
+                      <CardContent align="center">
+                        {((100 / votosTotales) * candidato.numeroVotos).toFixed(
+                          2
+                        )}{" "}
+                        %
+                        <br />
+                        {candidato.resultado === 1 ? "Electo" : "No electo"}
+                      </CardContent>
+                    </Card>
+                  </Item>
+                </Grid>
+              ))}
             </Grid>
           </Box>
-          :<Typography align="center" component="h2" variant="h4" sx={{flexGrow: 1, marginTop: 6}}>
-          No hay una votacion activa en estos momentos, espera noticias pronto
+        ) : estadoVotacion === "listoParaConteo" ? (
+          <Typography
+            align="center"
+            component="h2"
+            variant="h4"
+            sx={{ flexGrow: 1, marginTop: 6 }}
+          >
+            La votacion: {nombreVotacion} con periodo de votacion
+            <br /> <br />
+            {fechaInicioVotacion} - {fechaFinVotacion}
+            <br /> <br />
+            ha concluido, favor de mantenerse atentos para la publicacion de
+            resultados
           </Typography>
-          }
+        ) : (
+          <Typography
+            align="center"
+            component="h2"
+            variant="h4"
+            sx={{ flexGrow: 1, marginTop: 6 }}
+          >
+            No hay una votacion activa en estos momentos, espera noticias pronto
+          </Typography>
+        )}
       </Container>
     </ThemeProvider>
   );
