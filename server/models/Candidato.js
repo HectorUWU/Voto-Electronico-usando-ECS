@@ -36,7 +36,7 @@ Candidato.registro = function (candidato) {
       conexion
         .promise()
         .query(
-          "(SELECT idVotacion from votacion where estado='Preparando' LIMIT 1)"
+          "(SELECT idVotacion from votacion where estado='preparacion' LIMIT 1)"
         )
         .then(([fields, rows]) => {
           conexion

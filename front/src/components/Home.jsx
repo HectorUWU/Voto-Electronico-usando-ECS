@@ -93,10 +93,6 @@ export default function Main() {
           setEstadoVotacion("finalizado");
         }
       })
-      .catch((error) => {
-        setError(error);
-        setShowError(true);
-      });
   }, []);
   let votosTotales = 0;
   if (estadoVotacion === "finalizado") {

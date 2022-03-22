@@ -127,7 +127,15 @@ router.post('/subir', verificarMesa, (req, res) => {
 router.post('/registrarCandidato', verificarMesa, (req, res)=>{
   if (req.body) {
     const nuevoCandidato = new Candidato(req.body);
-    Candidato.registro(nuevoCandidato)
+    Candidato.registro(nuevoCandidato).then(results => {
+      res.send(results);
+    }).catch(error => {
+      res.status(500).send({ error: error.toString()});
+    })
+  }}
+)
+
+
 router.get("/verResultadosUltimaVotacion", (req, res) => {
   Votacion.consultarUltimaVotacion()
     .then((result) => {
@@ -177,8 +185,7 @@ router.post("/registroVotacion", verificarMesa, (req, res) => {
     res.status(400).send({ error: "Campos invalidos" });
   }
 })
-  }
-});
+
 
 router.get("/verEstadoUltimaVotacion", (req, res) => {
   Votacion.consultarUltimaVotacion()
