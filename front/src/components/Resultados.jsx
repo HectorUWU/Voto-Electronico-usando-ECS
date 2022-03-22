@@ -10,12 +10,11 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 
 const theme = createTheme();
 
-export default function SalaDeEsperaConteo() {
+export default function Resultados() {
   const [infoCandidatos, setInfoCandidatos] = React.useState([]);
   React.useEffect(() => {
     fetch("/api/verCandidatos")

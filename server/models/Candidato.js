@@ -85,14 +85,16 @@ Candidato.registrarVotos = function (votos) {
 };
 
 /**
- * Regresa todos los candidatos
+ * Regresa todos los candidatos de la ultima votacion
  * @return {promise}
  */
 Candidato.obtenerCandidatos = function () {
   return new Promise((resolve, reject) => {
     conexion
       .promise()
-      .query("SELECT * FROM candidato")
+      .query(
+        "SELECT * FROM candidato WHERE idVotacion=(SELECT MAX(idVotacion) FROM votacion)"
+      )
       .then(([fields, rows]) => {
         resolve(fields);
       })
