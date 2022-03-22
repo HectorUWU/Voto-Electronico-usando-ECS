@@ -48,41 +48,50 @@ Votante.registro = function (votante) {
   const sal = 10;
   return new Promise((resolve, reject) => {
     const ipn = votante.correo.split("@");
-    if (ipn[1] === "alumno.ipn.mx") { // Solo acepta correo institucional
-      if (votante.contrasena === votante.repetir) {
-        bcryptjs
-          .hash(votante.contrasena, sal)
-          .then(function (hash) {
-            return conexion.promise().query("INSERT INTO votante SET ?", {
-              boleta: votante.boleta,
-              idVotante: votante.boleta,
-              contrasena: hash,
-              correo: votante.correo,
-              estadoVoto: 0, // Se asigna como si no ubiera votado
-              estadoAcademico: 0, // Se asume que no esta inscrito hasta que se demuestre lo contrario
-              verificacion: "Pendiente",
-            });
-          })
-          .then(([fields, rows]) => {
-            const token = jwt.sign(
-              { correo: votante.correo, id: votante.boleta },
-              process.env.SECRET
-            );
-            const link =
-              "http://localhost:3000/verificar/" + token + "/" + votante.boleta; // Crea el link para la verificacion
-            const correo = new Correo();
-            correo.enviarCorreo(
-              votante.correo,
-              "Para continuar verifica tu cuenta en el siguiente link\n" + link,
-              "Verificacion de correo VOTA-ESCOM"
-            );
-            resolve({ mensaje: "Registro exitoso" });
-          })
-          .catch((error) => {
-            reject(error);
-          });
+    if (ipn[1] === "alumno.ipn.mx") {
+      // Solo acepta correo institucional
+      if (votante.contrasena === "") {
+        reject(new Error("La contraseña no debe estar vacia"));
       } else {
-        reject(new Error("Las contraseñas no coinciden"));
+        if (votante.contrasena === votante.repetir) {
+          bcryptjs
+            .hash(votante.contrasena, sal)
+            .then(function (hash) {
+              return conexion.promise().query("INSERT INTO votante SET ?", {
+                boleta: votante.boleta,
+                idVotante: votante.boleta,
+                contrasena: hash,
+                correo: votante.correo,
+                estadoVoto: 0, // Se asigna como si no ubiera votado
+                estadoAcademico: 0, // Se asume que no esta inscrito hasta que se demuestre lo contrario
+                verificacion: "Pendiente",
+              });
+            })
+            .then(([fields, rows]) => {
+              const token = jwt.sign(
+                { correo: votante.correo, id: votante.boleta },
+                process.env.SECRET
+              );
+              const link =
+                "http://localhost:3000/verificar/" +
+                token +
+                "/" +
+                votante.boleta; // Crea el link para la verificacion
+              const correo = new Correo();
+              correo.enviarCorreo(
+                votante.correo,
+                "Para continuar verifica tu cuenta en el siguiente link\n" +
+                  link,
+                "Verificacion de correo VOTA-ESCOM"
+              );
+              resolve({ mensaje: "Registro exitoso" });
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        } else {
+          reject(new Error("Las contraseñas no coinciden"));
+        }
       }
     } else {
       reject(new Error("Ingresa correo institucional"));
