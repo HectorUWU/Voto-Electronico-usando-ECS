@@ -9,7 +9,6 @@ import VotanteVotar from "./components/VotanteVotar";
 import VotanteVerCandidatos from "./components/VotanteVerCandidatos";
 import MesaMenu from "./components/MesaMenu";
 import CapturaLlavePrivada from "./components/CapturaLlavePrivada";
-import SalaDeEsperaConteo from "./components/SalaDeEsperaConteo";
 import Resultados from "./components/Resultados";
 import Verificar from "./components/Verificar";
 import EstablecerVotacion from "./components/EstablecerVotacion";
@@ -25,7 +24,6 @@ const Main = () => {
         <Route path="/votante/verCandidatos" element={<VotanteVerCandidatos />}></Route>
         <Route path="/mesa/menuPrincipal" element={<MesaMenu />}></Route> 
         <Route path="/mesa/recuperarVotos" element={<CapturaLlavePrivada />}></Route> 
-        <Route path="/mesa/salaDeEspera" element={<SalaDeEsperaConteo />}></Route> 
         <Route path="/mesa/resultados" element={<Resultados />}></Route> 
         <Route path="/verificar/:token/:id" element={<Verificar/>}></Route>
         <Route path="/mesa/establecerVotacion" element={<EstablecerVotacion/>}></Route>  

@@ -73,11 +73,12 @@ router.post("/votar", verificarVotantes, (req, res) => {
 
 router.post("/validarIntegrante", verificarMesa, (req, res) => {
   if (req.body) {
-    try {
-      const webSocket = new WSService();
+    const webSocket = new WSService();
+    const seDebeCrearSocket = webSocket.comprobarSocket();
+    if (seDebeCrearSocket) {
       webSocket.abrirSocket();
       res.status(200).send({ message: "ok" });
-    } catch (err) {
+    } else {
       console.log("socket ya abierto");
       res.status(200).send({ message: "ok" });
     }

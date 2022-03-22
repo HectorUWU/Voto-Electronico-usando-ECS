@@ -19,6 +19,8 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { Link } from "react-router-dom";
 
 let miWebSocket = null;
 
@@ -38,6 +40,14 @@ export default function CapturaLlavePrivada() {
   const [fileName, setFileName] = React.useState("Abrir...");
   const [error, setError] = React.useState("");
   const [showError, setShowError] = React.useState(false);
+  let [listaMesa, setInfoMesa] = React.useState([]);
+  let [conteoEnCurso, setConteoEnCurso] = React.useState(true);
+
+  const [severity, setSeverity] = React.useState("info");
+  const [tablamsg, setTablamsg] =
+    React.useState(`En espera del resto de miembros de la mesa electoral para
+  comenzar el conteo. Se requieren al menos t miembros para
+  continuar`);
 
   const handleChange = (event) => {
     console.log(event.target.files[0]);
@@ -72,10 +82,11 @@ export default function CapturaLlavePrivada() {
           setError(response.error);
           setShowError(true);
         } else {
+          document.getElementById("formContainer").style.display = "none";
+          document.getElementById("tablaEspera").style.display = "block";
           miWebSocket = new WebSocket("ws://localhost:8080");
 
           miWebSocket.onopen = function (evt) {
-            console.log("Socket ReadyState: " + miWebSocket.readyState);
             const file = document.getElementById("llave").files[0];
             const reader = new FileReader();
             let rawData = new ArrayBuffer();
@@ -97,11 +108,53 @@ export default function CapturaLlavePrivada() {
           };
 
           miWebSocket.onclose = function (evt) {
-            console.log("Conexion cerrada por host");
+            console.log(conteoEnCurso)
+            if (conteoEnCurso) {
+              document.getElementById("formContainer").style.display = "block";
+              document.getElementById("tablaEspera").style.display = "none";
+              setError("Ocurrió un error al validar la llave privada");
+              setShowError(true);
+            }
+            // window.location.href = "/mesa/menuPrincipal";
           };
 
           miWebSocket.onmessage = function (event) {
-            const jsondata = event.data
+            const jsondata = JSON.parse(event.data);
+            if (jsondata.estatus !== undefined) {
+              const listaAux = [];
+              listaMesa.forEach((mesa) => {
+                if (jsondata.id === mesa.idMesaElectoral) {
+                  listaAux.push({
+                    idMesaElectoral: mesa.idMesaElectoral,
+                    estado: jsondata.estatus,
+                  });
+                } else {
+                  listaAux.push({
+                    idMesaElectoral: mesa.idMesaElectoral,
+                    estado: mesa.estado,
+                  });
+                }
+              });
+              listaMesa = listaAux;
+              setInfoMesa(listaMesa);
+            } else if (jsondata.msg === "Participante ya registrado") {
+              // Mostrar alerta de que ya se habia registrado
+            } else if (jsondata.error !== undefined) {
+              conteoEnCurso = false;
+              setSeverity("error");
+              setTablamsg(
+                "Ocurrió un error en el conteo de votos, por favor refresque la página e ingrese sus credenciales nuevamente"
+              );
+              miWebSocket.close();
+            } else {
+              conteoEnCurso = false;
+              setConteoEnCurso(conteoEnCurso);
+              setSeverity("success");
+              setTablamsg(
+                "Participantes necesarios presentes. Pulse el botón Continuar para ver los resultados del conteo de votos"
+              );
+              //miWebSocket.close();
+            }
           };
         }
       });
@@ -109,6 +162,23 @@ export default function CapturaLlavePrivada() {
 
   let data = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
+
+  React.useEffect(() => {
+    fetch("/api/listaMesa")
+      .then((response) => {
+        return response.json();
+      })
+      .then((candidatos) => {
+        candidatos.forEach((candidato) => {
+          candidato.estado = 0;
+        });
+        setInfoMesa(candidatos);
+      })
+      .catch((error) => {
+        setError(error);
+        setShowError(true);
+      });
+  }, []);
   if (data != null) {
     return (
       <ThemeProvider theme={theme}>
@@ -129,13 +199,14 @@ export default function CapturaLlavePrivada() {
               <Typography component="h1" variant="h5">
                 Comenzar conteo de votos
               </Typography>
-              <ResponseError error={error} showError={showError} />
+
               <Box
                 component="form"
                 onSubmit={handleSubmit}
                 noValidate
                 sx={{ mt: 1 }}
               >
+                <ResponseError error={error} showError={showError} />
                 <Item elevation={0}>{`Ingrese su llave privada`}</Item>
                 <Box
                   sx={{
@@ -181,7 +252,7 @@ export default function CapturaLlavePrivada() {
             </Box>
           </div>
 
-          <div id="tablaEspera">
+          <div id="tablaEspera" style={{ display: "none" }}>
             <Box
               sx={{
                 marginTop: 8,
@@ -190,11 +261,7 @@ export default function CapturaLlavePrivada() {
                 alignItems: "center",
               }}
             >
-              <Alert severity="info">
-                En espera del resto de miembros de la mesa electoral para
-                comenzar el conteo. Se requieren al menos t miembros para
-                continuar
-              </Alert>
+              <Alert severity={severity}>{tablamsg}</Alert>
               <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
@@ -202,15 +269,30 @@ export default function CapturaLlavePrivada() {
                       <TableCell align="center">Miembro</TableCell>
                       <TableCell align="center">Estatus</TableCell>
                     </TableRow>
-
+                    {listaMesa.map((integrante, i) => (
+                      <TableRow key={i}>
+                        <TableCell align="center">
+                          {integrante.idMesaElectoral}
+                        </TableCell>
+                        <TableCell align="center">
+                          {integrante.estado === 1 ? (
+                            <CheckCircleIcon></CheckCircleIcon>
+                          ) : (
+                            <CircularProgress></CircularProgress>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableHead>
                   <TableBody></TableBody>
                 </Table>
               </TableContainer>
               <Button
                 variant="contained"
-                disabled
+                disabled={conteoEnCurso}
                 sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
+                component={Link}
+                to="/mesa/resultados"
               >
                 Continuar
               </Button>

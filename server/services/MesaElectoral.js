@@ -18,7 +18,7 @@ class MesaElectoral {
    * @param umbral {numero}, umbral del ECS
    */
   constructor() {
-    this.umbral = process.env.UMBRAL;
+    this.umbral = 3;
     this.participantesPresentes = [];
   }
 
@@ -28,10 +28,14 @@ class MesaElectoral {
    * @param id  {string}, Id del integrante de la mesa electoral
    * @param contra  {string}, Contraseña del integrante de la mesa electoral
    */
-  validarParticipante(llavePrivada, id, contra) {
+  async validarParticipante(llavePrivada, id, contra) {
     const rsa = new Rsa(llavePrivada);
     if (rsa.validarLlavePrivada(contra)) {
-      this.participantesPresentes.push({ id: id, llave: llavePrivada });
+      this.participantesPresentes.push({
+        id: id,
+        llave: llavePrivada,
+        contrasena: contra,
+      });
     } else {
       return { mensaje: "La llave es invalida", estatus: 0 };
     }
@@ -40,72 +44,90 @@ class MesaElectoral {
       for (let i = 0; i < this.participantesPresentes.length; i++) {
         idParticipantes.push(this.participantesPresentes[i].id);
       }
-      return this.extraerVotos(idParticipantes, contra);
+      console.log(
+        "-/-/-/-/-/-/-/-/-/-/-/-/*COMENZANDO CONTEO*/-/-/-/-/-/-/-/-/-/-/-/-"
+      );
+     const resultado = await this.extraerVotos(idParticipantes).then(result => {
+        return result
+      }).catch(err => {
+        return {error: err.message, estatus: 3}
+      })
+      return resultado
+    } else {
+      return { mensaje: "Esperando a participantes", estatus: 1 };
     }
-    return { mensaje: "Esperando a participantes", estatus: 1};
   }
 
   /**
    * Función para extraer y manipular los votos almacenados en la base de datos
    * @param idParticipantes {string array}, Arreglo con los id de los participantes presentes
-   * @param contra  {string}, Contraseña del integrante de la mesa electoral
    */
-  extraerVotos(idParticipantes, contra) {
-    const fragmentos = new Map();
-    const votosReales = [];
-    fragmentoBD
-      .obtenerFragmentos(idParticipantes)
-      .then((result) => {
-        // idFragmento, fragmento, idMesaElectoral
-        result.forEach((fragmento) => {
-          const idReal = this.descifrarVoto(
-            fragmento.idFragmento,
-            fragmento.idMesaElectoral,
-            contra
-          );
-          if (fragmentos.has(idReal)) {
-            const valor = fragmentos.get(idReal);
-            valor.push(fragmento.fragmento);
-            fragmentos.set(idReal, valor);
-          } else {
-            fragmentos.set(idReal, [fragmento.fragmento]);
-          }
-        });
-
-        fragmentos.forEach((value) => {
-          const voto = new Map();
-
-          for (let i = 0; i < value.length; i++) {
-            const coordenadas = value[i].split(",");
-            voto.set(coordenadas[0], coordenadas[1]);
-          }
-          const desfragmentador = new ECS();
-          const votoOriginal = desfragmentador.desfragmentarSecreto(voto);
-          votosReales.push(votoOriginal);
-          const conteo = new Votacion();
-          const resultados = conteo.contarVotos(votosReales);
-          resultados.forEach((resultadoFinal) => {
-            candidatoBD
-              .registrarVotos([
-                resultadoFinal.votos,
-                resultadoFinal.resultado,
-                resultadoFinal.id,
-              ])
-              .then()
-              .catch((err) => {
-                console.log(err);
-                return { error: "No se pudo guardar el resultado" };
-              });
+  extraerVotos(idParticipantes) {
+    return new Promise((resolve, reject) => {
+      const fragmentos = new Map();
+      const votosReales = [];
+      fragmentoBD
+        .obtenerFragmentos(idParticipantes)
+        .then((result) => {
+          // idFragmento, fragmento, idMesaElectoral
+          result.forEach((fragmento) => {
+            let contra = "";
+            this.participantesPresentes.forEach((participante) => {
+              if (participante.id === fragmento.idMesaElectoral) {
+                contra = participante.contrasena;
+              }
+            });
+            const idReal = this.descifrarVoto(
+              fragmento.idFragmento,
+              fragmento.idMesaElectoral,
+              contra
+            );
+            if(idReal === null) {
+              reject(new Error("Error al descifrar votos"))
+            }
+            if (fragmentos.has(idReal)) {
+              const valor = fragmentos.get(idReal);
+              valor.push(fragmento.fragmento);
+              fragmentos.set(idReal, valor);
+            } else {
+              fragmentos.set(idReal, [fragmento.fragmento]);
+            }
           });
+
+          fragmentos.forEach((value) => {
+            const voto = new Map();
+
+            for (let i = 0; i < value.length; i++) {
+              const coordenadas = value[i].split(",");
+              voto.set(coordenadas[0], coordenadas[1]);
+            }
+            const desfragmentador = new ECS();
+            const votoOriginal = desfragmentador.desfragmentarSecreto(voto);
+            votosReales.push(votoOriginal);
+            const conteo = new Votacion();
+            const resultados = conteo.contarVotos(votosReales);
+            resultados.forEach((resultadoFinal) => {
+              candidatoBD
+                .registrarVotos([
+                  resultadoFinal.votos,
+                  resultadoFinal.resultado,
+                  resultadoFinal.id,
+                ])
+                .then((result) => {
+                  resolve({ mensaje: "Conteo exitoso", estatus: 2 });
+                })
+                .catch((err) => {
+                  console.log("ERROR AL GUARDAR RESULTADOS " + err);
+                  reject(err);
+                });
+            });
+          });
+        })
+        .catch((err) => {
+          console.log("ERROR AL EXTRAER FRAGMENTOS " + err);
+          reject(err)
         });
-      })
-      .catch((err) => {
-        console.log(err);
-        return {
-          error: "No se pudieron extraer los fragmentos de la base de datos",
-        };
-      });
-    return { mensaje: "Conteo exitoso", estatus: 2 };
+    });
   }
 
   /**
@@ -122,12 +144,12 @@ class MesaElectoral {
     return descifradorRsa.descifrar(voto, contra);
   }
 
-  verPresentes(){
-      const participantes = []
-      this.participantesPresentes.forEach(participante => {
-        participantes.push(participante.id)
-      })
-      return participantes
+  verPresentes() {
+    const participantes = [];
+    this.participantesPresentes.forEach((participante) => {
+      participantes.push(participante.id);
+    });
+    return participantes;
   }
 }
 
