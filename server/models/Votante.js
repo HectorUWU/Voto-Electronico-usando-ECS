@@ -73,7 +73,7 @@ Votante.registro = function (votante) {
                 process.env.SECRET
               );
               const link =
-                "http://localhost:3000/verificar/" +
+                "https://vota-escom.herokuapp.com/verificar/" +
                 token +
                 "/" +
                 votante.boleta; // Crea el link para la verificacion

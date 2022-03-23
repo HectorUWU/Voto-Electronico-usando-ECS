@@ -68,7 +68,7 @@ function ConfirmacionVotar(props) {
         },
         body: JSON.stringify(datos),
         };
-        fetch("http://localhost:8000/api/votar", config)
+        fetch("https://vota-escom.herokuapp.com/api/votar", config)
         .then((response) => response.json())
         .then((response) => {
             if (response.error) {

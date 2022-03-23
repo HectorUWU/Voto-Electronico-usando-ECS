@@ -31,7 +31,7 @@ export default function SignIn() {
       },
       body: JSON.stringify(datos),
     };
-    fetch("http://localhost:8000/api/login", config)
+    fetch("https://vota-escom.herokuapp.com/api/login", config)
       .then((response) => response.json())
       .then((response) => {
         if (response.error) {

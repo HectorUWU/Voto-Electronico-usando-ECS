@@ -36,7 +36,7 @@ export default function SignUp() {
       },
       body: JSON.stringify(datos),
     };
-    fetch("http://localhost:8000/api/registro", config)
+    fetch("https://vota-escom.herokuapp.com/api/registro", config)
       .then((response) => response.json())
       .then((response) => {
         if (response.error) {

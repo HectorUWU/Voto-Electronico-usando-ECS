@@ -75,7 +75,7 @@ export default function CapturaLlavePrivada() {
       },
       body: JSON.stringify(datos),
     };
-    fetch("http://localhost:8000/api/validarIntegrante", config)
+    fetch("https://vota-escom.herokuapp.com/api/validarIntegrante", config)
       .then((response) => response.json())
       .then((response) => {
         if (response.error) {

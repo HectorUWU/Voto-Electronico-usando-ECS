@@ -17,11 +17,11 @@ export default function SignUp() {
   const [showError, setShowError] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const { token, id } = useParams();
-  const [mensaje, setMensaje] = React.useState("WTF");
+  const [mensaje, setMensaje] = React.useState("");
   const Verificar = (event) => {
     event.preventDefault();
     console.log(token);
-    fetch("http://localhost:8000/api/verificar/" + token + "/" + id, {
+    fetch("https://vota-escom.herokuapp.com/api/verificar/" + token + "/" + id, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",

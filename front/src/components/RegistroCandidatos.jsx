@@ -91,14 +91,14 @@ export default function RegistroCandidatos() {
           body: JSON.stringify(registro),
         };
 
-        fetch("http://localhost:8000/api/registrarCandidato", config)
+        fetch("https://vota-escom.herokuapp.com/api/registrarCandidato", config)
           .then((response) => response.json())
           .then((response) => {
             if (response.error) {
               setError(response.error);
               setShowError(true);
             } else {
-              registro.foto = "http://localhost:3000/files/" + files.name;
+              registro.foto = "https://vota-escom.herokuapp.com//files/" + files.name;
               let config = {
                 method: "POST",
                 headers: {
@@ -109,7 +109,7 @@ export default function RegistroCandidatos() {
                 body: JSON.stringify(datos),
               };
               setOpenCargando(true);
-              fetch("http://localhost:8000/api/subir", config)
+              fetch("https://vota-escom.herokuapp.com/api/subir", config)
                 .then((response) => response.json())
                 .then((response) => {
                   setOpenCargando(false);

@@ -62,7 +62,7 @@ function ConfirmacionInicioVotacion(props) {
       },
       body: JSON.stringify(datos),
     };
-    fetch("http://localhost:8000/api/iniciarVotacion", config)
+    fetch("https://vota-escom.herokuapp.com/api/iniciarVotacion", config)
       .then((response) => response.json())
       .then((response) => {
         if (response.error) {
