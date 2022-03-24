@@ -24,5 +24,8 @@
     "mysql2": "^2.3.3",
     "nodemailer": "^6.7.2",
     "rref": "^0.0.1"
+  },
+  "optionalDependencies": {
+    "fsevents": "^2.3.2"
   }
 }
