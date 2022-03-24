@@ -13,13 +13,13 @@ const F = require("../Models/Fragmento.js");
 class Votante {
   constructor(EstadoVoto, EstadoAcademico) {
     /**
-     * Propiedad que indica el estado del voto del votante
-     * @type {boolean}
+     * Propiedad que indica el estado del voto del votante, 0 = false, 1 = true
+     * @type {number}
      */
     this.EstadoVoto = EstadoVoto;
     /**
-     * Propiedad que indica el estado academico del votante
-     * @type {boolean}
+     * Propiedad que indica el estado academico del votante, 0 = false, 1 = true
+     * @type {number}
      */
     this.EstadoAcademico = EstadoAcademico;
   }
@@ -33,9 +33,9 @@ class Votante {
    */
   votar(eleccion, u, p) {
     return new Promise((resolve, reject) => {
-      if (this.EstadoAcademico===1) {
-        if (this.EstadoVoto===1) {
-          reject(new Error('Ya has ejercido tu voto'))
+      if (this.EstadoAcademico === 1) {
+        if (this.EstadoVoto === 1) {
+          reject(new Error("Ya has ejercido tu voto"));
         } else {
           const ecs = new ECS();
           // Obtener Id de voto
@@ -69,7 +69,7 @@ class Votante {
             });
         }
       } else {
-        reject(new Error('No estas inscrito y no puedes votar'))
+        reject(new Error("No estas inscrito y no puedes votar"));
       }
     });
   }
