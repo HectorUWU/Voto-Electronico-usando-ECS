@@ -1,4 +1,6 @@
 /* eslint-disable no-undef */
+
+import "regenerator-runtime/runtime";
 const MesaElectoral = require('../server/services/MesaElectoral')
 const mesa = new MesaElectoral(3)
 
@@ -58,5 +60,5 @@ hEgoWmV1cPSQgkcn9zyV7vRPxSgRFq8Er5txgm6hwv5d
 -----END ENCRYPTED PRIVATE KEY-----`
 
 test('Validar participantes cuando hay 0 en espera en un umbral de 3', () => {
-    expect(mesa.validarParticipante(llave1, 'ME1')).toStrictEqual({ mensaje: "Esperando a participantes" })
+    expect(mesa.validarParticipante(llave1, 'ME1', 'contra')).resolves.toStrictEqual({ mensaje: "Esperando a participantes", estatus: 1 })
 })
