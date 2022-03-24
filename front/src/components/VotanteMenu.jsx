@@ -7,11 +7,45 @@ import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import ResponseError from "./responseError";
+import Alert from "@mui/material/Alert";
 
 const theme = createTheme();
 
 export default function VotanteMenu() {
+  /**
+   * Estado que contendra los objetos de todos los candidatos de la base de datos
+   * @type {object}
+   */
+  const [estadoVotacion, setEstadoVotacion] = React.useState("");
+  /**
+   * Estado usado paraguardar el error que se pudiera dar
+   * @type {string}
+   */
+  const [error, setError] = React.useState("");
+  /**
+   * Estado usado para mostrar el error, en caso de que lo hubiera
+   * @type {boolean}
+   */
+  const [showError, setShowError] = React.useState(false);
+  /**
+   * Funcion que recupera el estado de la ultima votacion
+   */
+  React.useEffect(() => {
+    fetch("/api/verEstadoUltimaVotacion")
+      .then((response) => {
+        return response.json();
+      })
+      .then((response) => {
+        console.log(response);
+        setEstadoVotacion(response.estado);
+      })
+      .catch((error) => {
+        setError(error);
+        setShowError(true);
+      });
+  }, []);
   let data = sessionStorage.getItem("votante");
   data = JSON.parse(data);
   if (data != null) {
@@ -27,18 +61,37 @@ export default function VotanteMenu() {
               alignItems: "center",
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
+            <Avatar sx={{ m: 1, backgroundColor: "#0099E6" }}>
               <HowToVoteIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
               Bienvenido {data.boleta}
             </Typography>
+            {(estadoVotacion === "activo") |
+            (estadoVotacion === "listoParaConteo") ? (
+              data.estadoVoto === 0 ? (
+                <Alert severity="info">
+                  Aun no has ejercido tu voto, favor de hacerlo
+                </Alert>
+              ) : (
+                <Alert severity="success">
+                  Ya has ejercido tu voto, espera pronto los resultados
+                </Alert>
+              )
+            ) : null}
+            <ResponseError error={error} showError={showError} />
             <Button
               component={Link}
               to="/votante/verCandidatos"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              disabled={
+                (estadoVotacion === "activo") |
+                (estadoVotacion === "listoParaConteo")
+                  ? false
+                  : true
+              }
+              sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
             >
               Ver candidatos
             </Button>
@@ -47,7 +100,14 @@ export default function VotanteMenu() {
               to="/votante/votar"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              disabled={
+                data.estadoVoto === 0 &&
+                data.estadoAcademico === 1 &&
+                estadoVotacion === "activo"
+                  ? false
+                  : true
+              }
+              sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
             >
               Votar
             </Button>
@@ -56,7 +116,7 @@ export default function VotanteMenu() {
               to=""
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
             >
               Cambiar contraseña
             </Button>
@@ -65,6 +125,6 @@ export default function VotanteMenu() {
       </ThemeProvider>
     );
   } else {
-    window.location.href = "/";
+    window.location.href = "/SingIn";
   }
 }

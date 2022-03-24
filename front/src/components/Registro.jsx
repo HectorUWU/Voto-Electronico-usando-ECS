@@ -11,13 +11,13 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ResponseError from "./responseError";
-
+import Confirmacion from "./Confirmacion";
 const theme = createTheme();
 
 export default function SignUp() {
   const [error, setError] = React.useState("");
   const [showError, setShowError] = React.useState(false);
-
+  const [open, setOpen] = React.useState(false);
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -36,15 +36,19 @@ export default function SignUp() {
       },
       body: JSON.stringify(datos),
     };
-    fetch("http://localhost:8000/api/registro", config)
+    fetch("https://vota-escom.herokuapp.com/api/registro", config)
       .then((response) => response.json())
       .then((response) => {
         if (response.error) {
           setError(response.error);
           setShowError(true);
         } else {
-          window.location.href = "/";
+          setOpen(true);
         }
+      })
+      .catch((error) => {
+        setError(error);
+        setShowError(true);
       });
   };
   let data = sessionStorage.getItem("votante");
@@ -127,17 +131,24 @@ export default function SignUp() {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
             >
               Registrar
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link href="/SingIn" variant="body2">
-                  Ya tienes una cuenta? Inicia Sesion
+                  ¿Ya tienes una cuenta? Inicia Sesion
                 </Link>
               </Grid>
             </Grid>
+            <Confirmacion
+              open={open}
+              ruta={"/SingIn"}
+              mensaje={
+                "Registro exitoso. Se ha enviado un correo de confirmacion"
+              }
+            />
           </Box>
         </Box>
       </Container>

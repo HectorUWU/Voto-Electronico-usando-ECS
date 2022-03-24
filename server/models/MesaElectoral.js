@@ -42,7 +42,21 @@ MesaElectoral.buscarPorID = function (id) {
   });
 };
 
- MesaElectoral.obtenerLLavesPublicas = function () {
+MesaElectoral.obtenerListaCompleta = function () {
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query("SELECT * FROM mesaelectoral")
+      .then(([fields, rows]) => {
+        resolve(fields);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
+MesaElectoral.obtenerLLavesPublicas = function () {
   return new Promise((resolve, reject) => {
     conexion
       .promise()
@@ -107,7 +121,11 @@ MesaElectoral.iniciarSesion = function (me) {
       .then(([bool, resultado]) => {
         if (bool) {
           const token = jwt.sign(
-            { idMesaElectoral: resultado.idMesaElectoral, contrasena: resultado.contrasena, rol:"MesaElectoral" },
+            {
+              idMesaElectoral: resultado.idMesaElectoral,
+              contrasena: resultado.contrasena,
+              rol: "MesaElectoral",
+            },
             process.env.SECRET,
             { expiresIn: "5h" }
           );

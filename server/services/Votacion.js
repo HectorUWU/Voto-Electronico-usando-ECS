@@ -19,7 +19,34 @@ class Votacion {
             resultados.push({ id: item, votos: this.obtenerFrecuencia(votos, item) })
                 // resultados.push(new Candidato(item, this.obtenerFrecuencia(votos, item)))
         }
-        return resultados
+        return this.decidirCandidatosElectos(resultados)
+    }
+
+    /** 
+     * Establece el estatus ganador para los candidatos electos
+     * @param resultados {Candidato array}, arreglo de Candidatos con el id y conteo de votos
+     * @return resultadosFinales {Candidato array}, arreglo de Candidatos con el id, conteo de votos y estatus
+     */
+    decidirCandidatosElectos(resultados){
+        let mayor = 0
+        const resultadosFinales = []
+        resultados.forEach(candidato => {
+            if(candidato.votos > mayor){
+
+                mayor = candidato.votos
+
+            }
+        })
+
+        resultados.forEach(candidato => {
+            if(candidato.votos === mayor){
+                resultadosFinales.push({id: candidato.id,  resultado: 1, votos: candidato.votos})
+            } else {
+                resultadosFinales.push({id: candidato.id, resultado: 0, votos: candidato.votos})
+            }
+        })
+
+        return resultadosFinales
     }
 
     /** 

@@ -15,7 +15,7 @@ if (
 function Appbar() {
   return (
     <div>
-      <AppBar position="relative" sx={{ backgroundColor: "#6600FF" }}>
+      <AppBar position="relative" sx={{ backgroundColor: "#0099E6" }}>
         <Toolbar>
           <IconButton
             size="medium"
@@ -39,7 +39,7 @@ function Appbar() {
               to="/"
               color="inherit"
               onClick={() => {
-                if(sessionStorage.getItem("votante") != null){
+                if (sessionStorage.getItem("votante") != null) {
                   sessionStorage.removeItem("votante");
                   window.location.href = "/";
                 } else {

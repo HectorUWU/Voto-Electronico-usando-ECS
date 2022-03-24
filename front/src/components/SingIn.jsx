@@ -31,7 +31,7 @@ export default function SignIn() {
       },
       body: JSON.stringify(datos),
     };
-    fetch("http://localhost:8000/api/login", config)
+    fetch("https://vota-escom.herokuapp.com/api/login", config)
       .then((response) => response.json())
       .then((response) => {
         if (response.error) {
@@ -47,16 +47,20 @@ export default function SignIn() {
             window.location.href = "/mesa/menuPrincipal";
           }
         }
+      })
+      .catch((error) => {
+        setError(error);
+        setShowError(true);
       });
   };
   let data = sessionStorage.getItem("votante");
   data = JSON.parse(data);
-  if(data != null) {
+  if (data != null) {
     window.location.href = "/votante/menuPrincipal";
   }
-  data= sessionStorage.getItem("MesaElectoral");
+  data = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
-  if(data != null) {
+  if (data != null) {
     window.location.href = "/mesa/menuPrincipal";
   }
   return (
@@ -114,12 +118,12 @@ export default function SignIn() {
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">
-                  Olvidaste tu contraseña?
+                  ¿Olvidaste tu contraseña?
                 </Link>
               </Grid>
               <Grid item>
                 <Link href="/registro" variant="body2">
-                  {"No tienes cuenta? Registrate"}
+                  {"¿No tienes cuenta? Registrate"}
                 </Link>
               </Grid>
             </Grid>
