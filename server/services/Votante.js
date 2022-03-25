@@ -7,8 +7,8 @@
  */
 const ECS = require("./ECS.js");
 const Rsa = require("./Rsa.js");
-const ME = require("../Models/MesaElectoral.js");
-const F = require("../Models/Fragmento.js");
+const ME = require("../models/MesaElectoral.js");
+const F = require("../models/Fragmento.js");
 
 class Votante {
   constructor(EstadoVoto, EstadoAcademico) {
