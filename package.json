@@ -20,9 +20,10 @@
   },
   "homepage": "https://github.com/HectorUWU/Voto-Electronico-usando-ECS#readme",
   "devDependencies": {
-    "@babel/preset-env": "^7.16.4",
+    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
     "@babel/preset-react": "^7.16.0",
-    "babel-jest": "^26.6.0",
+    "babel-jest": "^26.6.3",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-standard": "^16.0.3",
@@ -30,13 +31,24 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.1",
     "eslint-plugin-react": "^7.27.1",
-    "jest": "26.6.0",
-    "lint-staged": "^12.1.2",
+    "jest": "^26.6.0",
+    "lint-staged": "^12.2.0",
     "react-test-renderer": "^17.0.2"
   },
   "dependencies": {
+    "@babel/core": "^7.17.8",
+    "@babel/polyfill": "^7.12.1",
+    "bcryptjs": "^2.4.3",
     "concurrently": "^6.4.0",
-    "pre-commit": "^1.2.2"
+    "dotenv": "^11.0.0",
+    "express": "^4.17.2",
+    "express-sessions": "^1.0.6",
+    "jsonwebtoken": "^8.5.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
+    "nodemailer": "^6.7.3",
+    "pre-commit": "^1.2.2",
+    "rref": "^0.0.1"
   },
   "lint-staged": {
     "*.js": "eslint"
