@@ -46,6 +46,7 @@
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
+    "nodemailer": "^6.7.3",
     "pre-commit": "^1.2.2",
     "rref": "^0.0.1"
   },
