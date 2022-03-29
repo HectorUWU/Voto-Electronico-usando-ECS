@@ -39,10 +39,6 @@ export default function MesaMenu() {
       })
       .then((response) => {
         setEstadoVotacion(response.estado);
-      })
-      .catch((error) => {
-        setError(error);
-        setShowError(true);
       });
   }, []);
   let data = sessionStorage.getItem("MesaElectoral");
