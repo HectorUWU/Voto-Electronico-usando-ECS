@@ -41,10 +41,6 @@ export default function VotanteMenu() {
         console.log(response);
         setEstadoVotacion(response.estado);
       })
-      .catch((error) => {
-        setError(error);
-        setShowError(true);
-      });
   }, []);
   let data = sessionStorage.getItem("votante");
   data = JSON.parse(data);
