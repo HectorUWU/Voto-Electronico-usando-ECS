@@ -33,7 +33,7 @@ export default function VotanteMenu() {
    * Funcion que recupera el estado de la ultima votacion
    */
   React.useEffect(() => {
-    fetch("/api/verEstadoUltimaVotacion")
+    fetch("https://vota-escom.herokuapp.com/api/verEstadoUltimaVotacion")
       .then((response) => {
         return response.json();
       })
