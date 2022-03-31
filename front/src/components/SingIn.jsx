@@ -41,10 +41,10 @@ export default function SignIn() {
           console.log(response);
           if (response.rol === "Votante") {
             sessionStorage.setItem("votante", JSON.stringify(response));
-            window.location.href = "/votante/menuPrincipal";
+            window.location.href = "/votanteMenuPrincipal";
           } else if (response.rol === "MesaElectoral") {
             sessionStorage.setItem("MesaElectoral", JSON.stringify(response));
-            window.location.href = "/mesa/menuPrincipal";
+            window.location.href = "/mesaMenuPrincipal";
           }
         }
       })
