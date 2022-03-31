@@ -44,7 +44,6 @@ export default function VotanteMenu() {
   }, []);
   let data = sessionStorage.getItem("votante");
   data = JSON.parse(data);
-  if (data != null) {
     return (
       <ThemeProvider theme={theme}>
         <Container component="main" maxWidth="xs">
@@ -120,7 +119,4 @@ export default function VotanteMenu() {
         </Container>
       </ThemeProvider>
     );
-  } else {
-    window.location.href = "/SingIn";
-  }
-}
+  } // Fin de la funcion

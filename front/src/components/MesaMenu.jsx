@@ -44,7 +44,6 @@ export default function MesaMenu() {
   let data = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
   console.log(estadoVotacion)
-  if (data != null) {
     return (
       <ThemeProvider theme={theme}>
         <Container component="main" maxWidth="xs">
@@ -119,7 +118,4 @@ export default function MesaMenu() {
         </Container>
       </ThemeProvider>
     );
-  } else {
-    window.location.href = "/";
-  }
-}
+  } //Fin de la funcion MesaMenu
