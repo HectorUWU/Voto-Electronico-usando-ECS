@@ -60,11 +60,11 @@ export default function VotanteMenu() {
               <HowToVoteIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Bienvenido {data.boleta}
+              Bienvenido {data?.boleta}
             </Typography>
             {(estadoVotacion === "activo") |
             (estadoVotacion === "listoParaConteo") ? (
-              data.estadoVoto === 0 ? (
+              data?.estadoVoto === 0 ? (
                 <Alert severity="info">
                   Aun no has ejercido tu voto, favor de hacerlo
                 </Alert>
@@ -96,8 +96,8 @@ export default function VotanteMenu() {
               fullWidth
               variant="contained"
               disabled={
-                data.estadoVoto === 0 &&
-                data.estadoAcademico === 1 &&
+                data?.estadoVoto === 0 &&
+                data?.estadoAcademico === 1 &&
                 estadoVotacion === "activo"
                   ? false
                   : true
