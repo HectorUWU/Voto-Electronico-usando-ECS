@@ -20,10 +20,10 @@ const Main = () => {
         <Route path="/" element={<Home />}></Route>
         <Route path="/SingIn" element={<SingIn/>}></Route>
         <Route path="/registro" element={<Registro/>}></Route>
-        <Route path="/votante/menuPrincipal" element={<VotanteMenu />}></Route>
+        <Route path="/votanteMenuPrincipal" element={<VotanteMenu />}></Route>
         <Route path="/votante/votar" element={<VotanteVotar />}></Route>
         <Route path="/votante/verCandidatos" element={<VotanteVerCandidatos />}></Route>
-        <Route path="/mesa/menuPrincipal" element={<MesaMenu />}></Route> 
+        <Route path="/mesaMenuPrincipal" element={<MesaMenu />}></Route> 
         <Route path="/mesa/recuperarVotos" element={<CapturaLlavePrivada />}></Route> 
         <Route path="/mesa/resultados" element={<Resultados />}></Route> 
         <Route path="/verificar/:token/:id" element={<Verificar/>}></Route>
