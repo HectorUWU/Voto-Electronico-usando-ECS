@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Home from "./components/Home";
 import SingIn from "./components/SingIn";
@@ -17,18 +17,18 @@ import EstablecerVotacion from "./components/EstablecerVotacion";
 const Main = () => {
   return (
       <Routes>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="/SingIn" element={<SingIn/>}></Route>
-        <Route path="/registro" element={<Registro/>}></Route>
-        <Route path="/votanteMenuPrincipal" element={<VotanteMenu />}></Route>
-        <Route path="/votante/votar" element={<VotanteVotar />}></Route>
-        <Route path="/votante/verCandidatos" element={<VotanteVerCandidatos />}></Route>
-        <Route path="/mesaMenuPrincipal" element={<MesaMenu />}></Route> 
-        <Route path="/mesa/recuperarVotos" element={<CapturaLlavePrivada />}></Route> 
-        <Route path="/mesa/resultados" element={<Resultados />}></Route> 
-        <Route path="/verificar/:token/:id" element={<Verificar/>}></Route>
-        <Route path="/mesa/registrarCandidato" element={<RegistroCandidatos/>}></Route>  
-        <Route path="/mesa/establecerVotacion" element={<EstablecerVotacion/>}></Route>  
+        <Route exact path="/" element={<Home />}></Route>
+        <Route exact path="/SingIn" element={<SingIn/>}></Route>
+        <Route exact path="/registro" element={<Registro/>}></Route>
+        <Route exact path="/votanteMenuPrincipal" element={<VotanteMenu />}></Route>
+        <Route exact path="/votante/votar" element={<VotanteVotar />}></Route>
+        <Route exact path="/votante/verCandidatos" element={<VotanteVerCandidatos />}></Route>
+        <Route exact path="/mesaMenuPrincipal" element={<MesaMenu />}></Route> 
+        <Route exact path="/mesa/recuperarVotos" element={<CapturaLlavePrivada />}></Route> 
+        <Route exact path="/mesa/resultados" element={<Resultados />}></Route> 
+        <Route exact path="/verificar/:token/:id" element={<Verificar/>}></Route>
+        <Route exact path="/mesa/registrarCandidato" element={<RegistroCandidatos/>}></Route>  
+        <Route exact path="/mesa/establecerVotacion" element={<EstablecerVotacion/>}></Route>  
       </Routes>
   );
 };

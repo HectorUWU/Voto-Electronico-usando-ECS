@@ -33,7 +33,7 @@ export default function MesaMenu() {
    * Funcion que recupera el estado de la ultima votacion
    */
   React.useEffect(() => {
-    fetch("/api/verEstadoUltimaVotacion")
+    fetch("https://vota-escom.herokuapp.com/api/verEstadoUltimaVotacion")
       .then((response) => {
         return response.json();
       })
@@ -44,7 +44,6 @@ export default function MesaMenu() {
   let data = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
   console.log(estadoVotacion)
-  if (data != null) {
     return (
       <ThemeProvider theme={theme}>
         <Container component="main" maxWidth="xs">
@@ -119,7 +118,4 @@ export default function MesaMenu() {
         </Container>
       </ThemeProvider>
     );
-  } else {
-    window.location.href = "/";
-  }
-}
+  } //Fin de la funcion MesaMenu
