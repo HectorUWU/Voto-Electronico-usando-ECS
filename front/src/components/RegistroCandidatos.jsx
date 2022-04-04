@@ -79,7 +79,7 @@ export default function RegistroCandidatos() {
           nombre: formulario.get("nombre"),
           correo: formulario.get("correo"),
           link: formulario.get("link"),
-          foto: "http://localhost:3000/files/" + files.name,
+          foto: "https://vota-escom.herokuapp.com/files/" + files.name,
         };
         let config = {
           method: "POST",
@@ -98,7 +98,7 @@ export default function RegistroCandidatos() {
               setError(response.error);
               setShowError(true);
             } else {
-              registro.foto = "https://vota-escom.herokuapp.com//files/" + files.name;
+              registro.foto = "https://vota-escom.herokuapp.com/files/" + files.name;
               let config = {
                 method: "POST",
                 headers: {
