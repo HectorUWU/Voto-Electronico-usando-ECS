@@ -14,15 +14,12 @@ class Correo {
   constructor() {
     this.transporter = nodemailer.createTransport({
       service: "gmail",
+      port: 465,
+      secure: true, // use SSL
       XOAuth2: {
         user: "tt2021a002@gmail.com",
         pass: "VotoECS2021A",
         host: "smtp.example.com",
-        port: 587,
-        secure: true, // use TLS
-        tls: {
-          rejectUnauthorized: false,
-        },
         clientId:
           "568226944879-66clq91ffs7l0jogurqmastd0jh89o5n.apps.googleusercontent.com",
         clientSecret: "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",
