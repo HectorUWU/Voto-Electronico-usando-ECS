@@ -18,8 +18,11 @@ class Correo {
         user: "tt2021a002@gmail.com",
         pass: "VotoECS2021A",
         host: "smtp.example.com",
-        port: 465,
+        port: 587,
         secure: true, // use TLS
+        tls: {
+          rejectUnauthorized: false,
+        },
         clientId:
           "568226944879-66clq91ffs7l0jogurqmastd0jh89o5n.apps.googleusercontent.com",
         clientSecret: "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",
