@@ -7,7 +7,7 @@
  * v.1.0 primera version del archivo
  */
 
-const nodemailer = require("nodemailer/lib/smtp-connection"); // modulo nodemailer, necesario para el envio de correo
+const nodemailer = require("nodemailer"); // modulo nodemailer, necesario para el envio de correo
 /**  @class */
 class Correo {
   /** @constructor */
