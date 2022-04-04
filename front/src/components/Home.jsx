@@ -69,7 +69,7 @@ export default function Main() {
    * Funcion que recupera la informacion de los candidatos de la ultima votacion en caso de que este finalizada y el estado de la misma
    */
   React.useEffect(() => {
-    fetch("/api/verResultadosUltimaVotacion")
+    fetch("https://vota-escom.herokuapp.com/api/verResultadosUltimaVotacion")
       .then((response) => {
         return response.json();
       })
@@ -81,18 +81,18 @@ export default function Main() {
           setNombreVotacion(response.nombre);
           setEstadoVotacion(response.estado);
           setFechaInicioVotacion(
-            moment(response.fechaInicio).format("DD/MM/YYYY")
+            moment(response.fechaInicio).utc().format("DD/MM/YYYY")
           );
-          setFechaFinVotacion(moment(response.fechaFin).format("DD/MM/YYYY"));
+          setFechaFinVotacion(
+            moment(response.fechaFin).utc().format("DD/MM/YYYY")
+          );
         } else if (response.estado === "inactivo") {
           setEstadoVotacion(response.estado);
-        }
-
-         else {
+        } else {
           setInfoCandidatos(response);
           setEstadoVotacion("finalizado");
         }
-      })
+      });
   }, []);
   let votosTotales = 0;
   if (estadoVotacion === "finalizado") {

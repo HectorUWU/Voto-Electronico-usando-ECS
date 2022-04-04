@@ -5,7 +5,7 @@ const conexion = mysql.createPool({
   user: process.env.DB_User,
   password: process.env.DB_Password,
   database: process.env.DB_DATABASE,
-  timezone: 'Mexico/General',
+  timezone: '-06:00',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,

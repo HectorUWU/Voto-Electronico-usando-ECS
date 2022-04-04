@@ -32,7 +32,7 @@ function Item(props) {
   );
 }
 
-export default function VotanteVotar() {
+export default function VotanteVerCandidatos() {
   /**
    * Estado que contendra los objetos de todos los candidatos de la base de datos
    * @type {object}
@@ -49,7 +49,7 @@ export default function VotanteVotar() {
    */
   const [showError, setShowError] = React.useState(false);
   React.useEffect(() => {
-    fetch("/api/verCandidatos")
+    fetch("https://vota-escom.herokuapp.com/api/verCandidatos")
       .then((response) => {
         return response.json();
       })

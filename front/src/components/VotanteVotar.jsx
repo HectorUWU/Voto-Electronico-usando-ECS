@@ -57,7 +57,7 @@ export default function VotanteVotar() {
    * Funcion que recupera la informacion de los candidatos
    */
   React.useEffect(() => {
-    fetch("/api/verCandidatos")
+    fetch("https://vota-escom.herokuapp.com/api/verCandidatos")
       .then((response) => {
         return response.json();
       })
