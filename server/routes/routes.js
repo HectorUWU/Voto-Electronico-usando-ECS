@@ -145,7 +145,7 @@ router.get("/verResultadosUltimaVotacion", (req, res) => {
             res.send(result);
           });
         } else if (result.estado === "activo") {
-          if (moment().isSameOrBefore(moment(result.fechaFin).add(1, "days"))) {
+          if (moment().utc().isSameOrBefore(moment(result.fechaFin).utc().add(1, "days"))) {
             res.send({
               estado: "activo",
               nombre: result.procesoElectoral,
@@ -194,7 +194,7 @@ router.get("/verEstadoUltimaVotacion", (req, res) => {
         if (result.estado === "finalizado") {
           res.send({ estado: "finalizado" });
         } else if (result.estado === "activo") {
-          if (moment().isSameOrBefore(moment(result.fechaFin).add(1, "days"))) {
+          if (moment().utc().isSameOrBefore(moment(result.fechaFin).utc().add(1, "days"))) {
             res.send({ estado: "activo" });
           } else {
             res.send({ estado: "listoParaConteo" });

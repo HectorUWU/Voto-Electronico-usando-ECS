@@ -41,8 +41,8 @@ Votacion.establecerVotacion = function (votacion) {
     if (votacion.nombre !== "") {
       // Solo acepta que la fecha de fin sea mayor a la de la fecha de inicio y que sea mayor a la fecha actual
       if (
-        (moment(votacion.fechaFin) > moment(votacion.fechaInicio)) &
-        (moment(votacion.fechaInicio) > moment())
+        (moment(votacion.fechaFin).utc() > moment(votacion.fechaInicio).utc()) &
+        (moment(votacion.fechaInicio).utc() > moment().utc())
       ) {
         // Solo acepta que el numero de umbral sea mayor o igual a 2 y que sea menor al numero de participantes
         if (
@@ -66,7 +66,6 @@ Votacion.establecerVotacion = function (votacion) {
               umbral: votacion.umbral,
             })
             .then(([fields, rows]) => {
-              console.log(fields[0]);
               Votacion.limpiarVotos().then(() => {
                 resolve({ mensaje: "Registro exitoso" });
               });
