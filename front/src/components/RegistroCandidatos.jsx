@@ -110,7 +110,7 @@ export default function RegistroCandidatos() {
                 body: files,
               };
               setOpenCargando(true);
-              fetch("https://api.imgur.com/3/upload", config)
+              fetch("https://api.imgur.com/3/image", config)
                 .then((response) => response.json())
                 .then((response) => {
                   setOpenCargando(false);
