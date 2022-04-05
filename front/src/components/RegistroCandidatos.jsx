@@ -90,7 +90,7 @@ export default function RegistroCandidatos() {
           body: JSON.stringify(datos),
         };
         setOpenCargando(true);
-        fetch("http://localhost:8000/api/subir", config)
+        fetch("https://vota-escom.herokuapp.com/api/subir", config)
           .then((response) => response.json())
           .then((response) => {
             if (response.error) {
