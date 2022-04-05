@@ -78,8 +78,7 @@ export default function RegistroCandidatos() {
         const registro = {
           nombre: formulario.get("nombre"),
           correo: formulario.get("correo"),
-          link: formulario.get("link"),
-          foto: "https://vota-escom.herokuapp.com/files/" + files.name,
+          link: formulario.get("link")
         };
         let config = {
           method: "POST",
@@ -88,17 +87,17 @@ export default function RegistroCandidatos() {
             "Content-Type": "application/json",
             "auth-token": data.token,
           },
-          body: JSON.stringify(registro),
+          body: JSON.stringify(datos),
         };
-
-        fetch("https://vota-escom.herokuapp.com/api/registrarCandidato", config)
+        setOpenCargando(true);
+        fetch("http://localhost:8000/api/subir", config)
           .then((response) => response.json())
           .then((response) => {
             if (response.error) {
               setError(response.error);
               setShowError(true);
             } else {
-              registro.foto = "https://vota-escom.herokuapp.com/files/" + files.name;
+              registro.foto = response.url;
               let config = {
                 method: "POST",
                 headers: {
@@ -106,10 +105,9 @@ export default function RegistroCandidatos() {
                   "Content-Type": "application/json",
                   "auth-token": data.token,
                 },
-                body: JSON.stringify(datos),
-              };
-              setOpenCargando(true);
-              fetch("https://vota-escom.herokuapp.com/api/subir", config)
+                body: JSON.stringify(registro),
+              }
+              fetch("https://vota-escom.herokuapp.com/api/registrarCandidato", config)
                 .then((response) => response.json())
                 .then((response) => {
                   setOpenCargando(false);
@@ -117,7 +115,7 @@ export default function RegistroCandidatos() {
                     setError(response.error);
                     setShowError(true);
                   } else {
-                    setOpen(true);
+                   setOpen(true)
                   }
                 });
             }

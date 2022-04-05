@@ -6,11 +6,11 @@ const router = express.Router();
 const verificarVotantes = require("./autenticarVotante");
 const verificarMesa = require("./autenticarMesaElectoral");
 const Candidato = require("../models/Candidato");
-const fs = require('fs')
-const path = require('path');
 const Votacion = require("../models/Votacion");
 const WSService = require("../services/WSService");
 const moment = require("moment");
+const cloudinary = require('cloudinary');
+
 router.post("/registro", (req, res) => {
   if (req.body) {
     const nuevoVotante = new Votante(req.body);
@@ -85,7 +85,7 @@ router.post("/validarIntegrante", verificarMesa, (req, res) => {
       res.status(200).send({ message: "ok" });
     }
   }
-});
+})
 
 router.get("/verCandidatos", (req, res) => {
   Candidato.obtenerCandidatos()
@@ -108,20 +108,18 @@ router.get("/listaMesa", (req, res) => {
 });
 
 router.post('/subir', verificarMesa, (req, res) => {
-  // const newPath = "D:\\Documentos\\Github\\Voto-Electronico-usando-ECS\\server\\files";
-  const dataUrl = req.body.file;
-  const matches = dataUrl.match(/^data:.+\/(.+);base64,(.*)$/);
-  // const ext = matches[1];
-  const base64Data = matches[2];
-  const buffer = Buffer.from(base64Data, 'base64');
-  const dir = path.join(__dirname,"../","public/files/", req.body.nombre)
-  fs.writeFile(dir, buffer, function (error) {
-    if(error){
-      res.status(500).send({ error: error.toString() });
-    }else{
-    res.send({mensaje: "Carga exitosa", direccion : dir});
-    }
+  cloudinary.config({ 
+    cloud_name: 'dc4qypsso', 
+    api_key: '527656637747284', 
+    api_secret: 'ettQEDQ1KKs9503Utxub-T7dIqw' 
   });
+  cloudinary.uploader.upload(req.body.file).then((result) => {
+    console.log(result);
+    res.status(200).send(
+      result).catch((err) => {
+      res.status(500).send({ error: err.toString() });
+    });
+});
 });
 
 router.post('/registrarCandidato', verificarMesa, (req, res)=>{
