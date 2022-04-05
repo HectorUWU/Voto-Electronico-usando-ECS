@@ -118,7 +118,7 @@ export default function RegistroCandidatos() {
                     setError(response.error);
                     setShowError(true);
                   } else {
-                    setOpen(true);
+                    console.log(response.data.link);
                   }
                 });
             }
