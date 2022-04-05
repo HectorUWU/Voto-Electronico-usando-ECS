@@ -105,11 +105,12 @@ export default function RegistroCandidatos() {
                   Accept: "application/json",
                   "Content-Type": "application/json",
                   "auth-token": data.token,
+                  Authorization: 'Client-ID 457be7e03ae9a71'
                 },
-                body: JSON.stringify(datos),
+                body: files,
               };
               setOpenCargando(true);
-              fetch("https://vota-escom.herokuapp.com/api/subir", config)
+              fetch("https://api.imgur.com/3/upload", config)
                 .then((response) => response.json())
                 .then((response) => {
                   setOpenCargando(false);

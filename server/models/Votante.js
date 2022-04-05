@@ -197,4 +197,49 @@ Votante.verificarCorreo = async function (token, id) {
   });
 };
 
+Votante.cambiarContrasena = function (votante) {
+  return new Promise((resolve, reject) => {
+    Votante.buscarPorBoleta(votante.id)
+      .then((resultado) => {
+        if (!resultado) {
+          reject(new Error("Boleta no registrada"));
+        } else if (resultado.verificacion === "Pendiente") {
+          reject(new Error("Cuenta no verificada"));
+        } else {
+          return Promise.all([
+            bcryptjs.compare(votante.contrasena, resultado.contrasena),
+            resultado,
+          ]);
+        }
+      })
+      .then(([bool, resultado]) => {
+        if (bool) {
+          if (votante.nuevaContrasena === votante.repetir) {
+            bcryptjs
+              .hash(votante.nuevaContrasena, 10)
+              .then(function (hash) {
+                return conexion.promise().query(
+                  "UPDATE votante SET contrasena = ? WHERE idVotante = ?",
+                  [hash, votante.id]
+                );
+              })
+              .then(([fields, rows]) => {
+                resolve({ mensaje: "Contraseña Actualizada" });
+              })
+              .catch((error) => {
+                reject(error);
+              });
+          } else {
+            reject(new Error("Las contraseñas no coinciden"));
+          }
+        } else {
+          reject(new Error("Contraseña incorrecta"));
+        }
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
 module.exports = Votante; // exporta clase votante
