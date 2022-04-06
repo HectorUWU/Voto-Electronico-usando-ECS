@@ -7,81 +7,100 @@
  * v.1.0 primera version del archivo
  */
 
-const nodemailer = require("nodemailer"); // modulo nodemailer, necesario para el envio de correo
-/**  @class */
-class Correo {
-  /** @constructor */
-  constructor() {
-    this.transporter = nodemailer.createTransport({
-      service: "gmail",
-      port: 465,
-      secure: true, // use SSL
-      XOAuth2: {
-        user: "tt2021a002@gmail.com",
-        pass: "VotoECS2021A",
-        host: "smtp.example.com",
-        clientId:
-          "568226944879-66clq91ffs7l0jogurqmastd0jh89o5n.apps.googleusercontent.com",
-        clientSecret: "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",
-        refreshToken:
-          "1//0flTrB-PYiOvsCgYIARAAGA8SNwF-L9IrjG6oYn0uRqcF0kWHV-xw0gDxYxMbYZhnu8Fc6rYvXpDFrg2n19bZLgzfjSqf2_KCtd0",
-        accessToken:
-          "ya29.A0ARrdaM_346vzKhxZDbGAH_ekKDO58y0ggv0Q3AMEIuh0ym8bVG3DyYApHW04k40UrgCW8grFlgzoAozgCSiMNzb-rzbv0HfDZScMzmV-0pJtHx_FvfTzh95_d-yH7dy7JWjZ1qW-QEFCZpaH9oTaHqjxAjEi",
-        timeout: 1649116253973 - Date.now(),
-      },
-    });
-  }
-
-  /**
-   * Metodo que envia una clave privada por correo a una direccion dada
-   * @param llavePrivada {string}
-   * @paramcorreo correo  {string}
-   */
-  enviarLLave(llavePrivada, correo) {
-    const mensaje =
-      "Felicidades, miembro de la mesa electoral. Esta es tu llave privada";
-    const mailOptions = {
-      from: "tt2021a002@gmail.com",
-      to: correo,
-      subject: "Envio de llave privada",
-      text: mensaje,
-      attachments: [
-        {
-          filename: "llave privada.pem",
-          content: llavePrivada,
-        },
-      ],
-    };
-    this.transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email enviado: " + info.response);
-      }
-    });
-  }
-
-  /**
-   * Metodo que envia un correo, puede personarlizarse el contenido, el asunto y el correo al que va dirigido
-   * @param correo {string}
-   * @param mensaje {string}
-   * @param asunto {string}
-   */
-  enviarCorreo(correo, mensaje, asunto) {
-    const mailOptions = {
-      from: "tt2021a002@gmail.com",
-      to: correo,
-      subject: asunto,
-      text: mensaje,
-    };
-
-    this.transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email enviado: " + info.response);
-      }
-    });
-  }
-}
-module.exports = Correo;
+ const { google } = require("googleapis");
+ const OAuth2 = google.auth.OAuth2;
+ const nodemailer = require("nodemailer"); // modulo nodemailer, necesario para el envio de correo
+ /**  @class */
+ class Correo { 
+   async creaTransporte() {
+     const oauth2Client = new OAuth2(
+       '568226944879-64ttn7a0vj72lmhevgslsfa0p6c51let.apps.googleusercontent.com',
+       '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',
+       "https://developers.google.com/oauthplayground"
+     );
+   
+     oauth2Client.setCredentials({
+       refresh_token: '1//0fyMfi5UGhzDFCgYIARAAGA8SNwF-L9IrZwA-xDCTpRPM418AzxkQqoJ1qMktXg13vouRS5STyMIQAdy0yRNk9inb0JFm69aHmJg',
+     });
+   
+     const accessToken = await new Promise((resolve, reject) => {
+       oauth2Client.getAccessToken((err, token) => {
+         if (err) {
+           reject(err);
+         }
+         resolve(token);
+       });
+     });
+   
+     const transporter = nodemailer.createTransport({
+       service: "gmail",
+       auth: {
+         type: "OAuth2",
+         user: 'tt2021a002@gmail.com',
+         accessToken,
+         clientId: '64ttn7a0vj72lmhevgslsfa0p6c51let.apps.googleusercontent.com',
+         clientSecret: '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',
+         refreshToken: '1//0fyMfi5UGhzDFCgYIARAAGA8SNwF-L9IrZwA-xDCTpRPM418AzxkQqoJ1qMktXg13vouRS5STyMIQAdy0yRNk9inb0JFm69aHmJg',
+       },
+     });
+   
+     return transporter;
+   }
+ 
+   /**
+    * Metodo que envia una clave privada por correo a una direccion dada
+    * @param llavePrivada {string}
+    * @paramcorreo correo  {string}
+    */
+   async enviarLLave(llavePrivada, correo) {
+     const mensaje =
+       "Felicidades, miembro de la mesa electoral. Esta es tu llave privada";
+     const mailOptions = {
+       subject: "Envio de llave privada",
+       text: mensaje,
+       to: correo,
+       from: 'tt2021a002@gmail.com',
+       attachments: [
+         {
+           filename: "llave privada.pem",
+           content: llavePrivada,
+         },
+       ],
+     };
+ 
+     const emailTransporter = await this.creaTransporte();
+     await emailTransporter.sendMail(mailOptions, function (error, info) {
+       if (error) {
+         console.log(error);
+       } else {
+         console.log("Email enviado: " + info.response);
+       }
+     });
+   }
+ 
+   /**
+    * Metodo que envia un correo, puede personarlizarse el contenido, el asunto y el correo al que va dirigido
+    * @param correo {string}
+    * @param mensaje {string}
+    * @param asunto {string}
+    */
+   async enviarCorreo(correo, mensaje, asunto) {
+     const mailOptions = {
+       subject: asunto,
+       text: mensaje,
+       to: correo,
+       from: 'tt2021a002@gmail.com',
+     };
+ 
+     const emailTransporter = await this.creaTransporte();
+     await emailTransporter.sendMail(mailOptions, function (error, info) {
+       if (error) {
+         console.log(error);
+       } else {
+         console.log("Email enviado: " + info.response);
+       }
+     });
+   }
+ }
+ 
+ module.exports = Correo;
