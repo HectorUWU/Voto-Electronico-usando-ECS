@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import "regenerator-runtime/runtime";
 require("iconv-lite").encodingExists("foo");
 const Votante = require("../server/services/Votante.js");
 /*
