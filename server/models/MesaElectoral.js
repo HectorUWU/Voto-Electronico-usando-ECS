@@ -139,4 +139,46 @@ MesaElectoral.iniciarSesion = function (me) {
       });
   });
 };
+// funcion que cambia la contraseña de un miembro de la mesa electorl 
+MesaElectoral.cambiarContrasena = function (me) { 
+  return new Promise((resolve, reject) => {
+    MesaElectoral.buscarPorID(me.id) 
+      .then((resultado) => {
+        if (!resultado) {
+          reject(new Error("Integrante de la mesa no valido"));
+        } else {
+          return Promise.all([
+            bcryptjs.compare(me.contrasena, resultado.contrasena),  // comparacion de la contraseña actual
+            resultado,
+          ]);
+        }
+      })
+      .then(([bool, resultado]) => {
+        if (bool) {
+          if(me.contrasenaNueva === me.contrasenaNueva2){
+          const [publica, privada] = Rsa.generarLLaves(me.contrasena);
+          bcryptjs
+            .hash(me.contrasenaNueva, 10)
+            .then(function (hash) {
+              return conexion.promise().query("UPDATE mesaelectoral SET contrasena = ?, clavePublica = ? WHERE idMesaElectoral = ?", [hash, publica, me.id]);
+            })
+            .then(([fields, rows]) => {
+              correo.enviarLLave(privada, resultado.correo);
+              resolve({ mensaje: "Contraseña cambiada exitosamente" });
+            })
+            .catch((error) => {
+              reject(error);
+            });
+          }else{
+            reject(new Error("Las contraseñas no coinciden")); 
+          }
+        } else {
+          reject(new Error("Contraseña incorrecta"));
+        }
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}; 
 module.exports = MesaElectoral;

@@ -23,10 +23,10 @@ export default function CambiarContrasena() {
     let datasession = sessionStorage.getItem("votante");
     datasession = JSON.parse(datasession);
     let datos = {
-      id: datasession.get("idVotante"),
+      id: datasession.idVotante,
       contrasena: data.get("contrasena"),
       nuevaContrasena: data.get("nuevaContrasena"),
-      repetir: data.get("confirmarContrasena"),
+      repetir: data.get("repetir"),
     };
     let config = {
       method: "POST",
@@ -37,7 +37,7 @@ export default function CambiarContrasena() {
       },
       body: JSON.stringify(datos),
     };
-    fetch("https://vota-escom.herokuapp.com/api/cambiarContrasenaVotante", config)
+    fetch("http://localhost:8000/api/cambiarContrasenaVotante", config)
       .then((response) => response.json())
       .then((response) => {
         if (response.error) {
@@ -45,17 +45,13 @@ export default function CambiarContrasena() {
           setShowError(true);
         } else {
           setOpen(true);
-          sessionStorage.removeItem("votante");
+          
         }
       })
-      .catch((error) => {
-        setError(error);
-        setShowError(true);
-      });
   };
   let data = sessionStorage.getItem("votante");
   data = JSON.parse(data);
-  if (data != null) {
+  if (data === null) {
     window.location.href = "/votante/menuPrincipal";
   }
   return (
@@ -74,7 +70,7 @@ export default function CambiarContrasena() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Cambias Contraseña
+            Cambiar Contraseña
           </Typography>
           <ResponseError error={error} showError={showError} />
           <Box
@@ -108,10 +104,10 @@ export default function CambiarContrasena() {
                 <TextField
                   required
                   fullWidth
-                  name="confirmarContrasena"
+                  name="repetir"
                   label="Repite tu nueva contraseña"
                   type="password"
-                  id="confirmarContrasena"
+                  id="repetir"
                 />
               </Grid>
             </Grid>
@@ -127,7 +123,7 @@ export default function CambiarContrasena() {
               open={open}
               ruta={"/"}
               mensaje={
-                "Cambio de contraseña exitoso. Por favor inicia sesion nuevamente."
+                "Cambio de contraseña exitoso"
               }
             />
           </Box>

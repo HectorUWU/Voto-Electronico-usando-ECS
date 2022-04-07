@@ -214,6 +214,7 @@ Votante.cambiarContrasena = function (votante) {
       })
       .then(([bool, resultado]) => {
         if (bool) {
+          console.log(votante.nuevaContrasena)
           if (votante.nuevaContrasena === votante.repetir) {
             bcryptjs
               .hash(votante.nuevaContrasena, 10)
