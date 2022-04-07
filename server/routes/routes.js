@@ -245,4 +245,8 @@ router.post("/iniciarVotacion", verificarMesa, (req, res) => {
   }
 });
 
+router.get('/.well-known/acme-challenge/azKcJfgBxwDgGfeqEfY9JitFB1V27ox_dAgBrVmqktI', function(req, res) {
+  res.send('azKcJfgBxwDgGfeqEfY9JitFB1V27ox_dAgBrVmqktI.vNDov1K-Hrr3tw6XVf6MOl0VFwInPlusouTDRQHL6YU')
+})
+
 module.exports = router;
