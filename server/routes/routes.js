@@ -245,4 +245,27 @@ router.post("/iniciarVotacion", verificarMesa, (req, res) => {
   }
 });
 
+router.post("/publicarResultados", verificarMesa, (req, res) => {
+  Votacion.consultarUltimaVotacion().then((result) => {
+    if (result.estado !== "finalizado") {
+      Votacion.publicarResultados().then((result) => {
+        res.send(result);
+      });
+    } else {
+      res.status(400).send({
+        error: "Ya se han publicado los resultados",
+      });
+    }
+  });
+});
+
+router.post("/cambiarContrasenaVotante", (req, res) => {
+  if (req.body) {
+    Votante.cambiarContrasena(req.body).then((result) => {
+      res.send(result);
+    });
+  } else {
+    res.status(400).send({ error: "No se han podido cambiar la contrasena" });
+  }
+});
 module.exports = router;
