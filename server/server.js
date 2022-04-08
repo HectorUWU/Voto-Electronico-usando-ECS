@@ -19,9 +19,7 @@ app.use(express.json({limit: '50mb'}));
 
 app.use("/api", routes);
 
-app.get('/.well-known/acme-challenge/PGcoYgI9TYeqhGjx2_s6rWx-shDUY1yFCq3vc3UoRNg', function(req, res) {
-  res.send('PGcoYgI9TYeqhGjx2_s6rWx-shDUY1yFCq3vc3UoRNg.vNDov1K-Hrr3tw6XVf6MOl0VFwInPlusouTDRQHL6YU')
-})
+
 
 app.use(express.static(path.join(__dirname, "../front", "build")));
 app.use(express.static('public'));
