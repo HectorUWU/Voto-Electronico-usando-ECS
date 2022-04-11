@@ -286,4 +286,34 @@ router.post("/cambiarContrasenaVotante", (req, res) => {
     res.status(400).send({ error: "No se han podido cambiar la contrasena" });
   }
 });
+
+router.post('/enviarToken', (req, res) => {
+  if (req.body) {
+    Votante.enviarToken(req.body)
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.toString() });
+      });
+  } else {
+    res.status(400).send({ error: "No se han podido enviar el token" });
+  }
+});
+
+router.post('/recuperarContrasena/:token/:id', (req, res) => {
+  const { token, id } = req.params;
+  if (req.body) {
+    Votante.restablecerContrasena(token, id, req.body)
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.toString() });
+      });
+  } else {
+    res.status(400).send({ error: "No se han podido cambiar la contrasena" });
+  }
+});
+
 module.exports = router;

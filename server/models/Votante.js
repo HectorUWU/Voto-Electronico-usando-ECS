@@ -242,5 +242,84 @@ Votante.cambiarContrasena = function (votante) {
       });
   });
 }
+// funcion que envia token para cambio de contraseña para votante
+Votante.enviarToken = function (votante) {
+  return new Promise((resolve, reject) => {
+    Votante.buscarPorBoleta(votante.id)
+      .then((resultado) => {
+        if (!resultado) {
+          reject(new Error("Boleta no registrada"));
+        } else if (resultado.verificacion === "Pendiente") {
+          reject(new Error("Cuenta no verificada"));
+        } else {
+            const token = jwt.sign( // genera token
+              {
+                id: resultado.boleta,
+                contrasena: resultado.contrasena,
+                correo: resultado.correo
+              },
+              process.env.SECRET,
+              { expiresIn: "1h" }
+            );
+            const link = 
+            "http://localhost:3000/votante/recuperarContrasena/" + token + "/" + votante.id;
+            const correo = new Correo();
+            correo.enviarCorreo(resultado.correo,
+              "Para restablecer tu contraseña favor de entrar en el siguiente link\n" +
+                  link+"\n Si no has sido tu, no debes de hacer nada." ,
+              "Recuperar Contraseña");
+            resolve({ mensaje: "Token enviado" });
+        }
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+// funcion que verifica el token y restablece la contraseña del votante
+Votante.restablecerContrasena = function (token, id, votante) {
+  return new Promise((resolve, reject) => {
+    Votante.buscarPorBoleta(id)
+      .then((resultado) => {
+        if (!resultado) {
+          reject(new Error("Boleta no registrada"));
+        } else if (resultado.verificacion === "Pendiente") {
+          reject(new Error("Cuenta no verificada"));
+        } else {
+          const verificacion = jwt.verify(token, process.env.SECRET);
+          if (id !== verificacion.id.toString()) {
+            reject(new Error("Token invalido"));
+          } else { 
+            if(resultado.contrasena !== verificacion.contrasena) {
+              reject(new Error("Este token ya ha sido utilizado"))
+            } else {  // si el token es valido
+              if(votante.contrasena !== votante.repetir){
+                reject(new Error("Las contraseñas no coinciden"))
+              } else {    
+                bcryptjs
+                  .hash(votante.contrasena, 10) // encripta la contraseña
+                  .then(function (hash) {
+                    return conexion.promise().query(
+                      "UPDATE votante SET contrasena = ? WHERE idVotante = ?",
+                      [hash, id]
+                    );
+                  })
+                  .then(([fields, rows]) => {
+                    resolve({ mensaje: "Contraseña Actualizada" });
+                  })
+                  .catch((error) => {
+                    reject(error);
+                  });
+              }
+            }
+          }
+        }
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
 
 module.exports = Votante; // exporta clase votante
