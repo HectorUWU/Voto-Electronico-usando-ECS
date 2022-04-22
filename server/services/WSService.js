@@ -1,6 +1,6 @@
 const WebSocket = require("ws");
-const https = require("https");
-const server = https.createServer();
+const http = require("http");
+const server = http.createServer();
 const MesaElectoral = require("./MesaElectoral");
 const ModelMesa = require("../models/MesaElectoral");
 class WSService {
@@ -106,7 +106,7 @@ class WSService {
       server.close();
     };
 
-    server.listen(8443);
+    server.listen(process.env.PORT || 8443);
     console.log("WSS running");
   }
 

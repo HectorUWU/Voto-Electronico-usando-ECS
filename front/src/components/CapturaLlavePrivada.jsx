@@ -84,7 +84,7 @@ export default function CapturaLlavePrivada() {
         } else {
           document.getElementById("formContainer").style.display = "none";
           document.getElementById("tablaEspera").style.display = "block";
-          miWebSocket = new WebSocket("wss://vota-escom.herokuapp.com:8443");
+          miWebSocket = new WebSocket("wss://vota-escom.herokuapp.com/");
 
           miWebSocket.onopen = function (evt) {
             const file = document.getElementById("llave").files[0];
