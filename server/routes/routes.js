@@ -7,7 +7,7 @@ const verificarVotantes = require("./autenticarVotante");
 const verificarMesa = require("./autenticarMesaElectoral");
 const Candidato = require("../models/Candidato");
 const Votacion = require("../models/Votacion");
-const WSService = require("../services/WSService");
+const WSService = require("../services/WSSService");
 const moment = require("moment");
 const cloudinary = require('cloudinary');
 
