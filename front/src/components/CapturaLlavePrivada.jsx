@@ -84,7 +84,9 @@ export default function CapturaLlavePrivada() {
         } else {
           document.getElementById("formContainer").style.display = "none";
           document.getElementById("tablaEspera").style.display = "block";
-          miWebSocket = new WebSocket("wss://vota-escom.herokuapp.com/");
+
+          const HOST = window.location.origin.replace(/^https/, 'wss');
+          miWebSocket = new WebSocket(HOST);
 
           miWebSocket.onopen = function (evt) {
             const file = document.getElementById("llave").files[0];
@@ -117,6 +119,10 @@ export default function CapturaLlavePrivada() {
             }
             // window.location.href = "/mesa/menuPrincipal";
           };
+
+          miWebSocket.onerror = function (evt) {
+            console.log(evt)
+          }
 
           miWebSocket.onmessage = function (event) {
             const jsondata = JSON.parse(event.data);
