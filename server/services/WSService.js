@@ -106,7 +106,7 @@ class WSService {
       server.close();
     };
 
-    server.listen(process.env.PORT || 8443);
+    server.listen(8443);
     console.log("WSS running");
   }
 
