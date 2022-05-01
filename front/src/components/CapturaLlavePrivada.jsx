@@ -86,7 +86,7 @@ export default function CapturaLlavePrivada() {
           document.getElementById("tablaEspera").style.display = "block";
 
           const HOST = window.location.origin.replace(/^https/, 'wss');
-          miWebSocket = new WebSocket(HOST);
+          miWebSocket = new WebSocket(HOST + ":443");
 
           miWebSocket.onopen = function (evt) {
             const file = document.getElementById("llave").files[0];
