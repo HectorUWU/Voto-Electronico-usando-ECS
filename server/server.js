@@ -3,6 +3,12 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 const path = require("path");
 
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
+
+
 const morgan = require("morgan");
 const cors = require("cors");
 // dotenv
@@ -11,6 +17,10 @@ dotenv.config({ path: "./dotenv/.env" });
 // rutas
 const routes = require("./routes/routes");
 // CONFIG
+
+io.on('connection', (socket) => {
+  console.log('WS: Client connected');
+});
 
 app.use(cors());
 app.use(morgan("dev"));
@@ -38,6 +48,6 @@ else {
   });
 }
 
-app.listen(PORT, function () {
+server.listen(PORT, () => {
   console.log("listening on port: " + PORT);
 });

@@ -8,6 +8,7 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
+import io from "socket.io-client";
 const theme = createTheme();
 const moment = require("moment");
 
@@ -66,9 +67,17 @@ export default function Main() {
    */
   const [showError, setShowError] = React.useState(false);
   /**
+   * 
+   * 
+   */
+  const [socket, setSocket] = React.useState(null);
+  /**
+   * 
    * Funcion que recupera la informacion de los candidatos de la ultima votacion en caso de que este finalizada y el estado de la misma
    */
   React.useEffect(() => {
+
+
     fetch("https://vota-escom.herokuapp.com/api/verResultadosUltimaVotacion")
       .then((response) => {
         return response.json();
@@ -93,7 +102,14 @@ export default function Main() {
           setEstadoVotacion("finalizado");
         }
       });
+
   }, []);
+  React.useEffect(() => {
+    const socket = io("https://vota-escom.herokuapp.com");
+    setSocket(socket);
+    return () => socket.close();
+  }, [setSocket]);
+
   let votosTotales = 0;
   if (estadoVotacion === "finalizado") {
     infoCandidatos.forEach((candidato) => {
@@ -103,6 +119,7 @@ export default function Main() {
   return (
     <ThemeProvider theme={theme}>
       <Container component="main">
+        <Typography variant="h2" component="h1" gutterBottom>{socket ? "Conectado" : "No conectado"}</Typography>
         <ResponseError error={error} showError={showError} />
         {/*Se mostraran los resultados de al ultima votacion si ya ha finalizado, 
           si esta activa se mostrara un mensaje para que vote, 

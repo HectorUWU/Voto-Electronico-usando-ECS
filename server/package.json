@@ -25,6 +25,7 @@
     "mysql2": "^2.3.3",
     "nodemailer": "^6.7.2",
     "rref": "^0.0.1",
+    "socket.io": "^4.5.0",
     "ws": "^8.5.0"
   },
   "optionalDependencies": {
