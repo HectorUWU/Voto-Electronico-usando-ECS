@@ -23,13 +23,14 @@ const conteo = new MesaElectoral();
 io.on("connection", (socket) => {
   console.log("WS: Client connected");
   socket.on("llave privada", (participante) => {
-    console.log("participante con id: " + participante.id);
+    const jsondata = JSON.parse(participante);
+    console.log("participante con id: " + jsondata.id);
 
     console.log("validando participante");
     let presentes = conteo.verPresentes();
     let estaPresente = false;
     presentes.forEach((participantePresente) => {
-      if (participantePresente === participante.id) {
+      if (participantePresente === jsondata.id) {
         estaPresente = true;
       }
     });
@@ -37,9 +38,9 @@ io.on("connection", (socket) => {
     if (estaPresente === false) {
       conteo
         .validarParticipante(
-          participante.llave,
-          participante.id,
-          participante.contrasena
+          jsondata.llave,
+          jsondata.id,
+          jsondata.contrasena
         )
         .then((result) => {
           console.log(result);
