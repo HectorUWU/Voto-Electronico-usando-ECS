@@ -11,6 +11,7 @@ const Rsa = require("./Rsa"); // Módulo RSA, necesario para descifrar el id de 
 const ECS = require("./ECS"); // Módulo ECS, necesario para la desfragmentación de los votos
 const Votacion = require("./Votacion"); // Módulo Votación, necesario para el conteo de votos y generación de resultados
 const candidatoBD = require("../models/Candidato"); // Módulo Candidato, necesario para almacenar en la base de datos
+const votacionBD = require("../models/Votacion"); // Módulo votacion, necesario para conocer el umbral
 
 class MesaElectoral {
   /**
@@ -18,9 +19,16 @@ class MesaElectoral {
    * @param umbral {numero}, umbral del ECS
    */
   constructor() {
-    this.umbral = 3;
+    this.umbral = this.definirUmbral();
     this.participantesPresentes = [];
   }
+
+  async definirUmbral(){
+    this.umbral = await votacionBD.getUmbral().then(result => {
+      return result.umbral;
+    })
+  }
+
 
   /**
    * Función para validar la presencia de los participantes necesarios para iniciar el conteo de votos

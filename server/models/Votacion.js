@@ -165,4 +165,18 @@ Votacion.limpiarVotos = function () {
   });
 };
 
+Votacion.getUmbral = function () {
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query("SELECT participantes, umbral FROM votacion WHERE idVotacion=(SELECT MAX(idVotacion) FROM votacion)")
+      .then(([fields, rows]) => {
+        resolve(fields[0]);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
 module.exports = Votacion;
