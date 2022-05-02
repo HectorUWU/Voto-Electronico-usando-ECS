@@ -95,7 +95,7 @@ export default function CapturaLlavePrivada() {
             const enc = new TextDecoder("utf-8");
             const llave = enc.decode(rawData);
             socket.emit(
-              "participante",
+              "llave privada",
               JSON.stringify({
                 llave: llave,
                 id: data.idMesaElectoral,
@@ -104,10 +104,6 @@ export default function CapturaLlavePrivada() {
             );
           };
           reader.readAsArrayBuffer(file);
-
-          socket.on('resultado', function (msg) {
-            console.log(msg);
-          })
         }
       });
   };

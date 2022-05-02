@@ -8,7 +8,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 
-const MesaElectoral = require("./services/MesaElectoral");
+// const MesaElectoral = require("./services/MesaElectoral");
 
 const morgan = require("morgan");
 const cors = require("cors");
@@ -19,45 +19,11 @@ dotenv.config({ path: "./dotenv/.env" });
 const routes = require("./routes/routes");
 // CONFIG
 
-const conteo = new MesaElectoral();
+// const conteo = new MesaElectoral();
 io.on("connection", (socket) => {
   console.log("WS: Client connected");
-  socket.on("participante", (participante) => {
-    console.log("Llave recibida para participante con id: " + participante.id);
-    let presentes = conteo.verPresentes();
-    let estaPresente = false;
-
-    presentes.forEach((participantePresente) => {
-      if (participantePresente === participante.id) {
-        estaPresente = true;
-      }
-    });
-
-    if (!estaPresente) {
-      conteo
-        .validarParticipante(
-          participante.llave,
-          participante.id,
-          participante.contrasena
-        )
-        .then((result) => {
-          if (result.estatus === 0) {
-            socket.disconnect();
-          }
-          if (result.estatus === 1 || result.estatus === 2) {
-            presentes = conteo.verPresentes();
-            io.emit("presentes", presentes);
-          }
-
-          if (result.estatus === 2) {
-            io.emit("resultado", result.mensaje);
-          }
-        });
-    }
-  });
-
-  socket.on("disconnect", function (s) {
-    console.log("Disconnected from global handler");
+  socket.on("llave privada", (llave) => {
+    console.log("llave: " + llave);
   });
 });
 
