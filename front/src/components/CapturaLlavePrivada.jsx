@@ -143,10 +143,6 @@ export default function CapturaLlavePrivada() {
             );
           });
 
-          socket.on('participante presente', function () {
-            console.log('Presente')
-          })
-
           socket.on("disconnect", function () {
             console.log(conteoEnCurso);
             if (conteoEnCurso) {

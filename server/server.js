@@ -68,7 +68,21 @@ io.on("connection", (socket) => {
           }
         });
     } else {
-      socket.emit('participante presente')
+      presentes = conteo.verPresentes();
+      ModelMesa.obtenerListaCompleta().then((result) => {
+        result.forEach((integranteMesa) => {
+          let estatus = 0;
+          presentes.forEach((presente) => {
+            if (presente === integranteMesa.idMesaElectoral) {
+              estatus = 1;
+            }
+          });
+          io.emit("lista mesa", {
+            id: integranteMesa.idMesaElectoral,
+            estatus: estatus,
+          });
+        });
+      });
     }
   });
 });
