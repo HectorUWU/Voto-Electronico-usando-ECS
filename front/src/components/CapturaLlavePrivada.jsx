@@ -104,6 +104,14 @@ export default function CapturaLlavePrivada() {
             );
           };
           reader.readAsArrayBuffer(file);
+
+          socket.on('lista mesa', function (lista) {
+            console.log(lista)
+          })
+
+          socket.on('conteo listo', function(msj) {
+            console.log(msj)
+          })
         }
       });
   };

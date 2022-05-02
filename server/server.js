@@ -9,6 +9,7 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 const MesaElectoral = require("./services/MesaElectoral");
+const ModelMesa = require("./models/MesaElectoral");
 
 const morgan = require("morgan");
 const cors = require("cors");
@@ -35,16 +36,34 @@ io.on("connection", (socket) => {
       }
     });
 
-    if (estaPresente === false) {
+    if (!estaPresente) {
       conteo
-        .validarParticipante(
-          jsondata.llave,
-          jsondata.id,
-          jsondata.contrasena
-        )
+        .validarParticipante(jsondata.llave, jsondata.id, jsondata.contrasena)
         .then((result) => {
-          console.log(result);
-          presentes = conteo.verPresentes();
+          if (result.estatus === 0) {
+            socket.disconnect();
+          }
+          if (result.estatus === 1 || result.estatus === 2) {
+            presentes = conteo.verPresentes();
+            ModelMesa.obtenerListaCompleta().then((result) => {
+              result.forEach((integranteMesa) => {
+                let estatus = 0;
+                presentes.forEach((presente) => {
+                  if (presente === integranteMesa.idMesaElectoral) {
+                    estatus = 1;
+                  }
+                });
+                io.emit('lista mesa', {
+                  id: integranteMesa.idMesaElectoral,
+                  estatus: estatus,
+                });
+              });
+            });
+          }
+
+          if(result.estatus === 2) {
+            io.emit('conteo listo', result.mensaje)
+          }
         });
     }
   });
