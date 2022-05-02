@@ -8,7 +8,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 
-// const MesaElectoral = require("./services/MesaElectoral");
+const MesaElectoral = require("./services/MesaElectoral");
 
 const morgan = require("morgan");
 const cors = require("cors");
@@ -19,11 +19,33 @@ dotenv.config({ path: "./dotenv/.env" });
 const routes = require("./routes/routes");
 // CONFIG
 
-// const conteo = new MesaElectoral();
+const conteo = new MesaElectoral();
 io.on("connection", (socket) => {
   console.log("WS: Client connected");
-  socket.on("llave privada", (llave) => {
-    console.log("llave: " + llave);
+  socket.on("llave privada", (participante) => {
+    console.log("participante con id: " + participante.id);
+
+    console.log("validando participante");
+    let presentes = conteo.verPresentes();
+    let estaPresente = false;
+    presentes.forEach((participantePresente) => {
+      if (participantePresente === participante.id) {
+        estaPresente = true;
+      }
+    });
+
+    if (estaPresente === false) {
+      conteo
+        .validarParticipante(
+          participante.llave,
+          participante.id,
+          participante.contrasena
+        )
+        .then((result) => {
+          console.log(result);
+          presentes = conteo.verPresentes();
+        });
+    }
   });
 });
 
