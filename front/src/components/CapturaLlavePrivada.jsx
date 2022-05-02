@@ -105,13 +105,57 @@ export default function CapturaLlavePrivada() {
           };
           reader.readAsArrayBuffer(file);
 
-          socket.on('lista mesa', function (lista) {
-            console.log(lista)
+          socket.on("lista mesa", function (lista) {
+            const jsondata = JSON.parse(lista);
+            const listaAux = [];
+            listaMesa.forEach((mesa) => {
+              if (jsondata.id === mesa.idMesaElectoral) {
+                listaAux.push({
+                  idMesaElectoral: mesa.idMesaElectoral,
+                  estado: jsondata.estatus,
+                });
+              } else {
+                listaAux.push({
+                  idMesaElectoral: mesa.idMesaElectoral,
+                  estado: mesa.estado,
+                });
+              }
+            });
+            listaMesa = listaAux;
+            setInfoMesa(listaMesa);
+          });
+
+          socket.on("error", function (msj) {
+            conteoEnCurso = false;
+            setSeverity("error");
+            setTablamsg(
+              "Ocurrió un error en el conteo de votos, por favor refresque la página e ingrese sus credenciales nuevamente. ERROR: " + msj
+            );
+            socket.disconnect();
+          });
+
+          socket.on("conteo listo", function () {
+            conteoEnCurso = false;
+            setConteoEnCurso(conteoEnCurso);
+            setSeverity("success");
+            setTablamsg(
+              "Participantes necesarios presentes. Pulse el botón Continuar para ver los resultados del conteo de votos"
+            );
+          });
+
+          socket.on('participante presente', function () {
+            console.log('Presente')
           })
 
-          socket.on('conteo listo', function(msj) {
-            console.log(msj)
-          })
+          socket.on("disconnect", function () {
+            console.log(conteoEnCurso);
+            if (conteoEnCurso) {
+              document.getElementById("formContainer").style.display = "block";
+              document.getElementById("tablaEspera").style.display = "none";
+              setError("Ocurrió un error al validar la llave privada");
+              setShowError(true);
+            }
+          });
         }
       });
   };
