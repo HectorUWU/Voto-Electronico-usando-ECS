@@ -23,6 +23,9 @@ io.on('connection', (socket) => {
   socket.on('test msg', (msg) => {
     console.log('MENSAJE: ' + msg);
   })
+  socket.on('llave privada', (llave) => {
+    console.log('llave: ' + llave);
+  })
 });
 
 app.use(cors());

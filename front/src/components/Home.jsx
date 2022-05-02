@@ -76,8 +76,6 @@ export default function Main() {
    * Funcion que recupera la informacion de los candidatos de la ultima votacion en caso de que este finalizada y el estado de la misma
    */
   React.useEffect(() => {
-
-
     fetch("https://vota-escom.herokuapp.com/api/verResultadosUltimaVotacion")
       .then((response) => {
         return response.json();
