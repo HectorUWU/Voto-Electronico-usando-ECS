@@ -7,7 +7,6 @@ const verificarVotantes = require("./autenticarVotante");
 const verificarMesa = require("./autenticarMesaElectoral");
 const Candidato = require("../models/Candidato");
 const Votacion = require("../models/Votacion");
-const WSService = require("../services/WSService");
 const moment = require("moment");
 const cloudinary = require('cloudinary');
 
@@ -75,15 +74,8 @@ router.post("/votar", verificarVotantes, (req, res) => {
 
 router.post("/validarIntegrante", verificarMesa, (req, res) => {
   if (req.body) {
-    const webSocket = new WSService();
-    const seDebeCrearSocket = webSocket.comprobarSocket();
-    if (seDebeCrearSocket) {
-      webSocket.abrirSocket();
-      res.status(200).send({ message: "ok" });
-    } else {
-      console.log("socket ya abierto");
-      res.status(200).send({ message: "ok" });
-    }
+    // TODO: Validar llave y contraseña
+    res.status(200).send({ message: "ok" });
   }
 })
 

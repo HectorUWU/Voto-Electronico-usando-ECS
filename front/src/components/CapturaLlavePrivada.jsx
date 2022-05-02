@@ -86,6 +86,10 @@ export default function CapturaLlavePrivada() {
 
           const socket = io("https://vota-escom.herokuapp.com");
 
+          socket.on('respuesta test', function (msg) {
+            console.log(msg);
+          })
+
           const file = document.getElementById("llave").files[0];
           const reader = new FileReader();
           let rawData = new ArrayBuffer();
@@ -95,7 +99,7 @@ export default function CapturaLlavePrivada() {
             const enc = new TextDecoder("utf-8");
             const llave = enc.decode(rawData);
             socket.emit(
-              "llave privada",
+              "participante",
               JSON.stringify({
                 llave: llave,
                 id: data.idMesaElectoral,
