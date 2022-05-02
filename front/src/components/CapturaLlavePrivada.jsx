@@ -86,10 +86,6 @@ export default function CapturaLlavePrivada() {
 
           const socket = io("https://vota-escom.herokuapp.com");
 
-          socket.on('resultado', function (msg) {
-            console.log(msg);
-          })
-
           const file = document.getElementById("llave").files[0];
           const reader = new FileReader();
           let rawData = new ArrayBuffer();
@@ -108,6 +104,10 @@ export default function CapturaLlavePrivada() {
             );
           };
           reader.readAsArrayBuffer(file);
+
+          socket.on('resultado', function (msg) {
+            console.log(msg);
+          })
         }
       });
   };

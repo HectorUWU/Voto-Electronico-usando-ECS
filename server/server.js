@@ -21,7 +21,6 @@ const routes = require("./routes/routes");
 
 const conteo = new MesaElectoral();
 io.on("connection", (socket) => {
-  console.log(io.sockets)
   console.log("WS: Client connected");
   socket.on("participante", (participante) => {
     console.log("Llave recibida para participante con id: " + participante.id);
