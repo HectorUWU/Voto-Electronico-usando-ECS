@@ -20,6 +20,9 @@ const routes = require("./routes/routes");
 
 io.on('connection', (socket) => {
   console.log('WS: Client connected');
+  socket.on('test msg', (msg) => {
+    console.log('MENSAJE: ' + msg);
+  })
 });
 
 app.use(cors());

@@ -106,7 +106,9 @@ export default function Main() {
   }, []);
   React.useEffect(() => {
     const socket = io("https://vota-escom.herokuapp.com");
+    socket.emit('test msg', 'hola mundo---------------');
     setSocket(socket);
+    
     return () => socket.close();
   }, [setSocket]);
 
