@@ -21,6 +21,7 @@ const routes = require("./routes/routes");
 
 const conteo = new MesaElectoral();
 io.on("connection", (socket) => {
+  console.log(io.sockets)
   console.log("WS: Client connected");
   socket.on("participante", (participante) => {
     console.log("Llave recibida para participante con id: " + participante.id);
@@ -33,23 +34,31 @@ io.on("connection", (socket) => {
       }
     });
 
-    if(!estaPresente){
-      conteo.validarParticipante(participante.llave, participante.id, participante.contrasena).then((result => {
-        if(result.estatus === 0){
-          socket.disconnect();
-        }
-        if(result.estatus === 1 || result.estatus === 2){
-          presentes = conteo.verPresentes();
-          io.emit('presentes', presentes);
-        }
+    if (!estaPresente) {
+      conteo
+        .validarParticipante(
+          participante.llave,
+          participante.id,
+          participante.contrasena
+        )
+        .then((result) => {
+          if (result.estatus === 0) {
+            socket.disconnect();
+          }
+          if (result.estatus === 1 || result.estatus === 2) {
+            presentes = conteo.verPresentes();
+            io.emit("presentes", presentes);
+          }
 
-        if(result.estatus === 2){
-          io.emit('resultado', result.mensaje);
-        }
-        
-      }))
+          if (result.estatus === 2) {
+            io.emit("resultado", result.mensaje);
+          }
+        });
     }
+  });
 
+  socket.on("disconnect", function (s) {
+    console.log("Disconnected from global handler");
   });
 });
 

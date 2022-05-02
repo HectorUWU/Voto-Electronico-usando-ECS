@@ -90,9 +90,8 @@ export default function CapturaLlavePrivada() {
             console.log(msg);
           })
 
-          socket.on('disconnect', function (msg) {
+          socket.on('disconnect', function () {
             console.log('Conexion cerrada desde host')
-            console.log(msg)
           })
 
           const file = document.getElementById("llave").files[0];
