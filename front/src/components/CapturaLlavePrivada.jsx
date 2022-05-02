@@ -86,8 +86,13 @@ export default function CapturaLlavePrivada() {
 
           const socket = io("https://vota-escom.herokuapp.com");
 
-          socket.on('respuesta test', function (msg) {
+          socket.on('resultado', function (msg) {
             console.log(msg);
+          })
+
+          socket.on('disconnect', function (msg) {
+            console.log('Conexion cerrada desde host')
+            console.log(msg)
           })
 
           const file = document.getElementById("llave").files[0];

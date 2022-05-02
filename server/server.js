@@ -24,7 +24,7 @@ io.on("connection", (socket) => {
   console.log("WS: Client connected");
   socket.on("participante", (participante) => {
     console.log("Llave recibida para participante con id: " + participante.id);
-    const presentes = conteo.verPresentes();
+    let presentes = conteo.verPresentes();
     let estaPresente = false;
 
     presentes.forEach((participantePresente) => {
@@ -35,8 +35,18 @@ io.on("connection", (socket) => {
 
     if(!estaPresente){
       conteo.validarParticipante(participante.llave, participante.id, participante.contrasena).then((result => {
-        console.log(result.estatus);
-        io.emit('respuesta test', {msg: 'q es esto', code: 'holis'});
+        if(result.estatus === 0){
+          socket.disconnect();
+        }
+        if(result.estatus === 1 || result.estatus === 2){
+          presentes = conteo.verPresentes();
+          io.emit('presentes', presentes);
+        }
+
+        if(result.estatus === 2){
+          io.emit('resultado', result.mensaje);
+        }
+        
       }))
     }
 
