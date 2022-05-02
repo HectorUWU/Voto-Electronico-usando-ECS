@@ -106,13 +106,13 @@ export default function CapturaLlavePrivada() {
           reader.readAsArrayBuffer(file);
 
           socket.on("lista mesa", function (lista) {
-            const jsondata = JSON.parse(lista);
+
             const listaAux = [];
             listaMesa.forEach((mesa) => {
-              if (jsondata.id === mesa.idMesaElectoral) {
+              if (lista.id === mesa.idMesaElectoral) {
                 listaAux.push({
                   idMesaElectoral: mesa.idMesaElectoral,
-                  estado: jsondata.estatus,
+                  estado: lista.estatus,
                 });
               } else {
                 listaAux.push({
