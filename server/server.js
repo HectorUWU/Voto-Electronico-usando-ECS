@@ -21,9 +21,19 @@ app.use("/api", routes);
 app.use(express.static(path.join(__dirname, "../front", "build")));
 app.use(express.static('public'));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../front", "public", "index.html"));
-});
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+  app.get("/*", function(req, res) {
+    res.sendFile(path.join(__dirname, "../front/build/index.html"));
+  });
+}
+
+else {
+  app.use(express.static(path.join(__dirname, '/front/public')));
+  app.get("/*", function(req, res) {
+    res.sendFile(path.join(__dirname, "../front/public/index.html"));
+  });
+}
 
 app.listen(PORT, function () {
   console.log("listening on port: " + PORT);

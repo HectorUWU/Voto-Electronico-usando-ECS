@@ -3,7 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -11,17 +10,21 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ResponseError from "./responseError";
+import Confirmacion from "./Confirmacion";
+import { useParams } from "react-router-dom";
 const theme = createTheme();
 
-export default function SignIn() {
+export default function CambiarContrasena() {
   const [error, setError] = React.useState("");
   const [showError, setShowError] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const { token, id } = useParams();
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     let datos = {
-      id: data.get("id"),
-      contrasena: data.get("contrasena"),
+      contrasena : data.get("contrasena"),
+      repetir: data.get("repetir"),
     };
     let config = {
       method: "POST",
@@ -31,38 +34,18 @@ export default function SignIn() {
       },
       body: JSON.stringify(datos),
     };
-    fetch("https://vota-escom.herokuapp.com/api/login", config)
+    fetch("http://localhost:8000/api/recuperarContrasena/"+ token + "/" + id, config)
       .then((response) => response.json())
       .then((response) => {
         if (response.error) {
           setError(response.error);
           setShowError(true);
         } else {
-          console.log(response);
-          if (response.rol === "Votante") {
-            sessionStorage.setItem("votante", JSON.stringify(response));
-            window.location.href = "/votante/menuPrincipal";
-          } else if (response.rol === "MesaElectoral") {
-            sessionStorage.setItem("MesaElectoral", JSON.stringify(response));
-            window.location.href = "/mesa/menuPrincipal";
-          }
+          setOpen(true);
+          
         }
       })
-      .catch((error) => {
-        setError(error);
-        setShowError(true);
-      });
   };
-  let data = sessionStorage.getItem("votante");
-  data = JSON.parse(data);
-  if (data != null) {
-    window.location.href = "/votante/menuPrincipal";
-  }
-  data = sessionStorage.getItem("MesaElectoral");
-  data = JSON.parse(data);
-  if (data != null) {
-    window.location.href = "/mesa/menuPrincipal";
-  }
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -79,54 +62,52 @@ export default function SignIn() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Iniciar Sesion
+            Escribe tu nueva Contraseña
           </Typography>
           <ResponseError error={error} showError={showError} />
           <Box
             component="form"
-            onSubmit={handleSubmit}
             noValidate
-            sx={{ mt: 1 }}
+            onSubmit={handleSubmit}
+            sx={{ mt: 3 }}
           >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="id"
-              label="Boleta"
-              name="id"
-              autoComplete="id"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="contrasena"
-              label="Contraseña"
-              type="password"
-              id="contrasena"
-            />
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="contrasena"
+                  label="Contraseña"
+                  type="password"
+                  id="contrasena"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="repetir"
+                  label="Repite tu nueva contraseña"
+                  type="password"
+                  id="repetir"
+                />
+              </Grid>
+            </Grid>
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
             >
-              Iniciar Sesion
+              Cambiar Contraseña
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="/solicitarRecuperacionContrasena" variant="body2">
-                  ¿Olvidaste tu contraseña?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="/registro" variant="body2">
-                  {"¿No tienes cuenta? Registrate"}
-                </Link>
-              </Grid>
-            </Grid>
+            <Confirmacion
+              open={open}
+              ruta={"/"}
+              mensaje={
+                "Cambio de contraseña exitoso"
+              }
+            />
           </Box>
         </Box>
       </Container>

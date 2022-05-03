@@ -38,89 +38,88 @@ export default function VotanteMenu() {
         return response.json();
       })
       .then((response) => {
-        console.log(response);
         setEstadoVotacion(response.estado);
-      })
+      });
   }, []);
   let data = sessionStorage.getItem("votante");
   data = JSON.parse(data);
-  if (data != null) {
-    return (
-      <ThemeProvider theme={theme}>
-        <Container component="main" maxWidth="xs">
-          <CssBaseline />
-          <Box
-            sx={{
-              marginTop: 8,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Avatar sx={{ m: 1, backgroundColor: "#0099E6" }}>
-              <HowToVoteIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Bienvenido {data.boleta}
-            </Typography>
-            {(estadoVotacion === "activo") |
-            (estadoVotacion === "listoParaConteo") ? (
-              data.estadoVoto === 0 ? (
-                <Alert severity="info">
-                  Aun no has ejercido tu voto, favor de hacerlo
-                </Alert>
-              ) : (
-                <Alert severity="success">
-                  Ya has ejercido tu voto, espera pronto los resultados
-                </Alert>
-              )
-            ) : null}
-            <ResponseError error={error} showError={showError} />
-            <Button
-              component={Link}
-              to="/votante/verCandidatos"
-              fullWidth
-              variant="contained"
-              disabled={
-                (estadoVotacion === "activo") |
-                (estadoVotacion === "listoParaConteo")
-                  ? false
-                  : true
-              }
-              sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
-            >
-              Ver candidatos
-            </Button>
-            <Button
-              component={Link}
-              to="/votante/votar"
-              fullWidth
-              variant="contained"
-              disabled={
-                data.estadoVoto === 0 &&
-                data.estadoAcademico === 1 &&
-                estadoVotacion === "activo"
-                  ? false
-                  : true
-              }
-              sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
-            >
-              Votar
-            </Button>
-            <Button
-              component={Link}
-              to=""
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
-            >
-              Cambiar contraseña
-            </Button>
-          </Box>
-        </Container>
-      </ThemeProvider>
-    );
-  } else {
+  if (data === null) {
     window.location.href = "/SingIn";
-  }
+  }else{
+  return (
+    <ThemeProvider theme={theme}>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <Box
+          sx={{
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Avatar sx={{ m: 1, backgroundColor: "#0099E6" }}>
+            <HowToVoteIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Bienvenido {data?.boleta}
+          </Typography>
+          {(estadoVotacion === "activo") |
+          (estadoVotacion === "listoParaConteo") ? (
+            data?.estadoVoto === 0 ? (
+              <Alert severity="info">
+                Aun no has ejercido tu voto, favor de hacerlo
+              </Alert>
+            ) : (
+              <Alert severity="success">
+                Ya has ejercido tu voto, espera pronto los resultados
+              </Alert>
+            )
+          ) : null}
+          <ResponseError error={error} showError={showError} />
+          <Button
+            component={Link}
+            to="/votante/verCandidatos"
+            fullWidth
+            variant="contained"
+            disabled={
+              (estadoVotacion === "activo") |
+              (estadoVotacion === "listoParaConteo")
+                ? false
+                : true
+            }
+            sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
+          >
+            Ver candidatos
+          </Button>
+          <Button
+            component={Link}
+            to="/votante/votar"
+            fullWidth
+            variant="contained"
+            disabled={
+              data?.estadoVoto === 0 &&
+              data?.estadoAcademico === 1 &&
+              estadoVotacion === "activo"
+                ? false
+                : true
+            }
+            sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
+          >
+            Votar
+          </Button>
+          <Button
+            component={Link}
+            to="/votante/cambiarContrasena"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
+          >
+            Cambiar contraseña
+          </Button>
+        </Box>
+      </Container>
+    </ThemeProvider>
+  );
 }
+} // Fin de la funcion

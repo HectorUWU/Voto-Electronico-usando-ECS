@@ -44,7 +44,6 @@ export default function MesaMenu() {
   let data = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
   console.log(estadoVotacion)
-  if (data != null) {
     return (
       <ThemeProvider theme={theme}>
         <Container component="main" maxWidth="xs">
@@ -102,7 +101,7 @@ export default function MesaMenu() {
             <InicioVotacion estadoVotacion={estadoVotacion} />
             <Button
               component={Link}
-              to="#"
+              to="/cambiarContrasena"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
@@ -119,7 +118,4 @@ export default function MesaMenu() {
         </Container>
       </ThemeProvider>
     );
-  } else {
-    window.location.href = "/";
-  }
-}
+  } //Fin de la funcion MesaMenu
