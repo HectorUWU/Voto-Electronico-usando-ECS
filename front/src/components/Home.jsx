@@ -66,6 +66,7 @@ export default function Main() {
    */
   const [showError, setShowError] = React.useState(false);
   /**
+   * 
    * Funcion que recupera la informacion de los candidatos de la ultima votacion en caso de que este finalizada y el estado de la misma
    */
   React.useEffect(() => {
@@ -93,7 +94,9 @@ export default function Main() {
           setEstadoVotacion("finalizado");
         }
       });
+
   }, []);
+
   let votosTotales = 0;
   if (estadoVotacion === "finalizado") {
     infoCandidatos.forEach((candidato) => {

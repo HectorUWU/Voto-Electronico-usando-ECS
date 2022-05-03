@@ -21,8 +21,7 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Link } from "react-router-dom";
-
-let miWebSocket = null;
+import io from "socket.io-client";
 
 const Input = styled("input")({
   display: "none",
@@ -84,78 +83,31 @@ export default function CapturaLlavePrivada() {
         } else {
           document.getElementById("formContainer").style.display = "none";
           document.getElementById("tablaEspera").style.display = "block";
-          miWebSocket = new WebSocket("ws://vota-escom.herokuapp.com:8080");
 
-          miWebSocket.onopen = function (evt) {
-            const file = document.getElementById("llave").files[0];
-            const reader = new FileReader();
-            let rawData = new ArrayBuffer();
-            reader.loadend = function () {};
+          const socket = io("https://vota-escom.herokuapp.com");
 
-            reader.onload = function (evt) {
-              rawData = evt.target.result;
-              const enc = new TextDecoder("utf-8");
-              const llave = enc.decode(rawData);
-              miWebSocket.send(
-                JSON.stringify({
-                  llave: llave,
-                  id: data.idMesaElectoral,
-                  contrasena: formulario.get("contrasena"),
-                })
-              );
-            };
-            reader.readAsArrayBuffer(file);
+          socket.on('respuesta test', function (msg) {
+            console.log(msg);
+          })
+
+          const file = document.getElementById("llave").files[0];
+          const reader = new FileReader();
+          let rawData = new ArrayBuffer();
+          reader.loadend = function () {};
+          reader.onload = function (evt) {
+            rawData = evt.target.result;
+            const enc = new TextDecoder("utf-8");
+            const llave = enc.decode(rawData);
+            socket.emit(
+              "participante",
+              JSON.stringify({
+                llave: llave,
+                id: data.idMesaElectoral,
+                contrasena: formulario.get("contrasena"),
+              })
+            );
           };
-
-          miWebSocket.onclose = function (evt) {
-            console.log(conteoEnCurso)
-            if (conteoEnCurso) {
-              document.getElementById("formContainer").style.display = "block";
-              document.getElementById("tablaEspera").style.display = "none";
-              setError("Ocurrió un error al validar la llave privada");
-              setShowError(true);
-            }
-            // window.location.href = "/mesa/menuPrincipal";
-          };
-
-          miWebSocket.onmessage = function (event) {
-            const jsondata = JSON.parse(event.data);
-            if (jsondata.estatus !== undefined) {
-              const listaAux = [];
-              listaMesa.forEach((mesa) => {
-                if (jsondata.id === mesa.idMesaElectoral) {
-                  listaAux.push({
-                    idMesaElectoral: mesa.idMesaElectoral,
-                    estado: jsondata.estatus,
-                  });
-                } else {
-                  listaAux.push({
-                    idMesaElectoral: mesa.idMesaElectoral,
-                    estado: mesa.estado,
-                  });
-                }
-              });
-              listaMesa = listaAux;
-              setInfoMesa(listaMesa);
-            } else if (jsondata.msg === "Participante ya registrado") {
-              // Mostrar alerta de que ya se habia registrado
-            } else if (jsondata.error !== undefined) {
-              conteoEnCurso = false;
-              setSeverity("error");
-              setTablamsg(
-                "Ocurrió un error en el conteo de votos, por favor refresque la página e ingrese sus credenciales nuevamente"
-              );
-              miWebSocket.close();
-            } else {
-              conteoEnCurso = false;
-              setConteoEnCurso(conteoEnCurso);
-              setSeverity("success");
-              setTablamsg(
-                "Participantes necesarios presentes. Pulse el botón Continuar para ver los resultados del conteo de votos"
-              );
-              //miWebSocket.close();
-            }
-          };
+          reader.readAsArrayBuffer(file);
         }
       });
   };

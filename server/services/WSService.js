@@ -106,7 +106,7 @@ class WSService {
       server.close();
     };
 
-    server.listen(8080);
+    server.listen(8443);
     console.log("WSS running");
   }
 
