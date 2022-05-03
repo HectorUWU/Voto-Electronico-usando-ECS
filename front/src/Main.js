@@ -13,7 +13,9 @@ import Resultados from "./components/Resultados";
 import Verificar from "./components/Verificar";
 import RegistroCandidatos from "./components/RegistroCandidatos.jsx";
 import EstablecerVotacion from "./components/EstablecerVotacion";
-
+import CambiarContrasena from "./components/CambiarContrasena";
+import SolicitarRecuperacionContrasena from "./components/SolicitarRecuperacionContrasena";
+import RecuperarContrasena from "./components/RecuperarContrasena";
 const Main = () => {
   return (
       <Routes>
@@ -23,12 +25,16 @@ const Main = () => {
         <Route exact path="/votante/menuPrincipal" element={<VotanteMenu />}></Route>
         <Route exact path="/votante/votar" element={<VotanteVotar />}></Route>
         <Route exact path="/votante/verCandidatos" element={<VotanteVerCandidatos />}></Route>
+        <Route exact path="/cambiarContrasena" element={<CambiarContrasena />}></Route>
+        <Route exact path="/mesa/establecerVotacion" element={<EstablecerVotacion/>}></Route>  
         <Route exact path="/mesa/menuPrincipal" element={<MesaMenu />}></Route> 
         <Route exact path="/mesa/recuperarVotos" element={<CapturaLlavePrivada />}></Route> 
         <Route exact path="/mesa/resultados" element={<Resultados />}></Route> 
         <Route exact path="/verificar/:token/:id" element={<Verificar/>}></Route>
         <Route exact path="/mesa/registrarCandidato" element={<RegistroCandidatos/>}></Route>  
-        <Route exact path="/mesa/establecerVotacion" element={<EstablecerVotacion/>}></Route>  
+        <Route exact path="/mesa/establecerVotacion" element={<EstablecerVotacion/>}></Route>
+        <Route exact path="/solicitarRecuperacionContrasena" element={<SolicitarRecuperacionContrasena/>}></Route>
+        <Route exact path="/recuperarContrasena/:token/:id" element={<RecuperarContrasena/>}></Route>
       </Routes>
   );
 };

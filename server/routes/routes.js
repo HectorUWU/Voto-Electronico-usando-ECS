@@ -8,7 +8,7 @@ const verificarMesa = require("./autenticarMesaElectoral");
 const Candidato = require("../models/Candidato");
 const Votacion = require("../models/Votacion");
 const moment = require("moment");
-const cloudinary = require('cloudinary');
+const cloudinary = require("cloudinary");
 
 router.post("/registro", (req, res) => {
   if (req.body) {
@@ -77,7 +77,7 @@ router.post("/validarIntegrante", verificarMesa, (req, res) => {
     // TODO: Validar llave y contraseña
     res.status(200).send({ message: "ok" });
   }
-})
+});
 
 router.get("/verCandidatos", (req, res) => {
   Candidato.obtenerCandidatos()
@@ -99,32 +99,35 @@ router.get("/listaMesa", (req, res) => {
     });
 });
 
-router.post('/subir', verificarMesa, (req, res) => {
-  cloudinary.config({ 
-    cloud_name: 'dc4qypsso', 
-    api_key: '527656637747284', 
-    api_secret: 'ettQEDQ1KKs9503Utxub-T7dIqw' 
+router.post("/subir", verificarMesa, (req, res) => {
+  cloudinary.config({
+    cloud_name: "dc4qypsso",
+    api_key: "527656637747284",
+    api_secret: "ettQEDQ1KKs9503Utxub-T7dIqw",
   });
   cloudinary.uploader.upload(req.body.file).then((result) => {
     console.log(result);
-    res.status(200).send(
-      result).catch((err) => {
-      res.status(500).send({ error: err.toString() });
-    });
-});
+    res
+      .status(200)
+      .send(result)
+      .catch((err) => {
+        res.status(500).send({ error: err.toString() });
+      });
+  });
 });
 
-router.post('/registrarCandidato', verificarMesa, (req, res)=>{
+router.post("/registrarCandidato", verificarMesa, (req, res) => {
   if (req.body) {
     const nuevoCandidato = new Candidato(req.body);
-    Candidato.registro(nuevoCandidato).then(results => {
-      res.send(results);
-    }).catch(error => {
-      res.status(500).send({ error: error.toString()});
-    })
-  }}
-)
-
+    Candidato.registro(nuevoCandidato)
+      .then((results) => {
+        res.send(results);
+      })
+      .catch((error) => {
+        res.status(500).send({ error: error.toString() });
+      });
+  }
+});
 
 router.get("/verResultadosUltimaVotacion", (req, res) => {
   Votacion.consultarUltimaVotacion()
@@ -135,7 +138,11 @@ router.get("/verResultadosUltimaVotacion", (req, res) => {
             res.send(result);
           });
         } else if (result.estado === "activo") {
-          if (moment().utc().isSameOrBefore(moment(result.fechaFin).utc().add(1, "days"))) {
+          if (
+            moment()
+              .utc()
+              .isSameOrBefore(moment(result.fechaFin).utc().add(1, "days"))
+          ) {
             res.send({
               estado: "activo",
               nombre: result.procesoElectoral,
@@ -174,8 +181,7 @@ router.post("/registroVotacion", verificarMesa, (req, res) => {
   } else {
     res.status(400).send({ error: "Campos invalidos" });
   }
-})
-
+});
 
 router.get("/verEstadoUltimaVotacion", (req, res) => {
   Votacion.consultarUltimaVotacion()
@@ -184,7 +190,11 @@ router.get("/verEstadoUltimaVotacion", (req, res) => {
         if (result.estado === "finalizado") {
           res.send({ estado: "finalizado" });
         } else if (result.estado === "activo") {
-          if (moment().utc().isSameOrBefore(moment(result.fechaFin).utc().add(1, "days"))) {
+          if (
+            moment()
+              .utc()
+              .isSameOrBefore(moment(result.fechaFin).utc().add(1, "days"))
+          ) {
             res.send({ estado: "activo" });
           } else {
             res.send({ estado: "listoParaConteo" });
@@ -234,6 +244,104 @@ router.post("/iniciarVotacion", verificarMesa, (req, res) => {
         .status(400)
         .send({ error: "No puedes iniciar una votacion activa o finalizada" });
     }
+  }
+});
+
+router.post("/publicarResultados", verificarMesa, (req, res) => {
+  Votacion.consultarUltimaVotacion().then((result) => {
+    if (result.estado !== "finalizado") {
+      Votacion.publicarResultados()
+        .then((result) => {
+          res.send(result);
+        })
+        .catch((err) => {
+          res.status(500).send({ error: err.toString() });
+        });
+    } else {
+      res.status(400).send({
+        error: "Ya se han publicado los resultados",
+      });
+    }
+  });
+});
+
+router.post("/cambiarContrasenaVotante", verificarVotantes, (req, res) => {
+  if (req.body) {
+    Votante.cambiarContrasena(req.body)
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.toString() });
+      });
+  } else {
+    res.status(400).send({ error: "No se han podido cambiar la contrasena" });
+  }
+});
+
+router.post("/cambiarContrasenaMesa", verificarMesa, (req, res) => {
+  if (req.body) {
+    MesaElectoral.cambiarContrasena(req.body)
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.toString() });
+      });
+  } else {
+    res.status(400).send({ error: "No se han podido cambiar la contrasena" });
+  }
+});
+
+router.post("/enviarToken", (req, res) => {
+  if (req.body) {
+    if (!isNaN(req.body.id)) {
+      Votante.enviarToken(req.body)
+        .then((result) => {
+          res.send(result);
+        })
+        .catch((err) => {
+          res.status(400).send({ error: err.toString() });
+        });
+    } else {
+      if (isNaN(req.body.id)) {
+        MesaElectoral.enviarToken(req.body)
+          .then((result) => {
+            res.send(result);
+          })
+          .catch((err) => {
+            res.status(400).send({ error: err.toString() });
+          });
+      }
+    }
+  } else {
+    res.status(400).send({ error: "No se han podido enviar el token" });
+  }
+});
+
+router.post("/recuperarContrasena/:token/:id", (req, res) => {
+  const { token, id } = req.params;
+
+  if (req.body) {
+    if(!isNaN(id)){
+    Votante.restablecerContrasena(token, id, req.body)
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.toString() });
+      });
+    }else{
+      MesaElectoral.restablecerContrasena(token, id, req.body)
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.toString() });
+      });
+    }
+  } else {
+    res.status(400).send({ error: "No se han podido cambiar la contrasena" });
   }
 });
 
