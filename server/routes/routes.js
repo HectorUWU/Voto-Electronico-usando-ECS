@@ -273,7 +273,7 @@ router.post("/publicarResultados", verificarMesa, (req, res) => {
   });
 });
 
-router.post("/cambiarContrasenaVotante", (req, res) => {
+router.post("/cambiarContrasenaVotante", verificarVotantes, (req, res) => {
   if (req.body) {
     Votante.cambiarContrasena(req.body)
       .then((result) => {
@@ -287,9 +287,9 @@ router.post("/cambiarContrasenaVotante", (req, res) => {
   }
 });
 
-router.post('/enviarToken', (req, res) => {
+router.post("/cambiarContrasenaMesa", verificarMesa, (req, res) => {
   if (req.body) {
-    Votante.enviarToken(req.body)
+    MesaElectoral.cambiarContrasena(req.body)
       .then((result) => {
         res.send(result);
       })
@@ -297,13 +297,41 @@ router.post('/enviarToken', (req, res) => {
         res.status(400).send({ error: err.toString() });
       });
   } else {
+    res.status(400).send({ error: "No se han podido cambiar la contrasena" });
+  }
+});
+
+router.post("/enviarToken", (req, res) => {
+  if (req.body) {
+    if (!isNaN(req.body.id)) {
+      Votante.enviarToken(req.body)
+        .then((result) => {
+          res.send(result);
+        })
+        .catch((err) => {
+          res.status(400).send({ error: err.toString() });
+        });
+    } else {
+      if (isNaN(req.body.id)) {
+        MesaElectoral.enviarToken(req.body)
+          .then((result) => {
+            res.send(result);
+          })
+          .catch((err) => {
+            res.status(400).send({ error: err.toString() });
+          });
+      }
+    }
+  } else {
     res.status(400).send({ error: "No se han podido enviar el token" });
   }
 });
 
-router.post('/recuperarContrasena/:token/:id', (req, res) => {
+router.post("/recuperarContrasena/:token/:id", (req, res) => {
   const { token, id } = req.params;
+
   if (req.body) {
+    if(!isNaN(id)){
     Votante.restablecerContrasena(token, id, req.body)
       .then((result) => {
         res.send(result);
@@ -311,6 +339,15 @@ router.post('/recuperarContrasena/:token/:id', (req, res) => {
       .catch((err) => {
         res.status(400).send({ error: err.toString() });
       });
+    }else{
+      MesaElectoral.restablecerContrasena(token, id, req.body)
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.toString() });
+      });
+    }
   } else {
     res.status(400).send({ error: "No se han podido cambiar la contrasena" });
   }

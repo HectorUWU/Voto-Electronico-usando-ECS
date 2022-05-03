@@ -262,7 +262,7 @@ Votante.enviarToken = function (votante) {
               { expiresIn: "1h" }
             );
             const link = 
-            "http://localhost:3000/votante/recuperarContrasena/" + token + "/" + votante.id;
+            "http://localhost:3000/recuperarContrasena/" + token + "/" + votante.id;
             const correo = new Correo();
             correo.enviarCorreo(resultado.correo,
               "Para restablecer tu contraseña favor de entrar en el siguiente link\n" +

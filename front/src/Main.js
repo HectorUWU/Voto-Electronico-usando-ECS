@@ -25,7 +25,7 @@ const Main = () => {
         <Route exact path="/votante/menuPrincipal" element={<VotanteMenu />}></Route>
         <Route exact path="/votante/votar" element={<VotanteVotar />}></Route>
         <Route exact path="/votante/verCandidatos" element={<VotanteVerCandidatos />}></Route>
-        <Route exact path="/votante/cambiarContrasena" element={<CambiarContrasena />}></Route>
+        <Route exact path="/cambiarContrasena" element={<CambiarContrasena />}></Route>
         <Route exact path="/mesa/establecerVotacion" element={<EstablecerVotacion/>}></Route>  
         <Route exact path="/mesa/menuPrincipal" element={<MesaMenu />}></Route> 
         <Route exact path="/mesa/recuperarVotos" element={<CapturaLlavePrivada />}></Route> 
@@ -34,7 +34,7 @@ const Main = () => {
         <Route exact path="/mesa/registrarCandidato" element={<RegistroCandidatos/>}></Route>  
         <Route exact path="/mesa/establecerVotacion" element={<EstablecerVotacion/>}></Route>
         <Route exact path="/solicitarRecuperacionContrasena" element={<SolicitarRecuperacionContrasena/>}></Route>
-        <Route exact path="/votante/recuperarContrasena/:token/:id" element={<RecuperarContrasena/>}></Route>
+        <Route exact path="/recuperarContrasena/:token/:id" element={<RecuperarContrasena/>}></Route>
       </Routes>
   );
 };

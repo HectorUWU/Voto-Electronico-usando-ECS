@@ -20,14 +20,15 @@ export default function CambiarContrasena() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    let datasession = sessionStorage.getItem("votante");
-    datasession = JSON.parse(datasession);
     let datos = {
-      id: datasession.idVotante,
       contrasena: data.get("contrasena"),
       nuevaContrasena: data.get("nuevaContrasena"),
       repetir: data.get("repetir"),
     };
+    let datasession = sessionStorage.getItem("votante");
+    datasession = JSON.parse(datasession);
+    if(datasession != null){
+    datos.id = datasession.idVotante;
     let config = {
       method: "POST",
       headers: {
@@ -48,10 +49,36 @@ export default function CambiarContrasena() {
           
         }
       })
+    }else {
+      let datasession = sessionStorage.getItem("MesaElectoral");
+      datasession = JSON.parse(datasession);
+      datos.id = datasession.idMesaElectoral;
+      let config = {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "auth-token": datasession.token
+        },
+        body: JSON.stringify(datos),
+      };
+      fetch("http://localhost:8000/api/cambiarContrasenaMesa", config)
+        .then((response) => response.json())
+        .then((response) => {
+          if (response.error) {
+            setError(response.error);
+            setShowError(true);
+          } else {
+            setOpen(true);
+            
+          }
+        })
+    }
   };
   let data = sessionStorage.getItem("votante");
+  let data2 = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
-  if (data === null) {
+  if (data === null && data2 === null)  {
     window.location.href = "/votante/menuPrincipal";
   }
   return (

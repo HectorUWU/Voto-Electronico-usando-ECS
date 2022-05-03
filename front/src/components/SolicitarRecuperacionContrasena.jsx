@@ -76,7 +76,7 @@ export default function CambiarContrasena() {
                 fullWidth
                 name="boleta"
                 label="Boleta"
-                type="number"
+                type="text"
                 id="boleta"
               />
             </Grid>
