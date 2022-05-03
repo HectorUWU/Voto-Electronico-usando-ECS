@@ -179,4 +179,27 @@ Votacion.getUmbral = function () {
   });
 };
 
+/**
+ * Actualiza el estado de la votacion a finalizado para bublicar los resultados
+ * @returns {promise}
+ */
+ Votacion.publicarResultados = function () {
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query(
+        "UPDATE votacion SET ? WHERE idVotacion=(SELECT MAX(v.idVotacion) FROM (SELECT * FROM votacion) as v);",
+        {
+          estado: "finalizado",
+        }
+      )
+      .then(([fields, rows]) => {
+        resolve({ mensaje: "Resultados publicados con exito" });
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
 module.exports = Votacion;

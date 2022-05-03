@@ -43,6 +43,9 @@ export default function VotanteMenu() {
   }, []);
   let data = sessionStorage.getItem("votante");
   data = JSON.parse(data);
+  if (data === null) {
+    window.location.href = "/SingIn";
+  }else{
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -107,7 +110,7 @@ export default function VotanteMenu() {
           </Button>
           <Button
             component={Link}
-            to=""
+            to="/votante/cambiarContrasena"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
@@ -118,4 +121,5 @@ export default function VotanteMenu() {
       </Container>
     </ThemeProvider>
   );
+}
 } // Fin de la funcion

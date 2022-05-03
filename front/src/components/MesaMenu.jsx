@@ -101,7 +101,7 @@ export default function MesaMenu() {
             <InicioVotacion estadoVotacion={estadoVotacion} />
             <Button
               component={Link}
-              to="#"
+              to="/cambiarContrasena"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
