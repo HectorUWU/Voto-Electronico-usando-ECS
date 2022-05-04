@@ -165,6 +165,11 @@ Votacion.limpiarVotos = function () {
   });
 };
 
+
+/**
+ * Consulta el umbral de la ultima votación
+ * @returns {promise}
+ */
 Votacion.getUmbral = function () {
   return new Promise((resolve, reject) => {
     conexion
