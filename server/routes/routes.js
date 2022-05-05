@@ -73,9 +73,18 @@ router.post("/votar", verificarVotantes, (req, res) => {
 });
 
 router.post("/validarIntegrante", verificarMesa, (req, res) => {
-  if (req.body) {
-    // TODO: Validar llave y contraseña
+  console.log(req.body.llave);
+  if (
+    req.body.llave &&
+    req.body.contrasena !== undefined &&
+    req.body.contrasena !== "" &&
+    req.body.contrasena !== null
+  ) {
     res.status(200).send({ message: "ok" });
+  } else {
+    res
+      .status(400)
+      .send({ error: "Por favor ingrese la información solicitada" });
   }
 });
 

@@ -48,12 +48,19 @@ export default function CapturaLlavePrivada() {
   comenzar el conteo. Se requieren al menos t miembros para
   continuar`);
 
+  let hayArchivo = false;
+
   const handleChange = (event) => {
     console.log(event.target.files[0]);
     event.preventDefault();
-    setFileName(
-      event.target.files[0] != null ? event.target.files[0].name : "Abrir..."
-    );
+
+    if (event.target.files[0] != null ) {
+     setFileName(event.target.files[0].name);   
+     hayArchivo = true;
+    } else {
+      setFileName("Abrir...")
+      hayArchivo = false;
+    }
   };
 
   const handleSubmit = (event) => {
@@ -62,7 +69,7 @@ export default function CapturaLlavePrivada() {
     event.preventDefault();
     const formulario = new FormData(event.currentTarget);
     let datos = {
-      llave: formulario.get("llave"),
+      llave: hayArchivo,
       contrasena: formulario.get("contrasena"),
     };
     let config = {
