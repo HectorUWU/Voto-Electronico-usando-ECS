@@ -61,19 +61,24 @@ router.post("/login", (req, res) => {
 router.post("/votar", verificarVotantes, (req, res) => {
   if (req.body) {
     const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
-    V.votar(req.body.eleccion, 2, 3)
+    Votacion.getUmbral()
       .then((result) => {
-        Votante.modificarEstadoVoto([1, req.body.idVotante]);
-        res.send(result);
+        V.votar(req.body.eleccion, result.umbral, result.participantes)
+          .then((result) => {
+            Votante.modificarEstadoVoto([1, req.body.idVotante]);
+            res.send(result);
+          })
+          .catch((err) => {
+            res.status(400).send({ error: err.toString() });
+          });
       })
       .catch((err) => {
-        res.status(400).send({ error: err.toString() });
+        res.status(400).send({ error: err });
       });
   }
 });
 
 router.post("/validarIntegrante", verificarMesa, (req, res) => {
-  console.log(req.body.llave);
   if (
     req.body.llave &&
     req.body.contrasena !== undefined &&
