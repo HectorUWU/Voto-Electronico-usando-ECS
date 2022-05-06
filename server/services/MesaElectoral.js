@@ -23,12 +23,11 @@ class MesaElectoral {
     this.participantesPresentes = [];
   }
 
-  async definirUmbral(){
-    this.umbral = await votacionBD.getUmbral().then(result => {
+  async definirUmbral() {
+    this.umbral = await votacionBD.getUmbral().then((result) => {
       return result.umbral;
-    })
+    });
   }
-
 
   /**
    * Función para validar la presencia de los participantes necesarios para iniciar el conteo de votos
@@ -55,12 +54,14 @@ class MesaElectoral {
       console.log(
         "-/-/-/-/-/-/-/-/-/-/-/-/*COMENZANDO CONTEO*/-/-/-/-/-/-/-/-/-/-/-/-"
       );
-     const resultado = await this.extraerVotos(idParticipantes).then(result => {
-        return result
-      }).catch(err => {
-        return {error: err.message, estatus: 3}
-      })
-      return resultado
+      const resultado = await this.extraerVotos(idParticipantes)
+        .then((result) => {
+          return result;
+        })
+        .catch((err) => {
+          return { error: err.message, estatus: 3 };
+        });
+      return resultado;
     } else {
       return { mensaje: "Esperando a participantes", estatus: 1 };
     }
@@ -90,8 +91,8 @@ class MesaElectoral {
               fragmento.idMesaElectoral,
               contra
             );
-            if(idReal === null) {
-              reject(new Error("Error al descifrar votos"))
+            if (idReal === null) {
+              reject(new Error("Error al descifrar votos"));
             }
             if (fragmentos.has(idReal)) {
               const valor = fragmentos.get(idReal);
@@ -114,6 +115,9 @@ class MesaElectoral {
             votosReales.push(votoOriginal);
             const conteo = new Votacion();
             const resultados = conteo.contarVotos(votosReales);
+            votacionBD.finalizarConteo().then((result) => {
+              console.log(result);
+            });
             resultados.forEach((resultadoFinal) => {
               candidatoBD
                 .registrarVotos([
@@ -133,7 +137,7 @@ class MesaElectoral {
         })
         .catch((err) => {
           console.log("ERROR AL EXTRAER FRAGMENTOS " + err);
-          reject(err)
+          reject(err);
         });
     });
   }

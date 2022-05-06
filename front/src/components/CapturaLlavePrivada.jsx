@@ -22,6 +22,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Link } from "react-router-dom";
 import io from "socket.io-client";
+import Confirmacion from "./Confirmacion";
 
 const Input = styled("input")({
   display: "none",
@@ -54,11 +55,11 @@ export default function CapturaLlavePrivada() {
     console.log(event.target.files[0]);
     event.preventDefault();
 
-    if (event.target.files[0] != null ) {
-     setFileName(event.target.files[0].name);   
-     hayArchivo = true;
+    if (event.target.files[0] != null) {
+      setFileName(event.target.files[0].name);
+      hayArchivo = true;
     } else {
-      setFileName("Abrir...")
+      setFileName("Abrir...");
       hayArchivo = false;
     }
   };
@@ -113,7 +114,6 @@ export default function CapturaLlavePrivada() {
           reader.readAsArrayBuffer(file);
 
           socket.on("lista mesa", function (lista) {
-
             const listaAux = [];
             listaMesa.forEach((mesa) => {
               if (lista.id === mesa.idMesaElectoral) {
@@ -136,7 +136,8 @@ export default function CapturaLlavePrivada() {
             conteoEnCurso = false;
             setSeverity("error");
             setTablamsg(
-              "Ocurrió un error en el conteo de votos, por favor refresque la página e ingrese sus credenciales nuevamente. ERROR: " + msj
+              "Ocurrió un error en el conteo de votos, por favor refresque la página e ingrese sus credenciales nuevamente. ERROR: " +
+                msj
             );
             socket.disconnect();
           });
@@ -165,6 +166,12 @@ export default function CapturaLlavePrivada() {
 
   let data = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
+  let saltarFormulario = false;
+  fetch("/api/revisarConteo").then((response) => {
+    if (response.message === "true") {
+      saltarFormulario = true;
+    }
+  });
 
   React.useEffect(() => {
     fetch("/api/listaMesa")
@@ -196,6 +203,11 @@ export default function CapturaLlavePrivada() {
                 alignItems: "center",
               }}
             >
+              <Confirmacion
+                open={saltarFormulario}
+                ruta={"/mesa/resultados"}
+                mensaje={'El conteo ha finalizado, pero no se ha publicado. Haga click en continuar para ver los resultados'}
+              />
               <Avatar sx={{ m: 1, bgcolor: "#0099E6" }}>
                 <HowToRegIcon />
               </Avatar>

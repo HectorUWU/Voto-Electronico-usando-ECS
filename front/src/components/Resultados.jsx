@@ -12,7 +12,6 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Button from "@mui/material/Button";
 import Confirmacion from "./Confirmacion";
-import ResponseError from "./responseError";
 
 const theme = createTheme();
 

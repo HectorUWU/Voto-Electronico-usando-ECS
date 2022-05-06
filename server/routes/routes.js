@@ -73,7 +73,7 @@ router.post("/votar", verificarVotantes, (req, res) => {
           });
       })
       .catch((err) => {
-        res.status(400).send({ error: err });
+        res.status(500).send({ error: err });
       });
   }
 });
@@ -203,7 +203,7 @@ router.get("/verEstadoUltimaVotacion", (req, res) => {
       if (result !== undefined) {
         if (result.estado === "finalizado") {
           res.send({ estado: "finalizado" });
-        } else if (result.estado === "activo") {
+        } else if (result.estado === "activo" || result.estado === "conteo listo") {
           if (
             moment()
               .utc()
@@ -357,6 +357,14 @@ router.post("/recuperarContrasena/:token/:id", (req, res) => {
   } else {
     res.status(400).send({ error: "No se han podido cambiar la contrasena" });
   }
+});
+
+router.get("/revisarConteo", (req, res) => {
+  Votacion.verEstadoUltimaVotacion().then((result) => {
+    if (result.estado === "conteo listo") {
+      res.send({ message: "true" });
+    }
+  });
 });
 
 module.exports = router;

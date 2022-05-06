@@ -207,4 +207,23 @@ Votacion.getUmbral = function () {
   });
 };
 
+Votacion.finalizarConteo = function () {
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query(
+        "UPDATE votacion SET ? WHERE idVotacion=(SELECT MAX(v.idVotacion) FROM (SELECT * FROM votacion) as v);",
+        {
+          estado: "conteo listo",
+        }
+      )
+      .then(([fields, rows]) => {
+        resolve({ mensaje: "Resultados contados" });
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
 module.exports = Votacion;
