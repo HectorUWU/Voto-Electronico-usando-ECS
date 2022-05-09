@@ -60,18 +60,15 @@ router.post("/login", (req, res) => {
 
 router.post("/votar", verificarVotantes, (req, res) => {
   if (req.body) {
-    const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
-    Votacion.getUmbral()
-      .then((result) => {
-        V.votar(req.body.eleccion, result.umbral, result.participantes)
-          .then((result) => {
-            Votante.modificarEstadoVoto([1, req.body.idVotante]);
-            res.send(result);
-          })
-          .catch((err) => {
-            res.status(400).send({ error: err.toString() });
-          });
-      })
+    Votacion.consultarUltimaVotacion()
+    .then((result) => {
+      const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
+      V.votar(req.body.eleccion, result.umbral, result.participantes)
+        .then((result) => {
+          // Votante.modificarEstadoVoto([1, req.body.idVotante]);
+          res.send(result);
+        })
+    })
       .catch((err) => {
         res.status(500).send({ error: err });
       });
