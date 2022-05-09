@@ -42,6 +42,7 @@ export default function CapturaLlavePrivada() {
   const [showError, setShowError] = React.useState(false);
   let [listaMesa, setInfoMesa] = React.useState([]);
   let [conteoEnCurso, setConteoEnCurso] = React.useState(true);
+  let [hayArchivo, setHayArchivo] = React.useState(false);
 
   const [severity, setSeverity] = React.useState("info");
   const [tablamsg, setTablamsg] =
@@ -49,18 +50,15 @@ export default function CapturaLlavePrivada() {
   comenzar el conteo. Se requieren al menos t miembros para
   continuar`);
 
-  let hayArchivo = false;
-
   const handleChange = (event) => {
-    console.log(event.target.files[0]);
     event.preventDefault();
 
     if (event.target.files[0] != null) {
+      setHayArchivo(true)
       setFileName(event.target.files[0].name);
-      hayArchivo = true;
     } else {
       setFileName("Abrir...");
-      hayArchivo = false;
+      setHayArchivo(false)
     }
   };
 
@@ -70,6 +68,7 @@ export default function CapturaLlavePrivada() {
     event.preventDefault();
     const formulario = new FormData(event.currentTarget);
     let datos = {
+      id: data.idMesaElectoral,
       llave: hayArchivo,
       contrasena: formulario.get("contrasena"),
     };
@@ -167,7 +166,7 @@ export default function CapturaLlavePrivada() {
   let data = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
   let saltarFormulario = false;
-  fetch("/api/revisarConteo").then((response) => {
+  fetch("https://vota-escom.herokuapp.com/api/revisarConteo").then((response) => {
     if (response.message === "true") {
       saltarFormulario = true;
     }
@@ -206,7 +205,9 @@ export default function CapturaLlavePrivada() {
               <Confirmacion
                 open={saltarFormulario}
                 ruta={"/mesa/resultados"}
-                mensaje={'El conteo ha finalizado, pero no se ha publicado. Haga click en continuar para ver los resultados'}
+                mensaje={
+                  "El conteo ha finalizado, pero no se ha publicado. Haga click en continuar para ver los resultados"
+                }
               />
               <Avatar sx={{ m: 1, bgcolor: "#0099E6" }}>
                 <HowToRegIcon />

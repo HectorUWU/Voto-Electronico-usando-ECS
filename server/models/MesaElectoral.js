@@ -165,7 +165,7 @@ MesaElectoral.cambiarContrasena = function (me) {
                   .query(
                     "UPDATE mesaelectoral SET contrasena = ?, clavePublica = ? WHERE idMesaElectoral = ?",
                     [hash, publica, me.id]
-                  ); 
+                  );
               })
               .then(([fields, rows]) => {
                 correo.enviarLLave(privada, resultado.correo);
@@ -232,10 +232,10 @@ MesaElectoral.restablecerContrasena = function (token, id, me) {
         if (!resultado) {
           reject(new Error("Integrante de la mesa no valido"));
         } else {
-          const verificacion = jwt.verify(token, process.env.SECRET)
-          if(verificacion.idMesaElectoral === id){
-            if(verificacion.contrasena === resultado.contrasena){
-              if(me.contrasenaNueva === me.repetir){
+          const verificacion = jwt.verify(token, process.env.SECRET);
+          if (verificacion.idMesaElectoral === id) {
+            if (verificacion.contrasena === resultado.contrasena) {
+              if (me.contrasenaNueva === me.repetir) {
                 const [publica, privada] = Rsa.generarLLaves(me.contrasena);
                 bcryptjs
                   .hash(me.contrasena, 10)
@@ -245,7 +245,7 @@ MesaElectoral.restablecerContrasena = function (token, id, me) {
                       .query(
                         "UPDATE mesaelectoral SET contrasena = ?, clavePublica = ? WHERE idMesaElectoral = ?",
                         [hash, publica, id]
-                      );  
+                      );
                   })
                   .then(([fields, rows]) => {
                     correo.enviarLLave(privada, resultado.correo);
@@ -254,15 +254,41 @@ MesaElectoral.restablecerContrasena = function (token, id, me) {
                   .catch((error) => {
                     reject(error);
                   });
-              }else{
+              } else {
                 reject(new Error("Las contraseñas no coinciden"));
               }
-            }else{
+            } else {
               reject(new Error("Contraseña incorrecta"));
             }
-          }else{
+          } else {
             reject(new Error("Token invalido"));
           }
+        }
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
+MesaElectoral.validarContra = function (me) {
+  return new Promise((resolve, reject) => {
+    MesaElectoral.buscarPorID(me.id)
+      .then((resultado) => {
+        if (!resultado) {
+          reject(new Error("Integrante de la mesa no valido"));
+        } else {
+          return Promise.all([
+            bcryptjs.compare(me.contrasena, resultado.contrasena),
+            resultado,
+          ]);
+        }
+      })
+      .then(([bool, resultado]) => {
+        if (bool) {
+          resolve({ mensaje: "Ok" });
+        } else {
+          reject(new Error("Contraseña incorrecta"));
         }
       })
       .catch((err) => {

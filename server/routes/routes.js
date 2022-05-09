@@ -79,13 +79,14 @@ router.post("/votar", verificarVotantes, (req, res) => {
 });
 
 router.post("/validarIntegrante", verificarMesa, (req, res) => {
-  if (
-    req.body.llave &&
-    req.body.contrasena !== undefined &&
-    req.body.contrasena !== "" &&
-    req.body.contrasena !== null
-  ) {
-    res.status(200).send({ message: "ok" });
+  if (req.body.llave && req.body.contrasena !== "") {
+    MesaElectoral.validarContra(req.body)
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.toString() });
+      });
   } else {
     res
       .status(400)
@@ -203,7 +204,10 @@ router.get("/verEstadoUltimaVotacion", (req, res) => {
       if (result !== undefined) {
         if (result.estado === "finalizado") {
           res.send({ estado: "finalizado" });
-        } else if (result.estado === "activo" || result.estado === "conteo listo") {
+        } else if (
+          result.estado === "activo" ||
+          result.estado === "conteo listo"
+        ) {
           if (
             moment()
               .utc()
