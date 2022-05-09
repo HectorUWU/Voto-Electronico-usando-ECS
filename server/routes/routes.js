@@ -65,7 +65,7 @@ router.post("/votar", verificarVotantes, (req, res) => {
       const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
       V.votar(req.body.eleccion, result.umbral, result.participantes)
         .then((result) => {
-          // Votante.modificarEstadoVoto([1, req.body.idVotante]);
+          Votante.modificarEstadoVoto([1, req.body.idVotante]);
           res.send(result);
         })
     })
