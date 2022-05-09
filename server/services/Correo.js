@@ -14,13 +14,13 @@
  class Correo { 
    async creaTransporte() {
      const oauth2Client = new OAuth2(
-       '568226944879-64ttn7a0vj72lmhevgslsfa0p6c51let.apps.googleusercontent.com',
-       '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',
+       '568226944879-q0kvl96aflgooojoepr0uantgqobmv7h.apps.googleusercontent.com',
+       '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',
        "https://developers.google.com/oauthplayground"
      );
    
      oauth2Client.setCredentials({
-       refresh_token: '1//0fyMfi5UGhzDFCgYIARAAGA8SNwF-L9IrZwA-xDCTpRPM418AzxkQqoJ1qMktXg13vouRS5STyMIQAdy0yRNk9inb0JFm69aHmJg',
+       refresh_token: '1//04UIqyWhKqV4_CgYIARAAGAQSNwF-L9IrdRiK4Jz_xp0g_l0KWobkoBRuESR6HhFQxM4BZnP-8xtZxeXsLOTL-s0_VxLb06phM34',
      });
    
      const accessToken = await new Promise((resolve, reject) => {
@@ -38,9 +38,9 @@
          type: "OAuth2",
          user: 'tt2021a002@gmail.com',
          accessToken,
-         clientId: '64ttn7a0vj72lmhevgslsfa0p6c51let.apps.googleusercontent.com',
-         clientSecret: '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',
-         refreshToken: '1//0fyMfi5UGhzDFCgYIARAAGA8SNwF-L9IrZwA-xDCTpRPM418AzxkQqoJ1qMktXg13vouRS5STyMIQAdy0yRNk9inb0JFm69aHmJg',
+         clientId: '568226944879-q0kvl96aflgooojoepr0uantgqobmv7h.apps.googleusercontent.com',
+         clientSecret: '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',
+         refreshToken: '1//04UIqyWhKqV4_CgYIARAAGAQSNwF-L9IrdRiK4Jz_xp0g_l0KWobkoBRuESR6HhFQxM4BZnP-8xtZxeXsLOTL-s0_VxLb06phM34',
        },
      });
    
