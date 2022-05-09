@@ -43,6 +43,7 @@ export default function CapturaLlavePrivada() {
   let [listaMesa, setInfoMesa] = React.useState([]);
   let [conteoEnCurso, setConteoEnCurso] = React.useState(true);
   let [hayArchivo, setHayArchivo] = React.useState(false);
+  const [saltarFormulario, setSalto] = React.useState(false);
 
   const [severity, setSeverity] = React.useState("info");
   const [tablamsg, setTablamsg] =
@@ -165,13 +166,11 @@ export default function CapturaLlavePrivada() {
 
   let data = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
-  let saltarFormulario = false;
   fetch("https://vota-escom.herokuapp.com/api/revisarConteo").then((response) => {
     if (response.message === "true") {
-      saltarFormulario = true;
+      setSalto(true);
     }
   });
-
   React.useEffect(() => {
     fetch("/api/listaMesa")
       .then((response) => {
