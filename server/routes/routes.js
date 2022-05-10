@@ -66,7 +66,7 @@ router.post("/votar", verificarVotantes, (req, res) => {
       console.log(result)
       V.votar(req.body.eleccion, result.umbral, result.participantes)
         .then((result) => {
-          // Votante.modificarEstadoVoto([1, req.body.idVotante]);
+          Votante.modificarEstadoVoto([1, req.body.idVotante]);
           res.send(result);
         })
     })
