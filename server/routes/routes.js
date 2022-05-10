@@ -364,7 +364,7 @@ router.post("/recuperarContrasena/:token/:id", (req, res) => {
 router.get("/revisarConteo", (req, res) => {
   Votacion.verEstadoUltimaVotacion().then((result) => {
     if (result.estado === "conteo listo") {
-      res.send({ message: "true" });
+      res.send({ message: "ok" });
     }
   });
 });
