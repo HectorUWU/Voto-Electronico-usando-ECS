@@ -115,9 +115,6 @@ class MesaElectoral {
             votosReales.push(votoOriginal);
             const conteo = new Votacion();
             const resultados = conteo.contarVotos(votosReales);
-            votacionBD.finalizarConteo().then((result) => {
-              console.log(result);
-            });
             resultados.forEach((resultadoFinal) => {
               candidatoBD
                 .registrarVotos([
@@ -134,6 +131,7 @@ class MesaElectoral {
                 });
             });
           });
+          votacionBD.finalizarConteo()
         })
         .catch((err) => {
           console.log("ERROR AL EXTRAER FRAGMENTOS " + err);

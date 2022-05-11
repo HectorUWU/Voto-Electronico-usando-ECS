@@ -55,11 +55,11 @@ export default function CapturaLlavePrivada() {
     event.preventDefault();
 
     if (event.target.files[0] != null) {
-      setHayArchivo(true)
+      setHayArchivo(true);
       setFileName(event.target.files[0].name);
     } else {
       setFileName("Abrir...");
-      setHayArchivo(false)
+      setHayArchivo(false);
     }
   };
 
@@ -166,11 +166,19 @@ export default function CapturaLlavePrivada() {
 
   let data = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
-  fetch("https://vota-escom.herokuapp.com/api/revisarConteo").then((response) => {
-    if (response.message === "true") {
-      setSalto(true);
-    }
-  });
+
+  React.useEffect(() => {
+    fetch("https://vota-escom.herokuapp.com/api/revisarConteo")
+      .then((response) => {
+        return response.json();
+      })
+      .then((mensaje) => {
+        if (mensaje.message === "ok") {
+          setSalto(true);
+        }
+      });
+  }, []);
+
   React.useEffect(() => {
     fetch("/api/listaMesa")
       .then((response) => {

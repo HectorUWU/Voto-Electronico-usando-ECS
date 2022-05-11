@@ -66,7 +66,7 @@ router.post("/votar", verificarVotantes, (req, res) => {
       console.log(result)
       V.votar(req.body.eleccion, result.umbral, result.participantes)
         .then((result) => {
-          // Votante.modificarEstadoVoto([1, req.body.idVotante]);
+          Votante.modificarEstadoVoto([1, req.body.idVotante]);
           res.send(result);
         })
     })
@@ -364,7 +364,7 @@ router.post("/recuperarContrasena/:token/:id", (req, res) => {
 router.get("/revisarConteo", (req, res) => {
   Votacion.verEstadoUltimaVotacion().then((result) => {
     if (result.estado === "conteo listo") {
-      res.send({ message: "true" });
+      res.send({ message: "ok" });
     }
   });
 });
