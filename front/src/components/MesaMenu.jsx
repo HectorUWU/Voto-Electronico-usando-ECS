@@ -43,7 +43,7 @@ export default function MesaMenu() {
   }, []);
   let data = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
-  console.log(estadoVotacion)
+  if (data != null) {
     return (
       <ThemeProvider theme={theme}>
         <Container component="main" maxWidth="xs">
@@ -114,8 +114,26 @@ export default function MesaMenu() {
             >
               Cambiar contraseña
             </Button>
+            <Button
+              component={Link}
+              to="/mesa/validarAlumnos"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
+              disabled={
+                (estadoVotacion === "listoParaConteo") |
+                (estadoVotacion === "activo")
+                  ? true
+                  : false
+              }
+            >
+              Actualizar estado academico de los alumnos
+            </Button>
           </Box>
         </Container>
       </ThemeProvider>
     );
-  } //Fin de la funcion MesaMenu
+  } else {
+    window.location.href = "/";
+  }
+} //Fin de la funcion MesaMenu
