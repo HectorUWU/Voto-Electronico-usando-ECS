@@ -9,6 +9,9 @@ const Candidato = require("../models/Candidato");
 const Votacion = require("../models/Votacion");
 const moment = require("moment");
 const cloudinary = require("cloudinary");
+const fs = require("fs");
+const path = require("path");
+const MesaServ = require("../services/MesaElectoral");
 
 router.post("/registro", (req, res) => {
   if (req.body) {
@@ -61,15 +64,16 @@ router.post("/login", (req, res) => {
 router.post("/votar", verificarVotantes, (req, res) => {
   if (req.body) {
     Votacion.getUmbral()
-    .then((result) => {
-      const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
-      console.log(result)
-      V.votar(req.body.eleccion, result.umbral, result.participantes)
-        .then((result) => {
-          Votante.modificarEstadoVoto([1, req.body.idVotante]);
-          res.send(result);
-        })
-    })
+      .then((result) => {
+        const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
+        console.log(result);
+        V.votar(req.body.eleccion, result.umbral, result.participantes).then(
+          (result) => {
+            Votante.modificarEstadoVoto([1, req.body.idVotante]);
+            res.send(result);
+          }
+        );
+      })
       .catch((err) => {
         res.status(500).send({ error: err });
       });
@@ -365,6 +369,29 @@ router.get("/revisarConteo", (req, res) => {
   Votacion.verEstadoUltimaVotacion().then((result) => {
     if (result.estado === "conteo listo") {
       res.send({ message: "ok" });
+    }
+  });
+});
+
+router.post("/actualizarAlumnos", verificarMesa, (req, res) => {
+  const dataUrl = req.body.file;
+  const matches = dataUrl.match(/^data:.+\/(.+);base64,(.*)$/);
+  const base64Data = matches[2];
+  const buffer = Buffer.from(base64Data, "base64");
+  const dir = path.join(__dirname, "../", "public/files/", req.body.nombre);
+  fs.writeFile(dir, buffer, function (error) {
+    if (error) {
+      res.status(500).send({ error: error.toString() });
+    } else {
+      const mesa = new MesaServ();
+      mesa
+        .validarInscritos(dir)
+        .then((resultado) => {
+          res.send(resultado);
+        })
+        .catch((err) => {
+          res.status(400).send({error: err.toString() });
+        });
     }
   });
 });

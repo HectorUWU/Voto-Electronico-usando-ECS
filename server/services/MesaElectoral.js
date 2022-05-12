@@ -12,6 +12,8 @@ const ECS = require("./ECS"); // Módulo ECS, necesario para la desfragmentació
 const Votacion = require("./Votacion"); // Módulo Votación, necesario para el conteo de votos y generación de resultados
 const candidatoBD = require("../models/Candidato"); // Módulo Candidato, necesario para almacenar en la base de datos
 const votacionBD = require("../models/Votacion"); // Módulo votacion, necesario para conocer el umbral
+const reader = require("xlsx"); // Módulo xlsx, necesario para leer archivos excel
+const votanteBD = require("../models/Votante"); // Módulo votante, necesario para cambiar su estado académico
 
 class MesaElectoral {
   /**
@@ -123,6 +125,7 @@ class MesaElectoral {
                   resultadoFinal.id,
                 ])
                 .then((result) => {
+                  votanteBD.actualizarEstudiantes();
                   resolve({ mensaje: "Conteo exitoso", estatus: 2 });
                 })
                 .catch((err) => {
@@ -131,7 +134,7 @@ class MesaElectoral {
                 });
             });
           });
-          votacionBD.finalizarConteo()
+          votacionBD.finalizarConteo();
         })
         .catch((err) => {
           console.log("ERROR AL EXTRAER FRAGMENTOS " + err);
@@ -160,6 +163,30 @@ class MesaElectoral {
       participantes.push(participante.id);
     });
     return participantes;
+  }
+
+  validarInscritos(archivo) {
+    return new Promise((resolve, reject) => {
+      const file = reader.readFile(archivo);
+      const temp = reader.utils.sheet_to_json(file.Sheets[file.SheetNames[0]]);
+      const boletas = [];
+      temp.forEach((res) => {
+        if (res.boleta === undefined) {
+          reject(
+            new Error('Error, el archivo no cumple con el formato necesario')
+          );
+        }
+        boletas.push(res.boleta);
+      });
+      votanteBD
+        .actualizarEstadoAcademico(boletas)
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
   }
 }
 

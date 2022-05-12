@@ -16,6 +16,8 @@ import EstablecerVotacion from "./components/EstablecerVotacion";
 import CambiarContrasena from "./components/CambiarContrasena";
 import SolicitarRecuperacionContrasena from "./components/SolicitarRecuperacionContrasena";
 import RecuperarContrasena from "./components/RecuperarContrasena";
+import FormularioBoletas from "./components/FormularioBoletas";
+
 const Main = () => {
   return (
       <Routes>
@@ -35,6 +37,7 @@ const Main = () => {
         <Route exact path="/mesa/establecerVotacion" element={<EstablecerVotacion/>}></Route>
         <Route exact path="/solicitarRecuperacionContrasena" element={<SolicitarRecuperacionContrasena/>}></Route>
         <Route exact path="/recuperarContrasena/:token/:id" element={<RecuperarContrasena/>}></Route>
+        <Route exact path="/mesa/validarAlumnos" element={<FormularioBoletas />}></Route>
       </Routes>
   );
 };
