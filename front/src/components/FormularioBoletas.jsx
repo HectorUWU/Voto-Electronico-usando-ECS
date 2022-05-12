@@ -74,7 +74,7 @@ export default function Main() {
           setError(response.error);
           setShowError(true);
         } else {
-            setBoletasActualizadas(true);
+          setBoletasActualizadas(true);
         }
       });
   };

@@ -48,10 +48,6 @@ export default function SignIn() {
           }
         }
       })
-      .catch((error) => {
-        setError(error);
-        setShowError(true);
-      });
   };
   let data = sessionStorage.getItem("votante");
   data = JSON.parse(data);
