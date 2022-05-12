@@ -345,4 +345,19 @@ router.post("/recuperarContrasena/:token/:id", (req, res) => {
   }
 });
 
+router.post("/registroMesa/:token/:id", verificarMesa, (req, res) => {
+  const { token, id } = req.params;
+  if(req.body){
+    MesaElectoral.registrarMesa(token, id, req.body)
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      res.status(400).send({ error: err.toString() });
+    });
+  }else{
+    res.status(400).send({ error: "No se han podido registrar la mesa" });
+  }
+}
+);
 module.exports = router;

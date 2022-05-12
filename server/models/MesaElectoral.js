@@ -75,10 +75,12 @@ MesaElectoral.obtenerLLavesPublicas = function () {
  * @param mesaelectoral {Mesaelectoral}
  * @return {Promise}
  */
-MesaElectoral.registrar = function (mesaelectoral) {
+MesaElectoral.registrar = function (mesaelectoral, token) {
   const sal = 10;
   const [publica, privada] = Rsa.generarLLaves(mesaelectoral.contrasena);
   return new Promise((resolve, reject) => {
+    const verificacion = jwt.verify(token, process.env.SECRET);
+    if (verificacion) {
     bcryptjs
       .hash(mesaelectoral.contrasena, sal)
       .then(function (hash) {
@@ -97,7 +99,11 @@ MesaElectoral.registrar = function (mesaelectoral) {
       .catch((error) => {
         reject(error);
       });
+} else {
+      reject(new Error( "Token invalido"));
+    }
   });
+
 };
 
 /**
@@ -270,4 +276,30 @@ MesaElectoral.restablecerContrasena = function (token, id, me) {
       });
   });
 };
+
+// Funcion que envia token por corereo, para solicitar registro 
+MesaElectoral.solicitarRegistro = function (candidato) {
+  return new Promise((resolve, reject) => {
+    const token = jwt.sign(
+      {
+        idCandidato: candidato.idCandidato,
+        correo: candidato.correo
+      },
+      process.env.SECRET,
+    );
+    const link = "http://localhost:3000/registroMesaElectoral" + 
+      token +
+      "/" +
+      candidato.idCandidato;
+    correo.enviarCorreo(
+      candidato.correo,
+      "Para registrarte en la mesa electoral favor de entrar en el siguiente link\n" +
+        link +
+      "Registro en Mesa Electoral"
+    );
+    resolve({ mensaje: "Token enviado" });
+  }
+  );
+}
+
 module.exports = MesaElectoral;
