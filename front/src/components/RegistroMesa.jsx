@@ -38,7 +38,7 @@ export default function SignUp() {
       },
       body: JSON.stringify(datos),
     };
-    fetch("https://vota-escom.herokuapp.com/api/registroMesa" + token + "/" + id, config)
+    fetch("https://vota-escom.herokuapp.com/api/registroMesa/" + token + "/" + id, config)
       .then((response) => response.json())
       .then((response) => {
         if (response.error) {
@@ -48,10 +48,6 @@ export default function SignUp() {
           setOpen(true);
         }
       })
-      .catch((error) => {
-        setError(error);
-        setShowError(true);
-      });
   };
   let data = sessionStorage.getItem("votante");
   data = JSON.parse(data);

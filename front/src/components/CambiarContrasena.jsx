@@ -38,7 +38,7 @@ export default function CambiarContrasena() {
       },
       body: JSON.stringify(datos),
     };
-    fetch("http://localhost:8000/api/cambiarContrasenaVotante", config)
+    fetch("https://vota-escom.herokuapp.com/api/cambiarContrasenaVotante", config)
       .then((response) => response.json())
       .then((response) => {
         if (response.error) {
@@ -62,7 +62,7 @@ export default function CambiarContrasena() {
         },
         body: JSON.stringify(datos),
       };
-      fetch("http://localhost:8000/api/cambiarContrasenaMesa", config)
+      fetch("https://vota-escom.herokuapp.com/api/cambiarContrasenaMesa", config)
         .then((response) => response.json())
         .then((response) => {
           if (response.error) {

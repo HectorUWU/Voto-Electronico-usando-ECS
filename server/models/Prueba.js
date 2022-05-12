@@ -1,18 +1,3 @@
-const conexion = require("../database/db");
-const Prueba = function() {};
-Prueba.probar = function() {
-    return new Promise((resolve, reject) => {
-        conexion
-            .promise()
-            .query("SELECT * FROM mesaelectoral;")
-            .then(([fields, rows]) => {
-                // console.log(rows)
-                console.log(fields)
-            })
-            .catch((err) => {
-                reject(err);
-            });
-    });
-};
+const me = require('./MesaElectoral');
 
-Prueba.probar()
+me.solicitarRegistro({idCandidato: 1, boleta: "123456789", correo: "hperezb1400@alumno.ipn.mx"})

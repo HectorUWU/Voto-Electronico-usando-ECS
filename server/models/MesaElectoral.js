@@ -75,8 +75,9 @@ MesaElectoral.obtenerLLavesPublicas = function () {
  * @param mesaelectoral {Mesaelectoral}
  * @return {Promise}
  */
-MesaElectoral.registrar = function (mesaelectoral, token) {
+MesaElectoral.registrar = function (token, id, mesaelectoral) {
   const sal = 10;
+  console.log(mesaelectoral);
   const [publica, privada] = Rsa.generarLLaves(mesaelectoral.contrasena);
   return new Promise((resolve, reject) => {
     const verificacion = jwt.verify(token, process.env.SECRET);
@@ -211,7 +212,7 @@ MesaElectoral.enviarToken = function (me) {
             { expiresIn: "5h" }
           );
           const link =
-            "http://localhost:3000/recuperarContrasena/" +
+            "https://vota-escom.herokuapp.com/recuperarContrasena/" +
             token +
             "/" +
             resultado.idMesaElectoral;
@@ -241,7 +242,7 @@ MesaElectoral.restablecerContrasena = function (token, id, me) {
           const verificacion = jwt.verify(token, process.env.SECRET);
           if (verificacion.idMesaElectoral === id) {
             if (verificacion.contrasena === resultado.contrasena) {
-              if (me.contrasenaNueva === me.repetir) {
+              if (me.contrasena === me.repetir) {
                 const [publica, privada] = Rsa.generarLLaves(me.contrasena);
                 bcryptjs
                   .hash(me.contrasena, 10)
@@ -287,7 +288,7 @@ MesaElectoral.solicitarRegistro = function (candidato) {
       },
       process.env.SECRET,
     );
-    const link = "http://localhost:3000/registroMesaElectoral" + 
+    const link = "https://vota-escom.herokuapp.com/registroMesa/" + 
       token +
       "/" +
       candidato.idCandidato;

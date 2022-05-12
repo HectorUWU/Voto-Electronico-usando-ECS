@@ -361,10 +361,10 @@ router.post("/recuperarContrasena/:token/:id", (req, res) => {
   }
 });
 
-router.post("/registroMesa/:token/:id", verificarMesa, (req, res) => {
+router.post("/registroMesa/:token/:id", (req, res) => {
   const { token, id } = req.params;
   if(req.body){
-    MesaElectoral.registrarMesa(token, id, req.body)
+    MesaElectoral.registrar(token, id, req.body)
     .then((result) => {
       res.send(result);
     })
