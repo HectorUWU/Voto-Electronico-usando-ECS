@@ -365,6 +365,21 @@ router.post("/recuperarContrasena/:token/:id", (req, res) => {
   }
 });
 
+router.post("/registroMesa/:token/:id", (req, res) => {
+  const { token, id } = req.params;
+  if(req.body){
+    MesaElectoral.registrar(token, id, req.body)
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      res.status(400).send({ error: err.toString() });
+    });
+  }else{
+    res.status(400).send({ error: "No se han podido registrar la mesa" });
+  }
+}
+);
 router.get("/revisarConteo", (req, res) => {
   Votacion.verEstadoUltimaVotacion().then((result) => {
     if (result.estado === "conteo listo") {

@@ -32,7 +32,7 @@ export default function CambiarContrasena() {
       },
       body: JSON.stringify(datos),
     };
-    fetch("http://localhost:8000/api/enviarToken", config)
+    fetch("https://vota-escom.herokuapp.com/api/enviarToken", config)
       .then((response) => response.json())
       .then((response) => {
         if (response.error) {

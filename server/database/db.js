@@ -1,10 +1,10 @@
 const mysql = require("mysql2");
 
 const conexion = mysql.createPool({
-  host:  process.env.DB_Host,
-  user: process.env.DB_User,
-  password: process.env.DB_Password,
-  database: process.env.DB_DATABASE,
+  host:  "localhost",
+  user: "root",
+  password: "root",
+  database: "votoe",
   timezone: '-06:00',
   waitForConnections: true,
   connectionLimit: 10,

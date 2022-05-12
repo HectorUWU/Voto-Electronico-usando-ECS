@@ -110,7 +110,7 @@ export default function VotanteMenu() {
           </Button>
           <Button
             component={Link}
-            to="/votante/cambiarContrasena"
+            to="/cambiarContrasena"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}

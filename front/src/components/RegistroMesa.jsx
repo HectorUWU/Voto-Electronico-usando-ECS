@@ -3,6 +3,7 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
+import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -11,34 +12,33 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import ResponseError from "./responseError";
 import Confirmacion from "./Confirmacion";
+import { useParams } from "react-router-dom";
 const theme = createTheme();
 
-export default function CambiarContrasena() {
+export default function SignUp() {
   const [error, setError] = React.useState("");
   const [showError, setShowError] = React.useState(false);
   const [open, setOpen] = React.useState(false);
+  const { token, id } = useParams();
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     let datos = {
+      boleta: data.get("boleta"),
+      idMesaElectoral: "ME" + data.get("boleta") ,
+      correo: data.get("correo"),
       contrasena: data.get("contrasena"),
-      nuevaContrasena: data.get("nuevaContrasena"),
-      repetir: data.get("repetir"),
+      repetir: data.get("confirmarContrasena"),
     };
-    let datasession = sessionStorage.getItem("votante");
-    datasession = JSON.parse(datasession);
-    if(datasession != null){
-    datos.id = datasession.idVotante;
     let config = {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        "auth-token": datasession.token
       },
       body: JSON.stringify(datos),
     };
-    fetch("https://vota-escom.herokuapp.com/api/cambiarContrasenaVotante", config)
+    fetch("https://vota-escom.herokuapp.com/api/registroMesa/" + token + "/" + id, config)
       .then((response) => response.json())
       .then((response) => {
         if (response.error) {
@@ -46,40 +46,18 @@ export default function CambiarContrasena() {
           setShowError(true);
         } else {
           setOpen(true);
-          
         }
       })
-    }else {
-      let datasession = sessionStorage.getItem("MesaElectoral");
-      datasession = JSON.parse(datasession);
-      datos.id = datasession.idMesaElectoral;
-      let config = {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "auth-token": datasession.token
-        },
-        body: JSON.stringify(datos),
-      };
-      fetch("https://vota-escom.herokuapp.com/api/cambiarContrasenaMesa", config)
-        .then((response) => response.json())
-        .then((response) => {
-          if (response.error) {
-            setError(response.error);
-            setShowError(true);
-          } else {
-            setOpen(true);
-            
-          }
-        })
-    }
   };
   let data = sessionStorage.getItem("votante");
-  let data2 = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
-  if (data === null && data2 === null)  {
+  if (data != null) {
     window.location.href = "/votante/menuPrincipal";
+  }
+  data = sessionStorage.getItem("MesaElectoral");
+  data = JSON.parse(data);
+  if (data != null) {
+    window.location.href = "/mesa/menuPrincipal";
   }
   return (
     <ThemeProvider theme={theme}>
@@ -97,7 +75,7 @@ export default function CambiarContrasena() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Cambiar Contraseña
+            Registro
           </Typography>
           <ResponseError error={error} showError={showError} />
           <Box
@@ -107,6 +85,25 @@ export default function CambiarContrasena() {
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="boleta"
+                  label="Boleta"
+                  name="boleta"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="correo"
+                  label="Correo"
+                  name="correo"
+                  autoComplete="email"
+                />
+              </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
@@ -121,20 +118,10 @@ export default function CambiarContrasena() {
                 <TextField
                   required
                   fullWidth
-                  name="nuevaContrasena"
-                  label="Nueva Contraseña"
+                  name="confirmarContrasena"
+                  label="Repite tu contraseña"
                   type="password"
-                  id="nuevaContrasena"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="repetir"
-                  label="Repite tu nueva contraseña"
-                  type="password"
-                  id="repetir"
+                  id="confirmarContrasena"
                 />
               </Grid>
             </Grid>
@@ -144,13 +131,20 @@ export default function CambiarContrasena() {
               variant="contained"
               sx={{ mt: 3, mb: 2, backgroundColor: "#0099E6" }}
             >
-              Cambiar Contraseña
+              Registrar
             </Button>
+            <Grid container justifyContent="flex-end">
+              <Grid item>
+                <Link href="/SingIn" variant="body2">
+                  ¿Ya tienes una cuenta? Inicia Sesion
+                </Link>
+              </Grid>
+            </Grid>
             <Confirmacion
               open={open}
-              ruta={"/"}
+              ruta={"/SingIn"}
               mensaje={
-                "Cambio de contraseña exitoso"
+                "Registro exitoso. Se ha enviado un correo de confirmacion"
               }
             />
           </Box>

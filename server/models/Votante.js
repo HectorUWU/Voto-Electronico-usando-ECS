@@ -254,30 +254,23 @@ Votante.enviarToken = function (votante) {
         } else if (resultado.verificacion === "Pendiente") {
           reject(new Error("Cuenta no verificada"));
         } else {
-          const token = jwt.sign(
-            // genera token
-            {
-              id: resultado.boleta,
-              contrasena: resultado.contrasena,
-              correo: resultado.correo,
-            },
-            process.env.SECRET,
-            { expiresIn: "1h" }
-          );
-          const link =
-            "http://localhost:3000/recuperarContrasena/" +
-            token +
-            "/" +
-            votante.id;
-          const correo = new Correo();
-          correo.enviarCorreo(
-            resultado.correo,
-            "Para restablecer tu contraseña favor de entrar en el siguiente link\n" +
-              link +
-              "\n Si no has sido tu, no debes de hacer nada.",
-            "Recuperar Contraseña"
-          );
-          resolve({ mensaje: "Token enviado" });
+            const token = jwt.sign( // genera token
+              {
+                id: resultado.boleta,
+                contrasena: resultado.contrasena,
+                correo: resultado.correo
+              },
+              process.env.SECRET,
+              { expiresIn: "1h" }
+            );
+            const link = 
+            "https://vota-escom.herokuapp.com/recuperarContrasena/" + token + "/" + votante.id;
+            const correo = new Correo();
+            correo.enviarCorreo(resultado.correo,
+              "Para restablecer tu contraseña favor de entrar en el siguiente link\n" +
+                  link+"\n Si no has sido tu, no debes de hacer nada." ,
+              "Recuperar Contraseña");
+            resolve({ mensaje: "Token enviado" });
         }
       })
       .catch((err) => {

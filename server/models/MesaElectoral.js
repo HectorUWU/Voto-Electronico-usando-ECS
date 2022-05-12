@@ -75,10 +75,13 @@ MesaElectoral.obtenerLLavesPublicas = function () {
  * @param mesaelectoral {Mesaelectoral}
  * @return {Promise}
  */
-MesaElectoral.registrar = function (mesaelectoral) {
+MesaElectoral.registrar = function (token, id, mesaelectoral) {
   const sal = 10;
+  console.log(mesaelectoral);
   const [publica, privada] = Rsa.generarLLaves(mesaelectoral.contrasena);
   return new Promise((resolve, reject) => {
+    const verificacion = jwt.verify(token, process.env.SECRET);
+    if (verificacion) {
     bcryptjs
       .hash(mesaelectoral.contrasena, sal)
       .then(function (hash) {
@@ -97,7 +100,11 @@ MesaElectoral.registrar = function (mesaelectoral) {
       .catch((error) => {
         reject(error);
       });
+} else {
+      reject(new Error( "Token invalido"));
+    }
   });
+
 };
 
 /**
@@ -205,7 +212,7 @@ MesaElectoral.enviarToken = function (me) {
             { expiresIn: "5h" }
           );
           const link =
-            "http://localhost:3000/recuperarContrasena/" +
+            "https://vota-escom.herokuapp.com/recuperarContrasena/" +
             token +
             "/" +
             resultado.idMesaElectoral;
@@ -235,7 +242,7 @@ MesaElectoral.restablecerContrasena = function (token, id, me) {
           const verificacion = jwt.verify(token, process.env.SECRET);
           if (verificacion.idMesaElectoral === id) {
             if (verificacion.contrasena === resultado.contrasena) {
-              if (me.contrasenaNueva === me.repetir) {
+              if (me.contrasena === me.repetir) {
                 const [publica, privada] = Rsa.generarLLaves(me.contrasena);
                 bcryptjs
                   .hash(me.contrasena, 10)
@@ -270,6 +277,31 @@ MesaElectoral.restablecerContrasena = function (token, id, me) {
       });
   });
 };
+
+// Funcion que envia token por corereo, para solicitar registro 
+MesaElectoral.solicitarRegistro = function (candidato) {
+  return new Promise((resolve, reject) => {
+    const token = jwt.sign(
+      {
+        idCandidato: candidato.idCandidato,
+        correo: candidato.correo
+      },
+      process.env.SECRET,
+    );
+    const link = "https://vota-escom.herokuapp.com/registroMesa/" + 
+      token +
+      "/" +
+      candidato.idCandidato;
+    correo.enviarCorreo(
+      candidato.correo,
+      "Para registrarte en la mesa electoral favor de entrar en el siguiente link\n" +
+        link +
+      "Registro en Mesa Electoral"
+    );
+    resolve({ mensaje: "Token enviado" });
+  }
+  );
+}
 
 MesaElectoral.validarContra = function (me) {
   return new Promise((resolve, reject) => {
