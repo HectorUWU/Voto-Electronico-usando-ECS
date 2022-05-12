@@ -11,6 +11,7 @@ const Rsa = require("./Rsa"); // Módulo RSA, necesario para descifrar el id de 
 const ECS = require("./ECS"); // Módulo ECS, necesario para la desfragmentación de los votos
 const Votacion = require("./Votacion"); // Módulo Votación, necesario para el conteo de votos y generación de resultados
 const candidatoBD = require("../models/Candidato"); // Módulo Candidato, necesario para almacenar en la base de datos
+const votacionBD = require("../models/Votacion"); // Módulo votacion, necesario para conocer el umbral
 
 class MesaElectoral {
   /**
@@ -18,8 +19,14 @@ class MesaElectoral {
    * @param umbral {numero}, umbral del ECS
    */
   constructor() {
-    this.umbral = 3;
+    this.umbral = this.definirUmbral();
     this.participantesPresentes = [];
+  }
+
+  async definirUmbral() {
+    this.umbral = await votacionBD.getUmbral().then((result) => {
+      return result.umbral;
+    });
   }
 
   /**
@@ -47,12 +54,14 @@ class MesaElectoral {
       console.log(
         "-/-/-/-/-/-/-/-/-/-/-/-/*COMENZANDO CONTEO*/-/-/-/-/-/-/-/-/-/-/-/-"
       );
-     const resultado = await this.extraerVotos(idParticipantes).then(result => {
-        return result
-      }).catch(err => {
-        return {error: err.message, estatus: 3}
-      })
-      return resultado
+      const resultado = await this.extraerVotos(idParticipantes)
+        .then((result) => {
+          return result;
+        })
+        .catch((err) => {
+          return { error: err.message, estatus: 3 };
+        });
+      return resultado;
     } else {
       return { mensaje: "Esperando a participantes", estatus: 1 };
     }
@@ -82,8 +91,8 @@ class MesaElectoral {
               fragmento.idMesaElectoral,
               contra
             );
-            if(idReal === null) {
-              reject(new Error("Error al descifrar votos"))
+            if (idReal === null) {
+              reject(new Error("Error al descifrar votos"));
             }
             if (fragmentos.has(idReal)) {
               const valor = fragmentos.get(idReal);
@@ -122,10 +131,11 @@ class MesaElectoral {
                 });
             });
           });
+          votacionBD.finalizarConteo()
         })
         .catch((err) => {
           console.log("ERROR AL EXTRAER FRAGMENTOS " + err);
-          reject(err)
+          reject(err);
         });
     });
   }

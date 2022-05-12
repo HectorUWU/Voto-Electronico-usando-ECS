@@ -9,6 +9,7 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 
 const MesaElectoral = require("./services/MesaElectoral");
+const ModelMesa = require("./models/MesaElectoral");
 
 const morgan = require("morgan");
 const cors = require("cors");
@@ -19,27 +20,70 @@ dotenv.config({ path: "./dotenv/.env" });
 const routes = require("./routes/routes");
 // CONFIG
 
-const conteo = new MesaElectoral();
+let conteo = new MesaElectoral();
 io.on("connection", (socket) => {
   console.log("WS: Client connected");
-  socket.on("participante", (participante) => {
-    console.log("Llave recibida para participante con id: " + participante.id);
-    const presentes = conteo.verPresentes();
-    let estaPresente = false;
+  socket.on("llave privada", (participante) => {
+    const jsondata = JSON.parse(participante);
+    console.log("participante con id: " + jsondata.id);
 
+    console.log("validando participante");
+    let presentes = conteo.verPresentes();
+    let estaPresente = false;
     presentes.forEach((participantePresente) => {
-      if (participantePresente === participante.id) {
+      if (participantePresente === jsondata.id) {
         estaPresente = true;
       }
     });
 
-    if(!estaPresente){
-      conteo.validarParticipante(participante.llave, participante.id, participante.contrasena).then((result => {
-        console.log(result.estatus);
-        io.emit('respuesta test', {msg: 'q es esto', code: 'holis'});
-      }))
+    if (!estaPresente) {
+      conteo
+        .validarParticipante(jsondata.llave, jsondata.id, jsondata.contrasena)
+        .then((result) => {
+          if (result.estatus === 0) {
+            socket.disconnect();
+          } else if (result.estatus === 1 || result.estatus === 2) {
+            presentes = conteo.verPresentes();
+            ModelMesa.obtenerListaCompleta().then((result) => {
+              result.forEach((integranteMesa) => {
+                let estatus = 0;
+                presentes.forEach((presente) => {
+                  if (presente === integranteMesa.idMesaElectoral) {
+                    estatus = 1;
+                  }
+                });
+                io.emit("lista mesa", {
+                  id: integranteMesa.idMesaElectoral,
+                  estatus: estatus,
+                });
+              });
+            });
+            if (result.estatus === 2) {
+              io.emit("conteo listo", result.mensaje);
+              conteo = new MesaElectoral();
+            }
+          } else {
+            io.emit("error", result.error);
+            conteo = new MesaElectoral();
+          }
+        });
+    } else {
+      presentes = conteo.verPresentes();
+      ModelMesa.obtenerListaCompleta().then((result) => {
+        result.forEach((integranteMesa) => {
+          let estatus = 0;
+          presentes.forEach((presente) => {
+            if (presente === integranteMesa.idMesaElectoral) {
+              estatus = 1;
+            }
+          });
+          io.emit("lista mesa", {
+            id: integranteMesa.idMesaElectoral,
+            estatus: estatus,
+          });
+        });
+      });
     }
-
   });
 });
 

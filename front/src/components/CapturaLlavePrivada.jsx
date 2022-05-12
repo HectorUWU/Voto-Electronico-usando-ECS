@@ -22,6 +22,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Link } from "react-router-dom";
 import io from "socket.io-client";
+import Confirmacion from "./Confirmacion";
 
 const Input = styled("input")({
   display: "none",
@@ -41,6 +42,8 @@ export default function CapturaLlavePrivada() {
   const [showError, setShowError] = React.useState(false);
   let [listaMesa, setInfoMesa] = React.useState([]);
   let [conteoEnCurso, setConteoEnCurso] = React.useState(true);
+  let [hayArchivo, setHayArchivo] = React.useState(false);
+  const [saltarFormulario, setSalto] = React.useState(false);
 
   const [severity, setSeverity] = React.useState("info");
   const [tablamsg, setTablamsg] =
@@ -49,11 +52,15 @@ export default function CapturaLlavePrivada() {
   continuar`);
 
   const handleChange = (event) => {
-    console.log(event.target.files[0]);
     event.preventDefault();
-    setFileName(
-      event.target.files[0] != null ? event.target.files[0].name : "Abrir..."
-    );
+
+    if (event.target.files[0] != null) {
+      setHayArchivo(true);
+      setFileName(event.target.files[0].name);
+    } else {
+      setFileName("Abrir...");
+      setHayArchivo(false);
+    }
   };
 
   const handleSubmit = (event) => {
@@ -62,7 +69,8 @@ export default function CapturaLlavePrivada() {
     event.preventDefault();
     const formulario = new FormData(event.currentTarget);
     let datos = {
-      llave: formulario.get("llave"),
+      id: data.idMesaElectoral,
+      llave: hayArchivo,
       contrasena: formulario.get("contrasena"),
     };
     let config = {
@@ -86,10 +94,6 @@ export default function CapturaLlavePrivada() {
 
           const socket = io("https://vota-escom.herokuapp.com");
 
-          socket.on('respuesta test', function (msg) {
-            console.log(msg);
-          })
-
           const file = document.getElementById("llave").files[0];
           const reader = new FileReader();
           let rawData = new ArrayBuffer();
@@ -99,7 +103,7 @@ export default function CapturaLlavePrivada() {
             const enc = new TextDecoder("utf-8");
             const llave = enc.decode(rawData);
             socket.emit(
-              "participante",
+              "llave privada",
               JSON.stringify({
                 llave: llave,
                 id: data.idMesaElectoral,
@@ -108,12 +112,72 @@ export default function CapturaLlavePrivada() {
             );
           };
           reader.readAsArrayBuffer(file);
+
+          socket.on("lista mesa", function (lista) {
+            const listaAux = [];
+            listaMesa.forEach((mesa) => {
+              if (lista.id === mesa.idMesaElectoral) {
+                listaAux.push({
+                  idMesaElectoral: mesa.idMesaElectoral,
+                  estado: lista.estatus,
+                });
+              } else {
+                listaAux.push({
+                  idMesaElectoral: mesa.idMesaElectoral,
+                  estado: mesa.estado,
+                });
+              }
+            });
+            listaMesa = listaAux;
+            setInfoMesa(listaMesa);
+          });
+
+          socket.on("error", function (msj) {
+            conteoEnCurso = false;
+            setSeverity("error");
+            setTablamsg(
+              "Ocurrió un error en el conteo de votos, por favor refresque la página e ingrese sus credenciales nuevamente. ERROR: " +
+                msj
+            );
+            socket.disconnect();
+          });
+
+          socket.on("conteo listo", function () {
+            conteoEnCurso = false;
+            setConteoEnCurso(conteoEnCurso);
+            setSeverity("success");
+            setTablamsg(
+              "Participantes necesarios presentes. Pulse el botón Continuar para ver los resultados del conteo de votos"
+            );
+          });
+
+          socket.on("disconnect", function () {
+            console.log(conteoEnCurso);
+            if (conteoEnCurso) {
+              document.getElementById("formContainer").style.display = "block";
+              document.getElementById("tablaEspera").style.display = "none";
+              setError("Ocurrió un error al validar la llave privada");
+              setShowError(true);
+            }
+          });
         }
       });
   };
 
   let data = sessionStorage.getItem("MesaElectoral");
   data = JSON.parse(data);
+
+  React.useEffect(() => {
+    fetch("https://vota-escom.herokuapp.com/api/revisarConteo")
+      .then((response) => {
+        return response.json();
+      })
+      .then((mensaje) => {
+        if (mensaje.message === "ok") {
+          setSalto(true);
+        }
+      });
+  }, []);
 
   React.useEffect(() => {
     fetch("/api/listaMesa")
@@ -145,6 +209,13 @@ export default function CapturaLlavePrivada() {
                 alignItems: "center",
               }}
             >
+              <Confirmacion
+                open={saltarFormulario}
+                ruta={"/mesa/resultados"}
+                mensaje={
+                  "El conteo ha finalizado, pero no se ha publicado. Haga click en continuar para ver los resultados"
+                }
+              />
               <Avatar sx={{ m: 1, bgcolor: "#0099E6" }}>
                 <HowToRegIcon />
               </Avatar>

@@ -165,6 +165,25 @@ Votacion.limpiarVotos = function () {
   });
 };
 
+
+/**
+ * Consulta el umbral de la ultima votación
+ * @returns {promise}
+ */
+Votacion.getUmbral = function () {
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query("SELECT participantes, umbral FROM votacion WHERE idVotacion=(SELECT MAX(idVotacion) FROM votacion)")
+      .then(([fields, rows]) => {
+        resolve(fields[0]);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
 /**
  * Actualiza el estado de la votacion a finalizado para bublicar los resultados
  * @returns {promise}
@@ -187,5 +206,24 @@ Votacion.limpiarVotos = function () {
       });
   });
 };
+
+Votacion.finalizarConteo = function () {
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query(
+        "UPDATE votacion SET ? WHERE idVotacion=(SELECT MAX(v.idVotacion) FROM (SELECT * FROM votacion) as v);",
+        {
+          estado: "conteo listo",
+        }
+      )
+      .then(([fields, rows]) => {
+        resolve({ mensaje: "Resultados contados" });
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
 
 module.exports = Votacion;

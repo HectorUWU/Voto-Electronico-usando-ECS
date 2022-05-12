@@ -60,22 +60,35 @@ router.post("/login", (req, res) => {
 
 router.post("/votar", verificarVotantes, (req, res) => {
   if (req.body) {
-    const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
-    V.votar(req.body.eleccion, 2, 3)
-      .then((result) => {
-        Votante.modificarEstadoVoto([1, req.body.idVotante]);
-        res.send(result);
-      })
+    Votacion.getUmbral()
+    .then((result) => {
+      const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
+      console.log(result)
+      V.votar(req.body.eleccion, result.umbral, result.participantes)
+        .then((result) => {
+          Votante.modificarEstadoVoto([1, req.body.idVotante]);
+          res.send(result);
+        })
+    })
       .catch((err) => {
-        res.status(400).send({ error: err.toString() });
+        res.status(500).send({ error: err });
       });
   }
 });
 
 router.post("/validarIntegrante", verificarMesa, (req, res) => {
-  if (req.body) {
-    // TODO: Validar llave y contraseña
-    res.status(200).send({ message: "ok" });
+  if (req.body.llave && req.body.contrasena !== "") {
+    MesaElectoral.validarContra(req.body)
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.toString() });
+      });
+  } else {
+    res
+      .status(400)
+      .send({ error: "Por favor ingrese la información solicitada" });
   }
 });
 
@@ -189,7 +202,10 @@ router.get("/verEstadoUltimaVotacion", (req, res) => {
       if (result !== undefined) {
         if (result.estado === "finalizado") {
           res.send({ estado: "finalizado" });
-        } else if (result.estado === "activo") {
+        } else if (
+          result.estado === "activo" ||
+          result.estado === "conteo listo"
+        ) {
           if (
             moment()
               .utc()
@@ -323,22 +339,22 @@ router.post("/recuperarContrasena/:token/:id", (req, res) => {
   const { token, id } = req.params;
 
   if (req.body) {
-    if(!isNaN(id)){
-    Votante.restablecerContrasena(token, id, req.body)
-      .then((result) => {
-        res.send(result);
-      })
-      .catch((err) => {
-        res.status(400).send({ error: err.toString() });
-      });
-    }else{
+    if (!isNaN(id)) {
+      Votante.restablecerContrasena(token, id, req.body)
+        .then((result) => {
+          res.send(result);
+        })
+        .catch((err) => {
+          res.status(400).send({ error: err.toString() });
+        });
+    } else {
       MesaElectoral.restablecerContrasena(token, id, req.body)
-      .then((result) => {
-        res.send(result);
-      })
-      .catch((err) => {
-        res.status(400).send({ error: err.toString() });
-      });
+        .then((result) => {
+          res.send(result);
+        })
+        .catch((err) => {
+          res.status(400).send({ error: err.toString() });
+        });
     }
   } else {
     res.status(400).send({ error: "No se han podido cambiar la contrasena" });
@@ -360,4 +376,12 @@ router.post("/registroMesa/:token/:id", verificarMesa, (req, res) => {
   }
 }
 );
+router.get("/revisarConteo", (req, res) => {
+  Votacion.verEstadoUltimaVotacion().then((result) => {
+    if (result.estado === "conteo listo") {
+      res.send({ message: "ok" });
+    }
+  });
+});
+
 module.exports = router;
