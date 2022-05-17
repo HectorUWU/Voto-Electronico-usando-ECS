@@ -37,7 +37,7 @@ class MesaElectoral {
    * @param id  {string}, Id del integrante de la mesa electoral
    * @param contra  {string}, Contraseña del integrante de la mesa electoral
    */
-  async validarParticipante(llavePrivada, id, contra) {
+  validarParticipante(llavePrivada, id, contra) {
     const rsa = new Rsa(llavePrivada);
     if (rsa.validarLlavePrivada(contra)) {
       this.participantesPresentes.push({
@@ -49,6 +49,14 @@ class MesaElectoral {
       return { mensaje: "La llave es invalida", estatus: 0 };
     }
     if (this.participantesPresentes.length === this.umbral) {
+      return { mensaje: "Listo para iniciar", estatus: 4 };
+    } else {
+      return { mensaje: "Esperando a participantes", estatus: 1 };
+    }
+  }
+
+  contarVotos() {
+    return new Promise((resolve, reject) => {
       const idParticipantes = [];
       for (let i = 0; i < this.participantesPresentes.length; i++) {
         idParticipantes.push(this.participantesPresentes[i].id);
@@ -56,17 +64,14 @@ class MesaElectoral {
       console.log(
         "-/-/-/-/-/-/-/-/-/-/-/-/*COMENZANDO CONTEO*/-/-/-/-/-/-/-/-/-/-/-/-"
       );
-      const resultado = await this.extraerVotos(idParticipantes)
+      this.extraerVotos(idParticipantes)
         .then((result) => {
-          return result;
+          resolve(result);
         })
         .catch((err) => {
-          return { error: err.message, estatus: 3 };
+          reject(err);
         });
-      return resultado;
-    } else {
-      return { mensaje: "Esperando a participantes", estatus: 1 };
-    }
+    });
   }
 
   /**
@@ -125,6 +130,7 @@ class MesaElectoral {
                   resultadoFinal.id,
                 ])
                 .then((result) => {
+                  votacionBD.finalizarConteo();
                   votanteBD.actualizarEstudiantes();
                   resolve({ mensaje: "Conteo exitoso", estatus: 2 });
                 })
@@ -134,7 +140,6 @@ class MesaElectoral {
                 });
             });
           });
-          votacionBD.finalizarConteo();
         })
         .catch((err) => {
           console.log("ERROR AL EXTRAER FRAGMENTOS " + err);
@@ -173,7 +178,7 @@ class MesaElectoral {
       temp.forEach((res) => {
         if (res.boleta === undefined) {
           reject(
-            new Error('Error, el archivo no cumple con el formato necesario')
+            new Error("Error, el archivo no cumple con el formato necesario")
           );
         }
         boletas.push(res.boleta);
