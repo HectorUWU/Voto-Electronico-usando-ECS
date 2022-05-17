@@ -60,6 +60,8 @@ class Votante {
                 fragmentos.push(fragmento);
                 i++;
               }
+              return fragmentos
+            }).then((fragmentos) => {
               F.guardarFragmentos(fragmentos).then((result) => {
                 resolve({ mensaje: "Voto correcto" });
               });
