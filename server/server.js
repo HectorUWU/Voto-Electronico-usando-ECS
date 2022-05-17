@@ -21,6 +21,7 @@ const routes = require("./routes/routes");
 // CONFIG
 
 let conteo = new MesaElectoral();
+let conteoEnCurso = false;
 io.on("connection", (socket) => {
   console.log("WS: Client connected");
   socket.on("llave privada", (participante) => {
@@ -37,36 +38,49 @@ io.on("connection", (socket) => {
     });
 
     if (!estaPresente) {
-      conteo
-        .validarParticipante(jsondata.llave, jsondata.id, jsondata.contrasena)
-        .then((result) => {
-          if (result.estatus === 0) {
-            socket.disconnect();
-          } else if (result.estatus === 1 || result.estatus === 2) {
-            presentes = conteo.verPresentes();
-            ModelMesa.obtenerListaCompleta().then((result) => {
-              result.forEach((integranteMesa) => {
-                let estatus = 0;
-                presentes.forEach((presente) => {
-                  if (presente === integranteMesa.idMesaElectoral) {
-                    estatus = 1;
-                  }
-                });
-                io.emit("lista mesa", {
-                  id: integranteMesa.idMesaElectoral,
-                  estatus: estatus,
-                });
-              });
+      const result = conteo.validarParticipante(
+        jsondata.llave,
+        jsondata.id,
+        jsondata.contrasena
+      );
+
+      if (result.estatus === 0) {
+        socket.disconnect();
+      } else if (result.estatus === 1 || result.estatus === 4) {
+        presentes = conteo.verPresentes();
+        ModelMesa.obtenerListaCompleta().then((result) => {
+          result.forEach((integranteMesa) => {
+            let estatus = 0;
+            presentes.forEach((presente) => {
+              if (presente === integranteMesa.idMesaElectoral) {
+                estatus = 1;
+              }
             });
-            if (result.estatus === 2) {
-              io.emit("conteo listo", result.mensaje);
-              conteo = new MesaElectoral();
-            }
-          } else {
-            io.emit("error", result.error);
-            conteo = new MesaElectoral();
-          }
+            io.emit("lista mesa", {
+              id: integranteMesa.idMesaElectoral,
+              estatus: estatus,
+            });
+          });
         });
+        if (result.estatus === 4) {
+          conteoEnCurso = true;
+          io.emit("comenzando conteo");
+          conteo
+            .contarVotos()
+            .then((result) => {
+              io.emit("conteo listo", result);
+            })
+            .catch((err) => {
+              io.emit("error", err);
+            });
+
+          conteo = new MesaElectoral();
+          conteoEnCurso = false;
+        }
+      } else {
+        io.emit("error", result.error);
+        conteo = new MesaElectoral();
+      }
     } else {
       presentes = conteo.verPresentes();
       ModelMesa.obtenerListaCompleta().then((result) => {
@@ -77,12 +91,15 @@ io.on("connection", (socket) => {
               estatus = 1;
             }
           });
-          io.emit("lista mesa", {
+          socket.emit("lista mesa", {
             id: integranteMesa.idMesaElectoral,
             estatus: estatus,
           });
         });
       });
+      if (conteoEnCurso) {
+        socket.emit("comenzando conteo");
+      }
     }
   });
 });

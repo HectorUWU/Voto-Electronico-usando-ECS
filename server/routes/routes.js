@@ -277,8 +277,8 @@ router.post("/publicarResultados", verificarMesa, (req, res) => {
           res.status(500).send({ error: err.toString() });
         });
     } else {
-      res.status(400).send({
-        error: "Ya se han publicado los resultados",
+      res.send({
+        mensaje: "Ya se han publicado los resultados",
       });
     }
   });

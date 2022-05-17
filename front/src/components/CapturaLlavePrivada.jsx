@@ -23,6 +23,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Link } from "react-router-dom";
 import io from "socket.io-client";
 import Confirmacion from "./Confirmacion";
+import Cargando from "./Cargando";
 
 const Input = styled("input")({
   display: "none",
@@ -44,6 +45,7 @@ export default function CapturaLlavePrivada() {
   let [conteoEnCurso, setConteoEnCurso] = React.useState(true);
   let [hayArchivo, setHayArchivo] = React.useState(false);
   const [saltarFormulario, setSalto] = React.useState(false);
+  const [openCargando, setOpenCargando] = React.useState(false);
 
   const [severity, setSeverity] = React.useState("info");
   const [tablamsg, setTablamsg] =
@@ -133,7 +135,7 @@ export default function CapturaLlavePrivada() {
           });
 
           socket.on("error", function (msj) {
-            conteoEnCurso = false;
+            setOpenCargando(false);
             setSeverity("error");
             setTablamsg(
               "Ocurrió un error en el conteo de votos, por favor refresque la página e ingrese sus credenciales nuevamente. ERROR: " +
@@ -142,9 +144,13 @@ export default function CapturaLlavePrivada() {
             socket.disconnect();
           });
 
+          socket.on("comenzando conteo", function () {
+            setOpenCargando(true);
+          })
+
           socket.on("conteo listo", function () {
-            conteoEnCurso = false;
-            setConteoEnCurso(conteoEnCurso);
+            setOpenCargando(false);
+            setConteoEnCurso(false);
             setSeverity("success");
             setTablamsg(
               "Participantes necesarios presentes. Pulse el botón Continuar para ver los resultados del conteo de votos"
@@ -152,7 +158,6 @@ export default function CapturaLlavePrivada() {
           });
 
           socket.on("disconnect", function () {
-            console.log(conteoEnCurso);
             if (conteoEnCurso) {
               document.getElementById("formContainer").style.display = "block";
               document.getElementById("tablaEspera").style.display = "none";
@@ -199,6 +204,7 @@ export default function CapturaLlavePrivada() {
     return (
       <ThemeProvider theme={theme}>
         <Container component="main" maxWidth="md">
+        <Cargando open={openCargando} mensaje={"Los votos se estan contando, por favor espere"} />
           <CssBaseline />
           <div id="formContainer">
             <Box
