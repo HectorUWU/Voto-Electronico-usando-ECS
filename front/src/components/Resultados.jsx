@@ -57,7 +57,7 @@ export default function Resultados() {
           setMensaje(response.error);
           setOpen(true);
         } else {
-          console.log("Fin de proceso");
+          setMensaje(response.mensaje);
           setOpen(true);
         }
       });
