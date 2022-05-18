@@ -254,23 +254,30 @@ Votante.enviarToken = function (votante) {
         } else if (resultado.verificacion === "Pendiente") {
           reject(new Error("Cuenta no verificada"));
         } else {
-            const token = jwt.sign( // genera token
-              {
-                id: resultado.boleta,
-                contrasena: resultado.contrasena,
-                correo: resultado.correo
-              },
-              process.env.SECRET,
-              { expiresIn: "1h" }
-            );
-            const link = 
-            "https://vota-escom.herokuapp.com/recuperarContrasena/" + token + "/" + votante.id;
-            const correo = new Correo();
-            correo.enviarCorreo(resultado.correo,
-              "Para restablecer tu contraseña favor de entrar en el siguiente link\n" +
-                  link+"\n Si no has sido tu, no debes de hacer nada." ,
-              "Recuperar Contraseña");
-            resolve({ mensaje: "Token enviado" });
+          const token = jwt.sign(
+            // genera token
+            {
+              id: resultado.boleta,
+              contrasena: resultado.contrasena,
+              correo: resultado.correo,
+            },
+            process.env.SECRET,
+            { expiresIn: "1h" }
+          );
+          const link =
+            "https://vota-escom.herokuapp.com/recuperarContrasena/" +
+            token +
+            "/" +
+            votante.id;
+          const correo = new Correo();
+          correo.enviarCorreo(
+            resultado.correo,
+            "Para restablecer tu contraseña favor de entrar en el siguiente link\n" +
+              link +
+              "\n Si no has sido tu, no debes de hacer nada.",
+            "Recuperar Contraseña"
+          );
+          resolve({ mensaje: "Token enviado" });
         }
       })
       .catch((err) => {
@@ -331,7 +338,9 @@ Votante.actualizarEstadoAcademico = function (boletas) {
   return new Promise((resolve, reject) => {
     conexion
       .promise()
-      .query("UPDATE votante SET estadoAcademico=1 where idVotante in (?);", [boletas])
+      .query("UPDATE votante SET estadoAcademico=1 where idVotante in (?);", [
+        boletas,
+      ])
       .then(([fields, rows]) => {
         resolve({ mensaje: "Estado Actualizado" });
       })
@@ -345,7 +354,9 @@ Votante.actualizarEstudiantes = function () {
   return new Promise((resolve, reject) => {
     conexion
       .promise()
-      .query("UPDATE votante SET estadoAcademico=0, estadoVoto=0 where estadoAcademico=1")
+      .query(
+        "UPDATE votante SET estadoAcademico=0, estadoVoto=0 where estadoAcademico=1"
+      )
       .then(([fields, rows]) => {
         resolve({ mensaje: "Estado Actualizado" });
       })
@@ -353,6 +364,22 @@ Votante.actualizarEstudiantes = function () {
         reject(err);
       });
   });
-}
+};
 
+Votante.obtenerInformacion = function (idVotante) {
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query(
+        "SELECT estadoAcademico, estadoVoto FROM votante WHERE idVotante=?;",
+        [idVotante]
+      )
+      .then(([fields, rows]) => {
+        resolve(fields[0]);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
 module.exports = Votante; // exporta clase votante

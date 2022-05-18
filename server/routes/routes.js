@@ -63,15 +63,23 @@ router.post("/login", (req, res) => {
 
 router.post("/votar", verificarVotantes, (req, res) => {
   if (req.body) {
-    Votacion.getUmbral()
+    Promise.all([
+      Votacion.getUmbral(),
+      Votante.obtenerInformacion(req.body.idVotante),
+    ])
       .then((result) => {
-        const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
-        V.votar(req.body.eleccion, result.umbral, result.participantes).then(
-          (result) => {
-            Votante.modificarEstadoVoto([1, req.body.idVotante]);
-            res.send(result);
-          }
-        );
+        const V = new Votan(result[1].estadoVoto, result[1].estadoAcademico);
+        return V.votar(
+          req.body.eleccion,
+          result[0].umbral,
+          result[0].participantes
+        ).catch((err) => {
+          res.status(500).send({ error: err });
+        });
+      })
+      .then((result) => {
+        Votante.modificarEstadoVoto([1, req.body.idVotante]);
+        res.send(result);
       })
       .catch((err) => {
         res.status(500).send({ error: err });
@@ -366,19 +374,18 @@ router.post("/recuperarContrasena/:token/:id", (req, res) => {
 
 router.post("/registroMesa/:token/:id", (req, res) => {
   const { token, id } = req.params;
-  if(req.body){
+  if (req.body) {
     MesaElectoral.registrar(token, id, req.body)
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => {
-      res.status(400).send({ error: err.toString() });
-    });
-  }else{
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.toString() });
+      });
+  } else {
     res.status(400).send({ error: "No se han podido registrar la mesa" });
   }
-}
-);
+});
 router.get("/revisarConteo", (req, res) => {
   Votacion.verEstadoUltimaVotacion().then((result) => {
     if (result.estado === "conteo listo") {
@@ -404,7 +411,7 @@ router.post("/actualizarAlumnos", verificarMesa, (req, res) => {
           res.send(resultado);
         })
         .catch((err) => {
-          res.status(400).send({error: err.toString() });
+          res.status(400).send({ error: err.toString() });
         });
     }
   });

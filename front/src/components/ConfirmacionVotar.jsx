@@ -55,8 +55,6 @@ function ConfirmacionVotar(props) {
         let datos = {
             // Se asigna a eleccion -1 para anular el voto o el ID del candidato en caso de haberse seleccionado alguno 
             eleccion: Object.keys(props.eleccion).length===0?-1:props.eleccion.IdCandidato,
-            estadoAcademico: data.estadoAcademico,
-            estadoVoto: data.estadoVoto,
             idVotante: data.idVotante,
         };
         let config = {
