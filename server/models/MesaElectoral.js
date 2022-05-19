@@ -291,7 +291,7 @@ MesaElectoral.solicitarRegistro = function (candidato) {
     const link = "https://vota-escom.herokuapp.com/registroMesa/" + 
       token +
       "/" +
-      candidato.idCandidato;
+      candidato.IdCandidato;
     correo.enviarCorreo(
       candidato.correo,
       "Para registrarte en la mesa electoral favor de entrar en el siguiente link\n" +
