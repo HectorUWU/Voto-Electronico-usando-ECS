@@ -283,7 +283,7 @@ MesaElectoral.solicitarRegistro = function (candidato) {
   return new Promise((resolve, reject) => {
     const token = jwt.sign(
       {
-        idCandidato: candidato.idCandidato,
+        idCandidato: candidato.IdCandidato,
         correo: candidato.correo
       },
       process.env.SECRET,
@@ -295,7 +295,7 @@ MesaElectoral.solicitarRegistro = function (candidato) {
     correo.enviarCorreo(
       candidato.correo,
       "Para registrarte en la mesa electoral favor de entrar en el siguiente link\n" +
-        link +
+        link,
       "Registro en Mesa Electoral"
     );
     resolve({ mensaje: "Token enviado" });

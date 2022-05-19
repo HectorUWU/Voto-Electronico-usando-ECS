@@ -1,3 +1,7 @@
-const me = require('./MesaElectoral');
+const c = require('./Candidato');
 
-me.solicitarRegistro({idCandidato: 1, boleta: "123456789", correo: "hperezb1400@alumno.ipn.mx"})
+c.obtenerElectos().then((electos) => {
+    electos.forEach((e) => {
+        console.log(e.nombre);
+    });
+});

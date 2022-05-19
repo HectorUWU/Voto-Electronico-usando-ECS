@@ -63,23 +63,16 @@ router.post("/login", (req, res) => {
 
 router.post("/votar", verificarVotantes, (req, res) => {
   if (req.body) {
-    Promise.all([
-      Votacion.getUmbral(),
-      Votante.obtenerInformacion(req.body.idVotante),
-    ])
+    Votacion.getUmbral()
       .then((result) => {
-        const V = new Votan(result[1].estadoVoto, result[1].estadoAcademico);
-        return V.votar(
-          req.body.eleccion,
-          result[0].umbral,
-          result[0].participantes
-        ).catch((err) => {
-          res.status(500).send({ error: err });
-        });
-      })
-      .then((result) => {
-        Votante.modificarEstadoVoto([1, req.body.idVotante]);
-        res.send(result);
+        const V = new Votan(req.body.estadoVoto, req.body.estadoAcademico);
+        console.log(result);
+        V.votar(req.body.eleccion, result.umbral, result.participantes).then(
+          (result) => {
+            Votante.modificarEstadoVoto([1, req.body.idVotante]);
+            res.send(result);
+          }
+        );
       })
       .catch((err) => {
         res.status(500).send({ error: err });
@@ -285,8 +278,8 @@ router.post("/publicarResultados", verificarMesa, (req, res) => {
           res.status(500).send({ error: err.toString() });
         });
     } else {
-      res.send({
-        mensaje: "Ya se han publicado los resultados",
+      res.status(400).send({
+        error: "Ya se han publicado los resultados",
       });
     }
   });
@@ -374,18 +367,19 @@ router.post("/recuperarContrasena/:token/:id", (req, res) => {
 
 router.post("/registroMesa/:token/:id", (req, res) => {
   const { token, id } = req.params;
-  if (req.body) {
+  if(req.body){
     MesaElectoral.registrar(token, id, req.body)
-      .then((result) => {
-        res.send(result);
-      })
-      .catch((err) => {
-        res.status(400).send({ error: err.toString() });
-      });
-  } else {
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      res.status(400).send({ error: err.toString() });
+    });
+  }else{
     res.status(400).send({ error: "No se han podido registrar la mesa" });
   }
-});
+}
+);
 router.get("/revisarConteo", (req, res) => {
   Votacion.verEstadoUltimaVotacion().then((result) => {
     if (result.estado === "conteo listo") {
@@ -411,10 +405,27 @@ router.post("/actualizarAlumnos", verificarMesa, (req, res) => {
           res.send(resultado);
         })
         .catch((err) => {
-          res.status(400).send({ error: err.toString() });
+          res.status(400).send({error: err.toString() });
         });
     }
   });
+});
+
+router.post("/solicitarRegistro",  (req, res) => {
+  if (req.body) {
+    Candidato.obtenerElectos().then((result) => {
+      if (result.length > 0) {
+        result.forEach((candidato) => {
+          MesaElectoral.solicitarRegistro(candidato)
+        });
+        res.send({ message: "ok" });
+      } else {
+        res.status(400).send({ error: "No hay candidatos registrados" });
+      }
+    });
+  } else {
+    res.status(400).send({ error: "No se han podido solicitar los registros" });
+  }
 });
 
 module.exports = router;

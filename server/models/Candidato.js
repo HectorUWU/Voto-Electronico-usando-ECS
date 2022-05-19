@@ -103,4 +103,26 @@ Candidato.obtenerCandidatos = function () {
       });
   });
 };
+
+
+/**
+ * Regresa todos los candidatos  electos de la ultima votacion
+ * @return {promise}
+ */
+Candidato.obtenerElectos = function () {
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query(
+        "SELECT * FROM candidato WHERE idVotacion=(SELECT MAX(idVotacion) FROM votacion) AND resultado=1"
+      )
+      .then(([fields, rows]) => {
+        resolve(fields);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
 module.exports = Candidato; // Exporta el modulo
