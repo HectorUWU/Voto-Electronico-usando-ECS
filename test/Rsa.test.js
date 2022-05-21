@@ -83,3 +83,17 @@ test("Ingresar texto cifrado previamente, llave privada y contrasena top secret 
     )
   ).toBe("my secret data");
 });
+
+test("Validacion de una llave privada con contraseña correcta", () => {
+  expect(rsaDescifrar.validarLlavePrivada("top secret")).toBe(true);
+});
+
+test("Validacion de una llave privada con contraseña incorrecta", () => {
+  expect(rsaDescifrar.validarLlavePrivada("top")).toBe(false);
+});
+
+const llaveFalsa = "Esto no es una llave";
+const rsaValidar = new Rsa(llaveFalsa);
+test("Validacion de una variable que no contiene ninguna llave", () => {
+  expect(rsaValidar.validarLlavePrivada("top secret")).toBe(false);
+});
