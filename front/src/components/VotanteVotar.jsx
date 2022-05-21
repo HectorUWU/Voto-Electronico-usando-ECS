@@ -37,7 +37,7 @@ export default function VotanteVotar() {
    * Estado que contendra los objetos de todos los candidatos de la base de datos
    * @type {object}
    */
-   const [estadoVotacion, setEstadoVotacion] = React.useState("activo");
+  const [estadoVotacion, setEstadoVotacion] = React.useState("activo");
   /**
    * Estado que contendra los objetos de todos los candidatos de la base de datos
    * @type {object}
@@ -59,43 +59,42 @@ export default function VotanteVotar() {
    */
   const [showError, setShowError] = React.useState(false);
   /**
-   * Funcion que recupera la informacion de los candidatos
+   * Funcion que recupera la informacion de los candidatos y la informacion de la ultima votacion
    */
   React.useEffect(() => {
-    fetch("http://localhost:8000/api/verCandidatos")
+    fetch("https://vota-escom.herokuapp.com/api/verCandidatos")
       .then((response) => {
         return response.json();
       })
       .then((candidatos) => {
         setInfoCandidatos(candidatos);
-        fetch("http://localhost:8000/api/verEstadoUltimaVotacion")
-      .then((response) => {
-        return response.json();
-      })
-      .then((response) => {
-        setEstadoVotacion(response.estado);
-      });
+        fetch("https://vota-escom.herokuapp.com/api/verEstadoUltimaVotacion")
+          .then((response) => {
+            return response.json();
+          })
+          .then((response) => {
+            setEstadoVotacion(response.estado);
+          });
       })
       .catch((error) => {
         setError(error);
         setShowError(true);
       });
-      
   }, []);
-
-  /**
-   * Funcion que recupera el estado de la ultima votacion
-   */
 
   const handleChange = (event) => {
     setSelectedValue(event.target.value);
   };
   let data = sessionStorage.getItem("votante");
   data = JSON.parse(data);
-  
+
   if (data != null) {
     // Verifica que el alumno no haya votado, este inscrito y que la votacion esta activa
-    if (data.estadoVoto === 0 && data.estadoAcademico === 1 && estadoVotacion === "activo") {
+    if (
+      data.estadoVoto === 0 &&
+      data.estadoAcademico === 1 &&
+      estadoVotacion === "activo"
+    ) {
       return (
         <Container component="main">
           <Box sx={{ flexGrow: 1, marginTop: 6 }}>
