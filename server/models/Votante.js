@@ -355,7 +355,7 @@ Votante.actualizarEstudiantes = function () {
     conexion
       .promise()
       .query(
-        "UPDATE votante SET estadoAcademico=0, estadoVoto=0 where estadoAcademico=1"
+        "UPDATE votante SET estadoAcademico=0, estadoVoto=0"
       )
       .then(([fields, rows]) => {
         resolve({ mensaje: "Estado Actualizado" });

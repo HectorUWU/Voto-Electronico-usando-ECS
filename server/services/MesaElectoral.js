@@ -129,17 +129,16 @@ class MesaElectoral {
                   resultadoFinal.resultado,
                   resultadoFinal.id,
                 ])
-                .then((result) => {
-                  votacionBD.finalizarConteo();
-                  votanteBD.actualizarEstudiantes();
-                  resolve({ mensaje: "Conteo exitoso", estatus: 2 });
-                })
+                .then((result) => {})
                 .catch((err) => {
                   console.log("ERROR AL GUARDAR RESULTADOS " + err);
                   reject(err);
                 });
             });
           });
+          votacionBD.finalizarConteo();
+          votanteBD.actualizarEstudiantes();
+          resolve({ mensaje: "Conteo exitoso", estatus: 2 });
         })
         .catch((err) => {
           console.log("ERROR AL EXTRAER FRAGMENTOS " + err);
