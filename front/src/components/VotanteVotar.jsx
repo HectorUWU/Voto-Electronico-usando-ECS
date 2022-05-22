@@ -37,6 +37,11 @@ export default function VotanteVotar() {
    * Estado que contendra los objetos de todos los candidatos de la base de datos
    * @type {object}
    */
+  const [estadoVotacion, setEstadoVotacion] = React.useState("activo");
+  /**
+   * Estado que contendra los objetos de todos los candidatos de la base de datos
+   * @type {object}
+   */
   const [infoCandidatos, setInfoCandidatos] = React.useState([]);
   /**
    * Estado que contendra la eleccion del votante
@@ -54,7 +59,7 @@ export default function VotanteVotar() {
    */
   const [showError, setShowError] = React.useState(false);
   /**
-   * Funcion que recupera la informacion de los candidatos
+   * Funcion que recupera la informacion de los candidatos y la informacion de la ultima votacion
    */
   React.useEffect(() => {
     fetch("https://vota-escom.herokuapp.com/api/verCandidatos")
@@ -63,6 +68,13 @@ export default function VotanteVotar() {
       })
       .then((candidatos) => {
         setInfoCandidatos(candidatos);
+        fetch("https://vota-escom.herokuapp.com/api/verEstadoUltimaVotacion")
+          .then((response) => {
+            return response.json();
+          })
+          .then((response) => {
+            setEstadoVotacion(response.estado);
+          });
       })
       .catch((error) => {
         setError(error);
@@ -75,8 +87,14 @@ export default function VotanteVotar() {
   };
   let data = sessionStorage.getItem("votante");
   data = JSON.parse(data);
+
   if (data != null) {
-    if (data.estadoVoto === 0) {
+    // Verifica que el alumno no haya votado, este inscrito y que la votacion esta activa
+    if (
+      data.estadoVoto === 0 &&
+      data.estadoAcademico === 1 &&
+      estadoVotacion === "activo"
+    ) {
       return (
         <Container component="main">
           <Box sx={{ flexGrow: 1, marginTop: 6 }}>
