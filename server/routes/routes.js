@@ -387,10 +387,13 @@ router.post("/registroMesa/:token/:id", (req, res) => {
   }
 }
 );
+
 router.get("/revisarConteo", (req, res) => {
   Votacion.verEstadoUltimaVotacion().then((result) => {
     if (result.estado === "conteo listo") {
       res.send({ message: "ok" });
+    } else {
+      res.send({ message: "not ready"});
     }
   });
 });
