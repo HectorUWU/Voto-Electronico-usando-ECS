@@ -78,7 +78,7 @@ router.post("/votar", verificarVotantes, (req, res) => {
         });
       })
       .then((result) => {
-        // Votante.modificarEstadoVoto([1, req.body.idVotante]);
+        Votante.modificarEstadoVoto([1, req.body.idVotante]);
         res.send(result);
       })
       .catch((err) => {
