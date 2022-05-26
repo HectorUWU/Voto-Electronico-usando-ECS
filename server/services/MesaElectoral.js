@@ -24,7 +24,6 @@ class MesaElectoral {
     this.participantesPresentes = [];
   }
 
-
   setUmbral() {
     this.umbral = this.definirUmbral();
   }

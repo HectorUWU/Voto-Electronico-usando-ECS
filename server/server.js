@@ -39,7 +39,6 @@ io.on("connection", (socket) => {
     });
 
     if (!estaPresente) {
-      console.log(conteo.getUmbral())
       const result = conteo.validarParticipante(
         jsondata.llave,
         jsondata.id,
