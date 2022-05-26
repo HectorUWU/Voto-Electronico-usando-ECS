@@ -23,6 +23,7 @@ const routes = require("./routes/routes");
 let conteo = new MesaElectoral();
 let conteoEnCurso = false;
 io.on("connection", (socket) => {
+  conteo.setUmbral();
   console.log("WS: Client connected");
   socket.on("llave privada", (participante) => {
     const jsondata = JSON.parse(participante);
@@ -38,6 +39,7 @@ io.on("connection", (socket) => {
     });
 
     if (!estaPresente) {
+      console.log(conteo.getUmbral())
       const result = conteo.validarParticipante(
         jsondata.llave,
         jsondata.id,

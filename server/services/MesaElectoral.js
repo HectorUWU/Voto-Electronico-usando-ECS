@@ -21,8 +21,16 @@ class MesaElectoral {
    * @param umbral {numero}, umbral del ECS
    */
   constructor() {
-    this.umbral = this.definirUmbral();
     this.participantesPresentes = [];
+  }
+
+
+  setUmbral() {
+    this.umbral = this.definirUmbral();
+  }
+
+  getUmbral() {
+    return this.umbral;
   }
 
   async definirUmbral() {
