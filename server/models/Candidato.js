@@ -34,7 +34,6 @@ Candidato.registro = function (candidato) {
       reject(new Error("Candidato ya registrado"));
     }else {
       const ipn = candidato.correo.split("@");
-      console.log(candidato.link)
       if(ipn[1] === "alumno.ipn.mx"){
       conexion
         .promise()

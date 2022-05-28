@@ -82,8 +82,8 @@ MesaElectoral.registrar = function (token, id, mesaelectoral) {
   const [publica, privada] = Rsa.generarLLaves(mesaelectoral.contrasena);
   return new Promise((resolve, reject) => {
     const verificacion = jwt.verify(token, process.env.SECRET);
-    if (verificacion) {
-      const ipn = mesaelectoral.correosplit("@");
+    if (verificacion.correo === mesaelectoral.correo) {
+      const ipn = mesaelectoral.correo.split("@");
       if (ipn[1] === "alumno.ipn.mx") {
         if (!MesaElectoral.verificarBoleta(mesaelectoral.boleta)) {
           reject(new Error("Boleta invalida"));

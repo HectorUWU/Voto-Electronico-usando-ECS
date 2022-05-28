@@ -75,6 +75,11 @@ export default function RegistroCandidatos() {
         setError("Debes de completar el formulario");
         setShowError(true);
       } else {
+        const correo = formulario.get("correo").split("@");
+        if (correo[1] !== "alumno.ipn.mx") {
+          setError("El correo debe ser institucional");
+          setShowError(true);
+        } else {
         const registro = {
           nombre: formulario.get("nombre"),
           correo: formulario.get("correo"),
@@ -120,6 +125,7 @@ export default function RegistroCandidatos() {
                 });
             }
           });
+        }
       }
     } else {
       setError("Debes seleccionar un archivo de imagen.");
