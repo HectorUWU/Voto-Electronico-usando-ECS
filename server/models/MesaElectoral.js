@@ -76,35 +76,54 @@ MesaElectoral.obtenerLLavesPublicas = function () {
  * @return {Promise}
  */
 MesaElectoral.registrar = function (token, id, mesaelectoral) {
-  const sal = 10;
-  console.log(mesaelectoral);
+  const salt = 10;
+  const regex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,16}$/;
   const [publica, privada] = Rsa.generarLLaves(mesaelectoral.contrasena);
   return new Promise((resolve, reject) => {
     const verificacion = jwt.verify(token, process.env.SECRET);
     if (verificacion) {
-    bcryptjs
-      .hash(mesaelectoral.contrasena, sal)
-      .then(function (hash) {
-        return conexion.promise().query("INSERT INTO mesaelectoral SET ?", {
-          boleta: mesaelectoral.boleta,
-          idmesaelectoral: mesaelectoral.idMesaElectoral,
-          contrasena: hash,
-          correo: mesaelectoral.correo,
-          clavePublica: publica,
-        });
-      })
-      .then(([fields, rows]) => {
-        correo.enviarLLave(privada, mesaelectoral.correo);
-        resolve({ mensaje: "Registro exitoso" });
-      })
-      .catch((error) => {
-        reject(error);
-      });
-} else {
-      reject(new Error( "Token invalido"));
+      const ipn = mesaelectoral.correosplit("@");
+      if (ipn[1] === "alumno.ipn.mx") {
+        if (!MesaElectoral.verificarBoleta(mesaelectoral.boleta)) {
+          reject(new Error("Boleta invalida"));
+        } else {
+          if (regex.test(mesaelectoral.contrasena)) {
+            bcryptjs
+              .hash(mesaelectoral.contrasena, salt)
+              .then(function (hash) {
+                return conexion
+                  .promise()
+                  .query("INSERT INTO mesaelectoral SET ?", {
+                    boleta: mesaelectoral.boleta,
+                    idmesaelectoral: mesaelectoral.idMesaElectoral,
+                    contrasena: hash,
+                    correo: mesaelectoral.correo,
+                    clavePublica: publica,
+                  });
+              })
+              .then(([fields, rows]) => {
+                correo.enviarLLave(privada, mesaelectoral.correo);
+                resolve({ mensaje: "Registro exitoso" });
+              })
+              .catch((error) => {
+                reject(error);
+              });
+          } else {
+            reject(
+              new Error(
+                "La contraseña debe contener al menos una mayuscula, una minuscula, un numero, un caracter especial($@$!%*?&) y debe tener entre 8 y 16 caracteres"
+              )
+            );
+          }
+        }
+      } else {
+        reject(new Error("Ingresa correo institucional"));
+      }
+    } else {
+      reject(new Error("Token invalido"));
     }
   });
-
 };
 
 /**
@@ -278,17 +297,18 @@ MesaElectoral.restablecerContrasena = function (token, id, me) {
   });
 };
 
-// Funcion que envia token por corereo, para solicitar registro 
+// Funcion que envia token por corereo, para solicitar registro
 MesaElectoral.solicitarRegistro = function (candidato) {
   return new Promise((resolve, reject) => {
     const token = jwt.sign(
       {
         idCandidato: candidato.IdCandidato,
-        correo: candidato.correo
+        correo: candidato.correo,
       },
-      process.env.SECRET,
+      process.env.SECRET
     );
-    const link = "https://vota-escom.herokuapp.com/registroMesa/" + 
+    const link =
+      "https://vota-escom.herokuapp.com/registroMesa/" +
       token +
       "/" +
       candidato.IdCandidato;
@@ -299,9 +319,8 @@ MesaElectoral.solicitarRegistro = function (candidato) {
       "Registro en Mesa Electoral"
     );
     resolve({ mensaje: "Token enviado" });
-  }
-  );
-}
+  });
+};
 
 MesaElectoral.validarContra = function (me) {
   return new Promise((resolve, reject) => {
@@ -328,4 +347,14 @@ MesaElectoral.validarContra = function (me) {
       });
   });
 };
+
+MesaElectoral.verificarBoleta = function (boleta) {
+  if (boleta.length === 10) {
+    if (boleta.substring(0, 2) === "20") {
+      return true;
+    }
+  }
+  return false;
+};
+
 module.exports = MesaElectoral;

@@ -33,6 +33,9 @@ Candidato.registro = function (candidato) {
       if(results){
       reject(new Error("Candidato ya registrado"));
     }else {
+      const ipn = candidato.correo.split("@");
+      console.log(candidato.link)
+      if(ipn[1] === "alumno.ipn.mx"){
       conexion
         .promise()
         .query(
@@ -57,6 +60,9 @@ Candidato.registro = function (candidato) {
         .catch((error) => {
           reject(error);
         });
+    }else{
+      reject(new Error("Ingresa correo institucional"));
+    }
     }
   })
   });
