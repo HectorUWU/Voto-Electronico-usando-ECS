@@ -195,9 +195,15 @@ router.get("/verResultadosUltimaVotacion", (req, res) => {
 
 router.post("/registroVotacion", verificarMesa, (req, res) => {
   if (req.body) {
-    Votacion.establecerVotacion(req.body)
+    MesaElectoral.obtenerNumeroIntegrantesMesa()
       .then((result) => {
-        res.send(result);
+        Votacion.establecerVotacion(req.body, result.numMesa)
+          .then((result) => {
+            res.send(result);
+          })
+          .catch((err) => {
+            res.status(400).send({ error: err.toString() });
+          });
       })
       .catch((err) => {
         res.status(400).send({ error: err.toString() });
@@ -374,26 +380,25 @@ router.post("/recuperarContrasena/:token/:id", (req, res) => {
 
 router.post("/registroMesa/:token/:id", (req, res) => {
   const { token, id } = req.params;
-  if(req.body){
+  if (req.body) {
     MesaElectoral.registrar(token, id, req.body)
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => {
-      res.status(400).send({ error: err.toString() });
-    });
-  }else{
+      .then((result) => {
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send({ error: err.toString() });
+      });
+  } else {
     res.status(400).send({ error: "No se han podido registrar la mesa" });
   }
-}
-);
+});
 
 router.get("/revisarConteo", (req, res) => {
   Votacion.verEstadoUltimaVotacion().then((result) => {
     if (result.estado === "conteo listo") {
       res.send({ message: "ok" });
     } else {
-      res.send({ message: "not ready"});
+      res.send({ message: "not ready" });
     }
   });
 });
@@ -415,18 +420,18 @@ router.post("/actualizarAlumnos", verificarMesa, (req, res) => {
           res.send(resultado);
         })
         .catch((err) => {
-          res.status(400).send({error: err.toString() });
+          res.status(400).send({ error: err.toString() });
         });
     }
   });
 });
 
-router.post("/solicitarRegistro",  (req, res) => {
+router.post("/solicitarRegistro", (req, res) => {
   if (req.body) {
     Candidato.obtenerElectos().then((result) => {
       if (result.length > 0) {
         result.forEach((candidato) => {
-          MesaElectoral.solicitarRegistro(candidato)
+          MesaElectoral.solicitarRegistro(candidato);
         });
         res.send({ message: "ok" });
       } else {

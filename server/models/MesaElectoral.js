@@ -357,4 +357,18 @@ MesaElectoral.verificarBoleta = function (boleta) {
   return false;
 };
 
+MesaElectoral.obtenerNumeroIntegrantesMesa = function () {
+  return new Promise((resolve, reject) => {
+    conexion
+      .promise()
+      .query("SELECT count(*) as numMesa FROM mesaelectoral")
+      .then(([fields, rows]) => {
+        resolve(fields[0]);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
 module.exports = MesaElectoral;
