@@ -45,9 +45,13 @@ class ECS {
     let evaluacion = 0;
     let j = 0;
     for (let i = coeficientes.length - 1; i >= 0; i--) {
-      evaluacion += Math.pow(x, i) * coeficientes[j];
+      evaluacion = math.add(
+        evaluacion,
+        math.multiply(math.pow(x, i), coeficientes[j])
+      );
       j++;
     }
+  
 
     return math.mod(evaluacion, CAMPO_TAM);
   }

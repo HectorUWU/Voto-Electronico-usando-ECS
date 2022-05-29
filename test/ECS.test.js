@@ -5,12 +5,12 @@ test("Fragmentar el secreto 21 con un umbral de 2 y 3 participantes nos debera d
   expect(ecs.fragmentarSecreto(21, 2, 3).size).toBe(3);
 });
 
-test("desfragmentacion (1,47), (3,195), (6,657) es 21", () => {
+test("desfragmentacion (1,1343433045), (5,2001450109), (3,1327094380) es 40", () => {
   const fragmentos = new Map();
-  fragmentos.set(1, 47);
-  fragmentos.set(3, 195);
-  fragmentos.set(6, 657);
-  expect(ecs.desfragmentarSecreto(fragmentos)).toBe(21);
+  fragmentos.set(1, 1343433045);
+  fragmentos.set(4,2114806357);
+  fragmentos.set(7,1219016585);
+  expect(ecs.desfragmentarSecreto(fragmentos)).toBe(40);
 });
 
 test("Evaluacion 4x^2 + 3x + 27 con x = 12 es 639", () => {
