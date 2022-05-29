@@ -63,7 +63,6 @@ class ECS {
       ecuaciones[i] = this.generarEcuacion(key, value, fragmentos.size);
       i++;
     }
-    console.log(ecuaciones)
     return this.resolverSistemaEcuaciones(ecuaciones);
   }
 
@@ -90,7 +89,6 @@ class ECS {
    */
   resolverSistemaEcuaciones(ecuaciones) {
     const res = rref(ecuaciones);
-    console.log(res);
     const x0 = res[0];
     return math.mod(x0[res[0].length - 1], CAMPO_TAM);
   }
