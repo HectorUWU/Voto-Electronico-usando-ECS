@@ -45,6 +45,7 @@
     "express-sessions": "^1.0.6",
     "googleapis": "^39.2.0",
     "jsonwebtoken": "^8.5.1",
+    "mathjs": "^10.6.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
     "nodemailer": "^6.7.3",

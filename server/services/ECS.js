@@ -6,8 +6,8 @@
  * v.1.0 Se crean funciones fragmentarSecreto, evaluarPolinomio, obtenerNumeroAleatorio, desfragmentarSecreto, generarEcuacion y resolverSistemaEcuaciones
  */
 const rref = require("rref"); // Módulo rref, necesario para resolver el sistema de ecuaciones
-
-const CAMPO_TAM = Math.pow(10, 2); // Constante que define el tamaño del plano
+const math = require("mathjs"); // Módulo mathjs, necesario para las operaciones matemáticas modulo
+const CAMPO_TAM = Math.pow(2, 31) - 1; // Constante que define el tamaño del plano
 
 class ECS {
   /** @constructor */
@@ -21,6 +21,7 @@ class ECS {
    */
   fragmentarSecreto(secreto, u, p) {
     const coeficientes = [];
+
     for (let i = 1; i < u; i++) {
       coeficientes.push(obtenerNumeroAleatorio(0, CAMPO_TAM));
     }
@@ -28,12 +29,7 @@ class ECS {
     const fragmentos = new Map();
 
     for (let i = 0; i < p; i++) {
-      let x;
-      do {
-        x = obtenerNumeroAleatorio(1, CAMPO_TAM);
-      } while (fragmentos.get(x) !== undefined);
-
-      fragmentos.set(x, this.evaluarPolinomio(x, coeficientes));
+      fragmentos.set(i + 1, this.evaluarPolinomio(i + 1, coeficientes));
     }
 
     return fragmentos;
@@ -53,7 +49,7 @@ class ECS {
       j++;
     }
 
-    return evaluacion;
+    return math.mod(evaluacion, CAMPO_TAM);
   }
 
   /**
@@ -68,7 +64,8 @@ class ECS {
       ecuaciones[i] = this.generarEcuacion(key, value, fragmentos.size);
       i++;
     }
-    return this.resolverSistemaEcuaciones(ecuaciones);
+
+    return math.mod(this.resolverSistemaEcuaciones(ecuaciones), CAMPO_TAM);
   }
 
   /**
