@@ -5,11 +5,11 @@ test("Fragmentar el secreto 21 con un umbral de 2 y 3 participantes nos debera d
   expect(ecs.fragmentarSecreto(21, 2, 3).size).toBe(3);
 });
 
-test("desfragmentacion (1,1343433045), (5,2001450109), (3,1327094380) es 40", () => {
+test("desfragmentacion (8,243367175), (5,1328931405), (3,1804960533) es 40", () => {
   const fragmentos = new Map();
-  fragmentos.set(1, 1343433045);
-  fragmentos.set(4,2114806357);
-  fragmentos.set(7,1219016585);
+  fragmentos.set(1,221692880);
+  fragmentos.set(8,243367175);
+  fragmentos.set(3,1804960533);
   expect(ecs.desfragmentarSecreto(fragmentos)).toBe(40);
 });
 

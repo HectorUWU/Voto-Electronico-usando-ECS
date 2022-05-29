@@ -7,6 +7,7 @@
  */
 const rref = require("rref"); // Módulo rref, necesario para resolver el sistema de ecuaciones
 const math = require("mathjs"); // Módulo mathjs, necesario para las operaciones matemáticas modulo
+const { randomInt } = require('crypto');
 const CAMPO_TAM = Math.pow(2, 31) - 1; // Constante que define el tamaño del plano
 
 class ECS {
@@ -22,16 +23,17 @@ class ECS {
   fragmentarSecreto(secreto, u, p) {
     const coeficientes = [];
 
-    for (let i = 1; i < u; i++) {
-      coeficientes.push(obtenerNumeroAleatorio(0, CAMPO_TAM));
-    }
     coeficientes.push(secreto);
+    for (let i = 1; i < u; i++) {
+      coeficientes.push(obtenerNumeroAleatorio(0, CAMPO_TAM-1));
+    }
+    
     const fragmentos = new Map();
-
+  
     for (let i = 0; i < p; i++) {
       fragmentos.set(i + 1, this.evaluarPolinomio(i + 1, coeficientes));
     }
-
+  
     return fragmentos;
   }
 
@@ -43,17 +45,10 @@ class ECS {
    */
   evaluarPolinomio(x, coeficientes) {
     let evaluacion = 0;
-    let j = 0;
-    for (let i = coeficientes.length - 1; i >= 0; i--) {
-      evaluacion = math.add(
-        evaluacion,
-        math.multiply(math.pow(x, i), coeficientes[j])
-      );
-      j++;
+    for (let i = 0; i < coeficientes.length; i++) {
+      evaluacion += coeficientes[i]*math.pow(x, i);
     }
-  
-
-    return math.mod(evaluacion, CAMPO_TAM);
+    return evaluacion;
   }
 
   /**
@@ -68,8 +63,8 @@ class ECS {
       ecuaciones[i] = this.generarEcuacion(key, value, fragmentos.size);
       i++;
     }
-
-    return math.mod(this.resolverSistemaEcuaciones(ecuaciones), CAMPO_TAM);
+    console.log(ecuaciones)
+    return this.resolverSistemaEcuaciones(ecuaciones);
   }
 
   /**
@@ -81,11 +76,11 @@ class ECS {
    */
   generarEcuacion(x, y, u) {
     const ecuacion = [];
-    for (let i = 0; i < u; i++) {
-      ecuacion.push(Math.pow(x, i));
-    }
-    ecuacion.push(y);
-    return ecuacion;
+  for (let i = 0; i < u; i++) {
+    ecuacion.push(math.mod(math.pow(x, i), CAMPO_TAM));
+  }
+  ecuacion.push(y);
+  return ecuacion;
   }
 
   /**
@@ -95,15 +90,14 @@ class ECS {
    */
   resolverSistemaEcuaciones(ecuaciones) {
     const res = rref(ecuaciones);
+    console.log(res);
     const x0 = res[0];
-    return x0[res[0].length - 1];
+    return math.mod(x0[res[0].length - 1], CAMPO_TAM);
   }
 }
 
 function obtenerNumeroAleatorio(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return randomInt(min, max);
 }
 
 module.exports = ECS;
