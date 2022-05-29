@@ -23,6 +23,10 @@ export default function SignUp() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const correo = data.get("correo").split("@");
+    if (correo[1] === "alumno.ipn.mx") {
+      const boleta = data.get("boleta");
+      if(boleta.length === 10 && boleta.substring(0, 2) === "20"){
     let datos = {
       boleta: data.get("boleta"),
       idMesaElectoral: "ME" + data.get("boleta") ,
@@ -48,6 +52,14 @@ export default function SignUp() {
           setOpen(true);
         }
       })
+    }else{
+      setError("Ingresa una boleta valida");
+      setShowError(true);
+    }
+  } else {
+    setError("Ingresa correo institucional");
+    setShowError(true);
+  }
   };
   let data = sessionStorage.getItem("votante");
   data = JSON.parse(data);

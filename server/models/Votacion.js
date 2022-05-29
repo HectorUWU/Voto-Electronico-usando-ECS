@@ -36,7 +36,7 @@ Votacion.verEstadoUltimaVotacion = function () {
  * @param votacion {Object}
  * @returns {promise}
  */
-Votacion.establecerVotacion = function (votacion) {
+Votacion.establecerVotacion = function (votacion, numMesa) {
   return new Promise((resolve, reject) => {
     if (votacion.nombre !== "") {
       // Solo acepta que la fecha de fin sea mayor a la de la fecha de inicio y que sea mayor a la fecha actual
@@ -46,12 +46,12 @@ Votacion.establecerVotacion = function (votacion) {
       ) {
         // Solo acepta que el numero de umbral sea mayor o igual a 2 y que sea menor al numero de participantes
         if (
-          (votacion.umbral > votacion.participantes) |
+          (votacion.umbral > numMesa) |
           (votacion.umbral < 2)
         ) {
           reject(
             new Error(
-              "El numero de umbral no puede ser mayor al numero de participantes ni menor a 2"
+              "El numero de umbral no puede ser mayor al numero de integrantes de la mesa = "+numMesa+", ni menor a 2"
             )
           );
         } else {
@@ -62,7 +62,7 @@ Votacion.establecerVotacion = function (votacion) {
               fechaInicio: votacion.fechaInicio,
               fechaFin: votacion.fechaFin,
               estado: "preparacion",
-              participantes: votacion.participantes,
+              participantes: numMesa,
               umbral: votacion.umbral,
             })
             .then(([fields, rows]) => {

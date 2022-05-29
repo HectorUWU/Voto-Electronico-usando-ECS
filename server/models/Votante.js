@@ -50,9 +50,13 @@ Votante.registro = function (votante) {
     const ipn = votante.correo.split("@");
     if (ipn[1] === "alumno.ipn.mx") {
       // Solo acepta correo institucional
-      if (votante.contrasena === "") {
-        reject(new Error("La contraseña no debe estar vacia"));
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,16}$/;
+      if (!regex.test(votante.contrasena)) {
+        reject(new Error("La contraseña debe contener al menos una mayuscula, una minuscula, un numero, un caracter especial($@$!%*?&) y debe tener entre 8 y 16 caracteres"));
       } else {
+        if(!Votante.verificarBoleta(votante.boleta)){
+          reject(new Error("Boleta no valida"));
+        }else{
         if (votante.contrasena === votante.repetir) {
           bcryptjs
             .hash(votante.contrasena, sal)
@@ -92,7 +96,7 @@ Votante.registro = function (votante) {
         } else {
           reject(new Error("Las contraseñas no coinciden"));
         }
-      }
+        }}
     } else {
       reject(new Error("Ingresa correo institucional"));
     }
@@ -382,4 +386,15 @@ Votante.obtenerInformacion = function (idVotante) {
       });
   });
 };
+// funcionFuncion que verifica el formato de la boleta
+Votante.verificarBoleta = function (boleta) {
+    if (boleta.length === 10) {
+      if(boleta.substring(0, 2) === "20"){
+        return true;
+      }
+    }
+    return false;
+  };
+
+
 module.exports = Votante; // exporta clase votante

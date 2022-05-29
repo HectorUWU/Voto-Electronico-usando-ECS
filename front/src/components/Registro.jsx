@@ -21,35 +21,47 @@ export default function SignUp() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    let datos = {
-      boleta: data.get("boleta"),
-      idVotante: data.get("boleta"),
-      correo: data.get("correo"),
-      contrasena: data.get("contrasena"),
-      repetir: data.get("confirmarContrasena"),
-    };
-    let config = {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(datos),
-    };
-    fetch("https://vota-escom.herokuapp.com/api/registro", config)
-      .then((response) => response.json())
-      .then((response) => {
-        if (response.error) {
-          setError(response.error);
+    const correo = data.get("correo").split("@");
+    if (correo[1] === "alumno.ipn.mx") {
+      const boleta = data.get("boleta");
+      if(boleta.length === 10 && boleta.substring(0, 2) === "20"){
+      let datos = {
+        boleta: data.get("boleta"),
+        idVotante: data.get("boleta"),
+        correo: data.get("correo"),
+        contrasena: data.get("contrasena"),
+        repetir: data.get("confirmarContrasena"),
+      };
+      let config = {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(datos),
+      };
+      fetch("https://vota-escom.herokuapp.com/api/registro", config)
+        .then((response) => response.json())
+        .then((response) => {
+          if (response.error) {
+            setError(response.error);
+            setShowError(true);
+          } else {
+            setOpen(true);
+          }
+        })
+        .catch((error) => {
+          setError(error);
           setShowError(true);
-        } else {
-          setOpen(true);
-        }
-      })
-      .catch((error) => {
-        setError(error);
+        });
+      }else{
+        setError("Ingresa una boleta valida");
         setShowError(true);
-      });
+      }
+    } else {
+      setError("Ingresa correo institucional");
+      setShowError(true);
+    }
   };
   let data = sessionStorage.getItem("votante");
   data = JSON.parse(data);

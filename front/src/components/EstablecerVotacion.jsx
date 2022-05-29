@@ -51,7 +51,6 @@ export default function SignUp() {
       nombre: data.get("nombreVotacion"),
       fechaInicio: moment(fechaInicio).format('YYYY-MM-DD'),
       fechaFin: moment(fechaFinal).format('YYYY-MM-DD'),
-      participantes: data.get("participantes"),
       umbral: data.get("umbral")
     };
     let config = {
@@ -134,16 +133,6 @@ export default function SignUp() {
                 value={fechaFinal}
                 onChange={handleChangeFechaFinal}
                 renderInput={(params) => <TextField required fullWidth {...params} />}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="participantes"
-                  label="No. de participantes"
-                  id="participantes"
-                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                 />
               </Grid>
               <Grid item xs={12}>
