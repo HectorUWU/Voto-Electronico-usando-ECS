@@ -6,7 +6,7 @@
  * v.1.0 Se crean funciones fragmentarSecreto, evaluarPolinomio, obtenerNumeroAleatorio, desfragmentarSecreto, generarEcuacion y resolverSistemaEcuaciones
  */
 const rref = require("rref"); // Módulo rref, necesario para resolver el sistema de ecuaciones
-const math = require("mathjs"); // Módulo mathjs, necesario para las operaciones matemáticas modulo
+const math = require("mathjs"); // Módulo mathjs, necesario para obtener operaciones matemáticas precisas
 const { randomInt } = require('crypto');
 const CAMPO_TAM = Math.pow(2, 31) - 1; // Constante que define el tamaño del plano
 
@@ -63,7 +63,6 @@ class ECS {
       ecuaciones[i] = this.generarEcuacion(key, value, fragmentos.size);
       i++;
     }
-    console.log(ecuaciones)
     return this.resolverSistemaEcuaciones(ecuaciones);
   }
 
@@ -90,7 +89,6 @@ class ECS {
    */
   resolverSistemaEcuaciones(ecuaciones) {
     const res = rref(ecuaciones);
-    console.log(res);
     const x0 = res[0];
     return math.mod(x0[res[0].length - 1], CAMPO_TAM);
   }
