@@ -46,7 +46,7 @@ class ECS {
   evaluarPolinomio(x, coeficientes) {
     let evaluacion = 0;
     for (let i = 0; i < coeficientes.length; i++) {
-      evaluacion += coeficientes[i]*math.pow(x, i);
+      evaluacion += coeficientes[i]*math.mod(math.pow(x, i), CAMPO_TAM);
     }
     return evaluacion;
   }
