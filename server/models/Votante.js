@@ -50,53 +50,59 @@ Votante.registro = function (votante) {
     const ipn = votante.correo.split("@");
     if (ipn[1] === "alumno.ipn.mx") {
       // Solo acepta correo institucional
-      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,16}$/;
+      const regex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,16}$/;
       if (!regex.test(votante.contrasena)) {
-        reject(new Error("La contraseña debe contener al menos una mayuscula, una minuscula, un numero, un caracter especial($@$!%*?&) y debe tener entre 8 y 16 caracteres"));
+        reject(
+          new Error(
+            "La contraseña debe contener al menos una mayuscula, una minuscula, un numero, un caracter especial($@$!%*?&) y debe tener entre 8 y 16 caracteres"
+          )
+        );
       } else {
-        if(!Votante.verificarBoleta(votante.boleta)){
+        if (!Votante.verificarBoleta(votante.boleta)) {
           reject(new Error("Boleta no valida"));
-        }else{
-        if (votante.contrasena === votante.repetir) {
-          bcryptjs
-            .hash(votante.contrasena, sal)
-            .then(function (hash) {
-              return conexion.promise().query("INSERT INTO votante SET ?", {
-                boleta: votante.boleta,
-                idVotante: votante.boleta,
-                contrasena: hash,
-                correo: votante.correo,
-                estadoVoto: 0, // Se asigna como si no ubiera votado
-                estadoAcademico: 0, // Se asume que no esta inscrito hasta que se demuestre lo contrario
-                verificacion: "Pendiente",
-              });
-            })
-            .then(([fields, rows]) => {
-              const token = jwt.sign(
-                { correo: votante.correo, id: votante.boleta },
-                process.env.SECRET
-              );
-              const link =
-                "https://vota-escom.herokuapp.com/verificar/" +
-                token +
-                "/" +
-                votante.boleta; // Crea el link para la verificacion
-              const correo = new Correo();
-              correo.enviarCorreo(
-                votante.correo,
-                "Para continuar verifica tu cuenta en el siguiente link\n" +
-                  link,
-                "Verificacion de correo VOTA-ESCOM"
-              );
-              resolve({ mensaje: "Registro exitoso" });
-            })
-            .catch((error) => {
-              reject(error);
-            });
         } else {
-          reject(new Error("Las contraseñas no coinciden"));
+          if (votante.contrasena === votante.repetir) {
+            bcryptjs
+              .hash(votante.contrasena, sal)
+              .then(function (hash) {
+                return conexion.promise().query("INSERT INTO votante SET ?", {
+                  boleta: votante.boleta,
+                  idVotante: votante.boleta,
+                  contrasena: hash,
+                  correo: votante.correo,
+                  estadoVoto: 0, // Se asigna como si no ubiera votado
+                  estadoAcademico: 0, // Se asume que no esta inscrito hasta que se demuestre lo contrario
+                  verificacion: "Pendiente",
+                });
+              })
+              .then(([fields, rows]) => {
+                const token = jwt.sign(
+                  { correo: votante.correo, id: votante.boleta },
+                  process.env.SECRET
+                );
+                const link =
+                  "https://vota-escom.herokuapp.com/verificar/" +
+                  token +
+                  "/" +
+                  votante.boleta; // Crea el link para la verificacion
+                const correo = new Correo();
+                correo.enviarCorreo(
+                  votante.correo,
+                  "Para continuar verifica tu cuenta en el siguiente link\n" +
+                    link,
+                  "Verificacion de correo VOTA-ESCOM"
+                );
+                resolve({ mensaje: "Registro exitoso" });
+              })
+              .catch((error) => {
+                reject(error);
+              });
+          } else {
+            reject(new Error("Las contraseñas no coinciden"));
+          }
         }
-        }}
+      }
     } else {
       reject(new Error("Ingresa correo institucional"));
     }
@@ -210,10 +216,16 @@ Votante.cambiarContrasena = function (votante) {
         } else if (resultado.verificacion === "Pendiente") {
           reject(new Error("Cuenta no verificada"));
         } else {
-          return Promise.all([
-            bcryptjs.compare(votante.contrasena, resultado.contrasena),
-            resultado,
-          ]);
+          const regex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,16}$/;
+          if (!regex.test(votante.nuevaContrasena)) {
+            reject(new Error("La contraseña debe contener al menos una mayuscula, una minuscula, un numero, un caracter especial($@$!%*?&) y debe tener entre 8 y 16 caracteres"));
+          } else {
+            return Promise.all([
+              bcryptjs.compare(votante.contrasena, resultado.contrasena),
+              resultado,
+            ]);
+          }
         }
       })
       .then(([bool, resultado]) => {
@@ -300,6 +312,10 @@ Votante.restablecerContrasena = function (token, id, votante) {
         } else if (resultado.verificacion === "Pendiente") {
           reject(new Error("Cuenta no verificada"));
         } else {
+          const regex =/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,16}$/;
+          if (!regex.test(votante.nuevaContrasena)) { 
+            reject(new Error("La contraseña debe contener al menos una mayuscula, una minuscula, un numero, un caracter especial($@$!%*?&) y debe tener entre 8 y 16 caracteres"));
+          } else {
           const verificacion = jwt.verify(token, process.env.SECRET);
           if (id !== verificacion.id.toString()) {
             reject(new Error("Token invalido"));
@@ -330,7 +346,7 @@ Votante.restablecerContrasena = function (token, id, votante) {
               }
             }
           }
-        }
+           } }
       })
       .catch((err) => {
         reject(err);
@@ -358,9 +374,7 @@ Votante.actualizarEstudiantes = function () {
   return new Promise((resolve, reject) => {
     conexion
       .promise()
-      .query(
-        "UPDATE votante SET estadoAcademico=0, estadoVoto=0"
-      )
+      .query("UPDATE votante SET estadoAcademico=0, estadoVoto=0")
       .then(([fields, rows]) => {
         resolve({ mensaje: "Estado Actualizado" });
       })
@@ -388,13 +402,12 @@ Votante.obtenerInformacion = function (idVotante) {
 };
 // funcionFuncion que verifica el formato de la boleta
 Votante.verificarBoleta = function (boleta) {
-    if (boleta.length === 10) {
-      if(boleta.substring(0, 2) === "20"){
-        return true;
-      }
+  if (boleta.length === 10) {
+    if (boleta.substring(0, 2) === "20") {
+      return true;
     }
-    return false;
-  };
-
+  }
+  return false;
+};
 
 module.exports = Votante; // exporta clase votante
