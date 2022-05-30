@@ -6,7 +6,7 @@
  * v.1.0 Se crean funciones fragmentarSecreto, evaluarPolinomio, obtenerNumeroAleatorio, desfragmentarSecreto, generarEcuacion y resolverSistemaEcuaciones
  */
 const rref = require("rref"); // Módulo rref, necesario para resolver el sistema de ecuaciones
-const math = require("mathjs"); // Módulo mathjs, necesario para las operaciones matemáticas modulo
+const math = require("mathjs"); // Módulo mathjs, necesario para obtener operaciones matemáticas precisas
 const { randomInt } = require('crypto');
 const CAMPO_TAM = Math.pow(2, 31) - 1; // Constante que define el tamaño del plano
 
