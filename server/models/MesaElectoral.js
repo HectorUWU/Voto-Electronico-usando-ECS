@@ -175,7 +175,7 @@ MesaElectoral.cambiarContrasena = function (me) {
         } else {
           const regex =
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,16}$/;
-          if (!regex.test(me.contrasena)) {
+          if (!regex.test(me.nuevaContrasena)) {
             reject(
               new Error(
                 "La contraseña debe contener al menos una mayuscula, una minuscula, un numero, un caracter especial($@$!%*?&) y debe tener entre 8 y 16 caracteres"
