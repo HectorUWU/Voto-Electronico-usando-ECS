@@ -173,10 +173,20 @@ MesaElectoral.cambiarContrasena = function (me) {
         if (!resultado) {
           reject(new Error("Integrante de la mesa no valido"));
         } else {
-          return Promise.all([
-            bcryptjs.compare(me.contrasena, resultado.contrasena), // comparacion de la contraseña actual
-            resultado,
-          ]);
+          const regex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,16}$/;
+          if (!regex.test(me.contrasena)) {
+            reject(
+              new Error(
+                "La contraseña debe contener al menos una mayuscula, una minuscula, un numero, un caracter especial($@$!%*?&) y debe tener entre 8 y 16 caracteres"
+              )
+            );
+          } else {
+            return Promise.all([
+              bcryptjs.compare(me.contrasena, resultado.contrasena), // comparacion de la contraseña actual
+              resultado,
+            ]);
+          }
         }
       })
       .then(([bool, resultado]) => {
@@ -258,6 +268,11 @@ MesaElectoral.restablecerContrasena = function (token, id, me) {
         if (!resultado) {
           reject(new Error("Integrante de la mesa no valido"));
         } else {
+          const regex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,16}$/;
+          if (!regex.test(me.contrasena)) {
+            reject(new Error("La contraseña debe contener al menos una mayuscula, una minuscula, un numero, un caracter especial($@$!%*?&) y debe tener entre 8 y 16 caracteres"));
+          } else {
           const verificacion = jwt.verify(token, process.env.SECRET);
           if (verificacion.idMesaElectoral === id) {
             if (verificacion.contrasena === resultado.contrasena) {
@@ -290,6 +305,7 @@ MesaElectoral.restablecerContrasena = function (token, id, me) {
             reject(new Error("Token invalido"));
           }
         }
+      }
       })
       .catch((err) => {
         reject(err);
